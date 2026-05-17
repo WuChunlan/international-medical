@@ -1,3 +1,11 @@
 .home-page {
-  padding-top: 189px; // topbar 80px + nav row 109px = 189px (matches scotemp #gridHeader 188.953px)
+  padding-top: 189px; // topbar 80px + nav row 109px = 189px
+}
+
+// Offset fixed header (189px) so scrollIntoView lands at the right position
+.hospitals-section,
+.equipment-section,
+.cases-section,
+.products-section {
+  scroll-margin-top: 189px;
 }

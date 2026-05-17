@@ -27,11 +27,16 @@ export default function HomePage() {
   // After tab switch re-renders the target section, scroll to it
   useEffect(() => {
     if (!pendingScroll) return;
-    const el = document.getElementById(pendingScroll);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => setPendingScroll(null), 0);
-    }
+    const anchor = pendingScroll;
+    // Wait two frames: first for React to commit the new section to DOM,
+    // second for the browser to calculate layout so getBoundingClientRect is accurate.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.getElementById(anchor);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => setPendingScroll(null), 0);
+      });
+    });
   }, [activeTab, pendingScroll]);
 
   return (

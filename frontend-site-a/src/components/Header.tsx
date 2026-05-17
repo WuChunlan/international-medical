@@ -43,12 +43,14 @@ export default function Header() {
   const scrollTo = (anchor: string) => {
     setMobileOpen(false);
     setActiveAnchor(anchor);
+    if (anchor === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     if (anchor === '#products') {
       window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'special', anchor: 'products' } }));
       return;
     }
-    if (anchor === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-    document.getElementById(anchor.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' });
+    // hospitals / equipment / cases — ensure professional tab is active first
+    const id = anchor.replace('#', '');
+    window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'professional', anchor: id } }));
   };
 
   return (
