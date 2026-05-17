@@ -1,0 +1,197 @@
+// ── scotemp.org design tokens ─────────────────────────────────────────────────
+@sco-navy:      #013489;
+@sco-primary:   #0067ED;
+@sco-theme:     #1e50ae;   // nav link color: rgb(30,80,174) from scotemp.org
+@sco-cyan:      #25F1FF;
+@sco-topbar-bg: rgba(255, 255, 255, 0.137);  // row679 background
+
+// ── Site-A Header — matches scotemp.org #gridHeader (188.953px total) ─────────
+.site-a-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  // Navy + bg.png top-right — identical to scotemp inline style on #gridHeader
+  background-color: @sco-navy;
+  background-image: url('../assets/bg.png');
+  background-size: auto;
+  background-repeat: no-repeat;
+  background-position: top right;
+  transition: box-shadow 0.3s ease;
+
+  &--scrolled {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  // ── Row 1: topbar 80px, rgba(255,255,255,0.137), lang switcher LEFT ──────
+  &__topbar {
+    background: @sco-topbar-bg;
+    height: 80px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__topbar-inner {
+    max-width: 1280px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;  // LEFT — matches scotemp jz_col_5 position
+  }
+
+  &__lang-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding-left: 10px;  // matches scotemp ul.languages padding-left:10px
+  }
+
+  // ── Row 2: nav 109px, WHITE background ───────────────────────────────────
+  &__main {
+    background: #ffffff;  // white nav row — scotemp second row
+  }
+
+  &__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+    height: 109px;  // 188.953 - 80 = 108.953 ≈ 109px
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  &__logo-img {
+    height: 52px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 100%;
+  }
+
+  &__mobile-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  &__mobile-menu {
+    background: @sco-navy;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__mobile-lang {
+    display: flex;
+    gap: 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    &__nav { display: none; }
+    &__mobile-btn { display: block; }
+    &__topbar { display: none; }
+  }
+}
+
+// ── Nav links — #1e50ae on white, matches scotemp nav_item_text ───────────────
+.header-nav-link {
+  font-family: '微软雅黑', 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: @sco-theme;  // rgb(30,80,174) = #1e50ae
+  text-decoration: none;
+  padding: 0 20px;
+  height: 109px;
+  line-height: 109px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  transition: color 0.2s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 20px; right: 20px;
+    height: 3px;
+    background: @sco-cyan;
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+    border-radius: 2px 2px 0 0;
+  }
+
+  &:hover {
+    color: @sco-cyan;
+    &::after { transform: scaleX(1); }
+  }
+
+  & + & {
+    border-left: 1px solid rgba(30, 80, 174, 0.12);
+  }
+
+  &--mobile {
+    height: auto;
+    line-height: 1;
+    padding: 12px 0;
+    border-left: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: block;
+    text-align: left;
+    color: rgba(255, 255, 255, 0.92);
+
+    &::after { display: none; }
+    &:hover { color: @sco-cyan; }
+  }
+}
+
+// ── Language switcher — matches scotemp s_multi_language ─────────────────────
+// white text, active = cyan, divider between items
+.header-lang-item {
+  font-family: '微软雅黑', 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 1);  // --s_ml-t-c-color: rgba(255,255,255,1)
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 10px;
+  height: 28px;
+  line-height: 28px;
+  transition: color 0.2s;
+  white-space: nowrap;
+
+  & + & {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &:hover {
+    color: @sco-cyan;  // --s_ml-t-hc-color: rgba(37,241,255,1)
+  }
+
+  &--active {
+    color: @sco-cyan;  // isActived: rgb(37,241,255)
+  }
+}

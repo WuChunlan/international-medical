@@ -1,0 +1,199 @@
+// ============================================================
+// Admin Design Tokens — Ant Design Pro-style
+// ============================================================
+@navy:      #0F2460;
+@accent:    #1677ff;
+@bg-layout: #f0f2f5;
+@radius:    8px;
+
+:root {
+  --navy: @navy;
+}
+
+// ============================================================
+// Reset & Base
+// ============================================================
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5715;
+  color: rgba(0,0,0,0.85);
+  background-color: @bg-layout;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100vh; }
+
+// ============================================================
+// Ant Design Overrides
+// ============================================================
+.ant-layout { background: @bg-layout; }
+
+.ant-table-wrapper .ant-table { border-radius: 0; }
+
+.ant-layout-sider {
+  transition: width 0.2s, min-width 0.2s, max-width 0.2s;
+}
+
+// ============================================================
+// Scrollbar
+// ============================================================
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track { background: #f1f1f1; }
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+
+  &:hover { background: #a8a8a8; }
+}
+
+// ============================================================
+// Shared Page Layout
+// ============================================================
+.page-header-row {
+  margin-bottom: 16px;
+}
+
+.page-title {
+  margin: 0 !important;
+}
+
+.page-card {
+  border-radius: @radius !important;
+}
+
+.filter-select {
+  width: 200px;
+}
+
+// ============================================================
+// ImageUpload Component
+// ============================================================
+.image-upload-preview {
+  margin-top: 8px;
+}
+
+.image-upload-preview__img {
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+}
+
+.image-upload-preview__url {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+  word-break: break-all;
+}
+
+// ============================================================
+// Dashboard Icons
+// ============================================================
+.stat-icon-blue   { font-size: 28px; color: #1677ff; }
+.stat-icon-green  { font-size: 28px; color: #52c41a; }
+.stat-icon-orange { font-size: 28px; color: #fa8c16; }
+.stat-icon-purple { font-size: 28px; color: #722ed1; }
+
+.stat-title { font-size: 14px; color: #666; }
+
+// ============================================================
+// AdminLayout
+// ============================================================
+.admin-collapsed-icon { color: #1677ff; font-size: 22px; }
+.admin-avatar         { background-color: #1677ff !important; }
+
+// ============================================================
+// SiteConfig
+// ============================================================
+.config-card {
+  border-radius: @radius !important;
+  margin-bottom: 16px;
+}
+
+.config-key-hint {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.config-divider {
+  margin: 8px 0 16px !important;
+}
+
+// ============================================================
+// Form Utilities
+// ============================================================
+.form-wrap {
+  margin-top: 16px;
+}
+
+.input-number-full {
+  width: 100%;
+}
+
+// ============================================================
+// Login Page
+// ============================================================
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #001529 0%, #0f2460 100%);
+}
+
+.login-card {
+  width: 400px;
+  border-radius: @radius !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+
+.login-logo-wrap {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-logo-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1677ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.login-logo-icon {
+  font-size: 24px;
+  color: #fff;
+}
+
+.login-title {
+  margin: 0 !important;
+  color: #001529 !important;
+}
+
+.login-subtitle {
+  font-size: 13px;
+}
+
+.login-input-icon { color: #bbb; }
+
+.login-submit-btn {
+  height: 44px !important;
+  font-size: 16px !important;
+}
+
+.login-form-footer {
+  margin-bottom: 0 !important;
+}

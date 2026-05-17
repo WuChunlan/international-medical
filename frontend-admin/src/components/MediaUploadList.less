@@ -1,0 +1,109 @@
+.media-upload-list {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__label {
+    font-weight: 600;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__empty {
+    color: #999;
+    font-size: 13px;
+    padding: 16px 0;
+    text-align: center;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  &__disabled-tip {
+    color: #999;
+    font-size: 12px;
+    padding: 12px 0;
+    text-align: center;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+  }
+}
+
+.media-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #fafafa;
+  transition: border-color 0.2s;
+
+  &--cover {
+    border-color: #1677ff;
+    background: #e6f4ff;
+  }
+
+  &__thumb {
+    width: 80px;
+    height: 56px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__video-icon {
+    font-size: 24px;
+    color: #1677ff;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__type-tag {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  &__url {
+    font-size: 11px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+  }
+
+  &__cover-badge {
+    font-size: 11px;
+    color: #1677ff;
+    font-weight: 600;
+  }
+
+  &__btns {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+}

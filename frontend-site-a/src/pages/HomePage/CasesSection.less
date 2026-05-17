@@ -1,0 +1,116 @@
+// CasesSection — dark navy bg, clean flat cards
+.cases-section {
+  background: #013489;
+  padding: 100px 0;
+}
+
+.case-card {
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #25F1FF;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  &__cover {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+  }
+
+  &:hover &__cover img { transform: scale(1.04); }
+
+  &__cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(1, 52, 137, 0.8) 0%, rgba(30, 80, 150, 0.8) 100%);
+  }
+
+  &__cover-placeholder-inner {
+    width: 56px; height: 56px;
+    border: 1px solid rgba(37, 241, 255, 0.35);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: rgba(37, 241, 255, 0.6);
+    }
+  }
+
+  &__cover-gradient {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(transparent, rgba(1, 52, 137, 0.7));
+  }
+
+  &__content {
+    padding: 24px 24px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #ffffff;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  &__summary {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: rgba(233, 244, 254, 0.7);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: #25F1FF;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    padding: 0;
+    transition: gap 0.25s ease;
+    align-self: flex-start;
+
+    &:hover { gap: 10px; }
+  }
+}

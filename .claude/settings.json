@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(brew list *)",
+      "Bash(mysql --version)",
+      "Bash(mvn -version)",
+      "Bash(npm --version)",
+      "Bash(mysql -u root -e \"SELECT 1;\")",
+      "Bash(mysql -u root -p'' -e \"SELECT 1;\")",
+      "Bash(brew install *)",
+      "Bash(mysql -u root -p'123456' -e \"SELECT 'connected';\")",
+      "Bash(pdftotext \"/Users/wuchunlan/Desktop/项目/International-medical-mst/泰康同济资料/泰康同济高端特色项目.pdf\" -)",
+      "Bash(mysql -u root -p'123456')",
+      "Bash(mysql -u root -p123456 international_medical -e ' *)",
+      "Bash(kill 34769)",
+      "Bash(npm install *)",
+      "Bash(echo \"Site A deps installing \\(PID $!\\)\")",
+      "Bash(echo \"Site B deps installing \\(PID $!\\)\")",
+      "Bash(echo \"Admin deps installing \\(PID $!\\)\")",
+      "Bash(wait)",
+      "Bash(npx tsc *)",
+      "WebFetch(domain:www.startupindia.gov.in)",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT id, username, password, role FROM users WHERE username='admin';\")"
+    ]
+  }
+}

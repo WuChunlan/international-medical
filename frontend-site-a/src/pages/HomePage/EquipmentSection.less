@@ -1,0 +1,108 @@
+// EquipmentSection
+.equipment-grid {
+  margin-bottom: 40px;
+}
+
+.equipment-section {
+  background: #EFF6FF;
+  padding: 100px 0;
+  border-top: 1px solid #DAEDfd;
+  border-bottom: 1px solid #DAEDfd;
+}
+
+.equipment-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.equipment-dot {
+  height: 6px;
+  border-radius: 3px;
+  background: #c5ddf8;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+
+  &--active {
+    width: 24px;
+    background: #0067ED;
+  }
+
+  &:not(&--active) { width: 6px; }
+}
+
+.equip-card {
+  background: #ffffff;
+  border: 1px solid #DAEDfd;
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+
+  &:hover {
+    border-color: #0067ED;
+    box-shadow: 0 8px 32px rgba(1, 52, 137, 0.12);
+    transform: translateY(-4px);
+  }
+
+  &__cover {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+  }
+
+  &:hover &__cover img { transform: scale(1.04); }
+
+  &__cover-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #013489 0%, #1E5096 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__content {
+    padding: 20px 24px 24px;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  &__accent-bar {
+    width: 3px; height: 16px;
+    background: #0067ED;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #013489;
+    line-height: 1.3;
+  }
+
+  &__desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: #515A71;
+    line-height: 1.75;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

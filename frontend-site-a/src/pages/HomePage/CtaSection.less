@@ -1,0 +1,198 @@
+// CtaSection
+@keyframes ctaOrb {
+  0%, 100% { transform: scale(1) translate(0, 0); }
+  50%       { transform: scale(1.08) translate(12px, -8px); }
+}
+
+.cta-section {
+  position: relative;
+  background: linear-gradient(135deg, #013489 0%, #0067ED 60%, #1E5096 100%);
+  padding: 100px 0;
+  overflow: hidden;
+
+  &__orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+
+    &--top {
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(37,241,255,0.12) 0%, transparent 70%);
+      animation: ctaOrb 8s ease-in-out infinite;
+    }
+
+    &--bottom {
+      bottom: -60px; left: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(37,241,255,0.08) 0%, transparent 70%);
+      animation: ctaOrb 10s ease-in-out infinite reverse;
+    }
+  }
+
+  &__grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 40px;
+    text-align: center;
+  }
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 5px 16px;
+    background: rgba(37,241,255,0.1);
+    border: 1px solid rgba(37,241,255,0.25);
+    border-radius: 20px;
+  }
+
+  &__eyebrow-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #25F1FF;
+  }
+
+  &__eyebrow-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #25F1FF;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 24px;
+    white-space: pre-line;
+  }
+
+  &__divider {
+    width: 48px; height: 2px;
+    background: linear-gradient(90deg, transparent, #25F1FF, transparent);
+    margin: 0 auto 28px;
+    border-radius: 2px;
+  }
+
+  &__subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+    font-weight: 400;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.85;
+    max-width: 640px;
+    margin: 0 auto 48px;
+  }
+
+  &__buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+
+  &__trust {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 20px 0;
+  }
+}
+
+.cta-btn-primary {
+  padding: 16px 44px;
+  background: #fff;
+  color: #013489;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #E9F4FE;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+  }
+}
+
+.cta-btn-secondary {
+  padding: 16px 44px;
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border: 1.5px solid rgba(255,255,255,0.35);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.7);
+    transform: translateY(-2px);
+  }
+}
+
+.cta-trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 32px;
+  border-right: 1px solid rgba(255,255,255,0.12);
+
+  &:last-child { border-right: none; }
+
+  &__value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    color: #25F1FF;
+    line-height: 1;
+  }
+
+  &__label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.3px;
+  }
+}

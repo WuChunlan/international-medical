@@ -1,0 +1,466 @@
+// ============================================================
+// Site-A Design Tokens — scotemp.org palette
+// ============================================================
+@sco-navy:      #013489;   // primary nav/header bg
+@sco-primary:   #0067ED;   // primary blue
+@sco-cyan:      #25F1FF;   // accent cyan
+@sco-dark:      #10345B;   // dark section bg (hospitals, cases)
+@sco-dark-alt:  #0a2040;   // alternate dark bg
+@sco-mid:       #1E5096;   // mid-blue section bg
+@sco-light-bg:  #E9F4FE;   // light blue bg (equipment, products)
+@sco-light-alt: #DAEDfd;   // slightly darker light bg
+@white:         #ffffff;
+@text-dark:     #1a1a2e;
+@text-muted:    #515A71;
+@text-light:    #94A3B8;
+@border-light:  rgba(0, 103, 237, 0.18);
+@shadow-sm:     0 2px 8px rgba(1, 52, 137, 0.10);
+@shadow-md:     0 8px 32px rgba(1, 52, 137, 0.16);
+@shadow-lg:     0 20px 60px rgba(1, 52, 137, 0.24);
+@transition:    all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ── Legacy aliases (keep for backward compat with section files) ──
+@navy:         @sco-dark;
+@navy-mid:     @sco-dark-alt;
+@navy-light:   @sco-mid;
+@accent:       @sco-primary;
+@accent-light: #64B5F6;
+@accent-dim:   rgba(0, 103, 237, 0.25);
+@cream:        @sco-light-bg;
+@cream-dark:   @sco-light-alt;
+
+// ============================================================
+// CSS Custom Properties
+// ============================================================
+:root {
+  --navy:        @sco-dark;
+  --navy-mid:    @sco-dark-alt;
+  --navy-light:  @sco-mid;
+  --gold:        @sco-primary;
+  --gold-light:  #64B5F6;
+  --gold-dark:   @sco-navy;
+  --cream:       @sco-light-bg;
+  --cream-dark:  @sco-light-alt;
+  --white:       @white;
+  --text-dark:   @text-dark;
+  --text-muted:  @text-muted;
+  --text-light:  @text-light;
+  --border-light: @border-light;
+  --shadow-sm:   @shadow-sm;
+  --shadow-md:   @shadow-md;
+  --shadow-lg:   @shadow-lg;
+  --transition:  @transition;
+
+  font-family: 'Source Sans 3', '微软雅黑', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: @text-dark;
+  background: @white;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ============================================================
+// Reset & Base
+// ============================================================
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: @white;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+  color: @text-dark;
+}
+
+p  { margin: 0; }
+a  { color: inherit; text-decoration: none; }
+img { max-width: 100%; height: auto; display: block; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+// ============================================================
+// Keyframes
+// ============================================================
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+// ============================================================
+// Scroll Reveal
+// ============================================================
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+
+  &.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ============================================================
+// Layout Utilities
+// ============================================================
+.section-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+
+  @media (max-width: 768px) { padding: 0 20px; }
+}
+
+.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 500;
+  color: @sco-navy;
+  text-align: center;
+  margin-bottom: 12px;
+
+  @media (max-width: 768px) { font-size: 1.75rem; }
+}
+
+.section-title-en {
+  font-size: 0.85em;
+  color: @sco-primary;
+  display: block;
+  font-style: italic;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+// Section divider — scotemp uses a solid blue line
+.gold-divider {
+  width: 60px;
+  height: 3px;
+  background: @sco-primary;
+  margin: 16px auto 48px;
+  border-radius: 2px;
+
+  &--light {
+    background: @sco-cyan;
+  }
+}
+
+// ============================================================
+// Primary Button
+// ============================================================
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: @sco-primary;
+  color: @white;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  transition: @transition;
+  cursor: pointer;
+  border: none;
+
+  &:hover {
+    background: @sco-navy;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 103, 237, 0.35);
+  }
+}
+
+// ============================================================
+// Card Base
+// ============================================================
+.card {
+  background: @white;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: @shadow-sm;
+  transition: @transition;
+  border: 1px solid transparent;
+
+  &:hover {
+    box-shadow: @shadow-md;
+    border-color: @sco-primary;
+    transform: translateY(-4px);
+  }
+}
+
+// ============================================================
+// Image Placeholder
+// ============================================================
+.img-placeholder {
+  width: 100%;
+  background: linear-gradient(135deg, @sco-navy 0%, @sco-dark 50%, @sco-mid 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: @accent-light;
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  text-align: center;
+  padding: 20px;
+}
+
+// ============================================================
+// Scroll Reveal
+// ============================================================
+.section-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+
+  &--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &--fast {
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+}
+
+// ============================================================
+// Section Header — scotemp style: solid blue eyebrow line
+// ============================================================
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+
+  &__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  &__line {
+    width: 32px;
+    height: 2px;
+    background: @sco-primary;
+    opacity: 0.8;
+  }
+
+  &__line--light {
+    background: rgba(255,255,255,0.4);
+  }
+
+  &__label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: @sco-primary;
+    font-weight: 600;
+  }
+
+  &__label--light {
+    color: @sco-cyan;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 500;
+    margin-bottom: 16px;
+
+    &--light { color: @white; }
+    &--dark  { color: @sco-navy; }
+  }
+}
+
+// ============================================================
+// Data Card (dark & light variants)
+// ============================================================
+.data-card {
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+
+  &--dark {
+    background: rgba(1, 52, 137, 0.55);
+    border: 1px solid rgba(37, 241, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+
+    &:hover {
+      background: rgba(0, 103, 237, 0.25);
+      border-color: rgba(37, 241, 255, 0.5);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      transform: translateY(-6px);
+    }
+  }
+
+  &--light {
+    background: @white;
+    border: 1px solid @sco-light-alt;
+    box-shadow: @shadow-sm;
+    display: flex;
+    flex-direction: column;
+
+    &:hover {
+      border-color: @sco-primary;
+      box-shadow: @shadow-lg;
+      transform: translateY(-6px);
+    }
+  }
+
+  &__cover {
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+  }
+
+  &--dark:hover &__cover img,
+  &--light:hover &__cover img {
+    transform: scale(1.05);
+  }
+
+  &__cover-gradient {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(transparent, rgba(1, 52, 137, 0.85));
+  }
+
+  &__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__content {
+    padding: 24px 28px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  &__accent-bar {
+    width: 3px;
+    height: 20px;
+    background: @sco-cyan;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 12px;
+
+    &--light { color: @white; font-size: 1.3rem; }
+    &--dark  { color: @sco-navy; font-size: 1.1rem; }
+  }
+
+  &__desc {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.8;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+
+    &--light { color: rgba(233, 244, 254, 0.85); }
+    &--dark  { color: @text-muted; }
+  }
+
+  &__badge {
+    position: absolute;
+    top: 16px; left: 16px;
+    width: 36px; height: 36px;
+    background: rgba(1, 52, 137, 0.8);
+    border: 1px solid rgba(37, 241, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.8rem;
+      color: @sco-cyan;
+    }
+  }
+}
+
+// ============================================================
+// Section State (loading / empty)
+// ============================================================
+.section-state {
+  text-align: center;
+  padding: 60px 0;
+
+  &--light { color: @sco-cyan; }
+  &--dark  { color: @text-muted; }
+}
+
+// ============================================================
+// Cards Grid
+// ============================================================
+.cards-grid {
+  display: grid;
+  gap: 28px;
+
+  &--hospitals { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--products  { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  &--cases     { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  &--equipment { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+  @media (max-width: 1024px) {
+    &--hospitals { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    &--hospitals { grid-template-columns: 1fr; }
+    &--equipment { grid-template-columns: 1fr; }
+  }
+}

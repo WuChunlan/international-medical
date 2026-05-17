@@ -1,0 +1,697 @@
+// ============================================================
+// Site-B Design Tokens — Navy + Teal Medical Portal
+// ============================================================
+@navy-deep:    #080F32;
+@navy:         #0F2460;
+@navy-mid:     #162B6E;
+@navy-light:   #1E3A8A;
+@accent:       #60A5FA;
+@accent-light: #93C5FD;
+@teal:         #0EA5A0;
+@teal-light:   #E0F7F6;
+@bg:           #ffffff;
+@bg-section:   #F0F6FF;
+@text:         #1F2937;
+@text-muted:   #6B7280;
+@border:       #E5E7EB;
+@header-h:     64px;
+@radius:       8px;
+@radius-lg:    12px;
+@shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+@shadow-md:    0 4px 12px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+@shadow-lg:    0 10px 30px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+
+:root {
+  --blue-dark:  @navy;
+  --blue-mid:   @navy-mid;
+  --teal:       @teal;
+  --teal-light: @teal-light;
+  --bg:         @bg;
+  --bg-section: @bg-section;
+  --text:       @text;
+  --text-muted: @text-muted;
+  --border:     @border;
+  --shadow-sm:  @shadow-sm;
+  --shadow-md:  @shadow-md;
+  --shadow-lg:  @shadow-lg;
+  --radius:     @radius;
+  --radius-lg:  @radius-lg;
+  --header-h:   @header-h;
+
+  font-family: 'Lato', 'Noto Serif SC', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: @text;
+  background: @bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+// ============================================================
+// Reset & Base
+// ============================================================
+*, *::before, *::after { box-sizing: border-box; }
+
+body { margin: 0; padding: 0; background: @bg; }
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Serif SC', 'Lato', serif;
+  color: @navy;
+  margin: 0;
+}
+
+p { margin: 0; }
+
+a {
+  color: @teal;
+  text-decoration: none;
+  transition: color 0.2s;
+  &:hover { color: @navy; }
+}
+
+// ============================================================
+// Ant Design Token Overrides
+// ============================================================
+.ant-btn-primary {
+  background-color: @teal !important;
+  border-color: @teal !important;
+
+  &:hover, &:focus {
+    background-color: darken(@teal, 6%) !important;
+    border-color: darken(@teal, 6%) !important;
+  }
+
+  &.ant-btn-ghost {
+    background-color: transparent !important;
+    color: @teal !important;
+    border-color: @teal !important;
+
+    &:hover { background-color: @teal-light !important; }
+  }
+}
+
+// ============================================================
+// Layout Utilities
+// ============================================================
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: @bg;
+}
+
+.page-main {
+  flex: 1;
+  padding-top: @header-h;
+}
+
+.page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+
+  &--inline { min-height: 200px; }
+}
+
+.section-block {
+  padding: 56px 0;
+  background: @bg;
+
+  &--alt { background: @bg-section; }
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-title {
+  font-family: 'Noto Serif SC', serif !important;
+  color: @navy !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  margin-bottom: 0 !important;
+}
+
+// ============================================================
+// Header
+// ============================================================
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: @header-h;
+  background: @navy;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+
+  &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #fff !important;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.85; color: #fff !important; }
+  }
+
+  &__nav { display: flex; align-items: center; }
+}
+
+.logo-zh   { font-family: 'Noto Serif SC', serif; font-weight: 700; }
+.logo-divider { color: @teal; font-weight: 300; margin: 0 2px; }
+.logo-en   { font-family: 'Lato', sans-serif; font-weight: 300; font-size: 15px; opacity: 0.9; }
+
+.header-lang-btn {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 13px !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  border-radius: 4px !important;
+  padding: 2px 10px !important;
+  height: auto !important;
+  transition: all 0.2s !important;
+
+  &:hover {
+    color: #fff !important;
+    border-color: rgba(255,255,255,0.6) !important;
+    background: rgba(255,255,255,0.1) !important;
+  }
+}
+
+.header-nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 14px;
+  transition: color 0.2s;
+  &:hover { color: #fff !important; }
+}
+
+.header-profile-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+  &:hover { color: #fff !important; }
+}
+
+.header-logout-btn {
+  color: rgba(255,255,255,0.7) !important;
+  font-size: 13px !important;
+  padding: 0 8px !important;
+  &:hover { color: #fff !important; background: rgba(255,255,255,0.1) !important; }
+}
+
+.header-register-btn {
+  background: @teal !important;
+  border-color: @teal !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding: 0 16px !important;
+}
+
+// ============================================================
+// Shared Banner Mixin
+// ============================================================
+.banner-block() {
+  width: 100%;
+  max-height: 520px;
+  overflow: hidden;
+  position: relative;
+
+  video, img {
+    width: 100%;
+    max-height: 520px;
+    object-fit: cover;
+    display: block;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40%;
+    background: linear-gradient(transparent, rgba(8,15,50,0.55));
+    pointer-events: none;
+  }
+}
+
+// ============================================================
+// Hero Banner (video / image / none)
+// ============================================================
+.detail-hero {
+  background: @navy;
+  color: #fff;
+
+  &__banner {
+    .banner-block();
+  }
+
+  &__info {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 56px;
+  }
+}
+
+// ============================================================
+// Hospital Detail (legacy class names kept for compatibility)
+// ============================================================
+.hospital-hero {
+  background: @navy;
+  color: #fff;
+}
+
+.hospital-video-wrap,
+.hospital-cover-wrap {
+  .banner-block();
+}
+
+.hospital-video,
+.hospital-cover {
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  display: block;
+}
+
+.hospital-hero__info {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+}
+
+.hospital-title {
+  font-family: 'Noto Serif SC', serif !important;
+  color: #fff !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+}
+
+.hospital-intro {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+  max-width: 720px;
+  margin-bottom: 20px !important;
+}
+
+.hospital-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+  }
+}
+
+// ============================================================
+// Equipment
+// ============================================================
+.equipment-card {
+  border-radius: @radius !important;
+  overflow: hidden;
+  border: 1px solid @border !important;
+  transition: box-shadow 0.2s, transform 0.2s !important;
+
+  &:hover {
+    box-shadow: @shadow-md !important;
+    transform: translateY(-2px);
+  }
+}
+
+.equipment-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.equipment-img-placeholder {
+  width: 100%;
+  height: 160px;
+  background: @bg-section;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: @text-muted;
+}
+
+// ============================================================
+// Doctor Cards
+// ============================================================
+.doctor-card {
+  border-radius: @radius !important;
+  border: 1px solid @border !important;
+  transition: box-shadow 0.2s, transform 0.2s !important;
+  height: 100%;
+
+  &:hover {
+    box-shadow: @shadow-md !important;
+    transform: translateY(-2px);
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  &__name-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.doctor-avatar { background: @teal-light !important; color: @teal !important; flex-shrink: 0; }
+.doctor-name   { font-family: 'Noto Serif SC', serif; font-size: 16px !important; color: @navy !important; }
+.doctor-title-tag  { font-size: 11px !important; }
+.doctor-specialty  { margin-bottom: 10px !important; font-size: 12px !important; }
+.doctor-bio        { color: @text-muted !important; font-size: 13px !important; line-height: 1.6 !important; margin-bottom: 12px !important; }
+
+.doctor-price {
+  font-size: 20px;
+  font-weight: 700;
+  color: @teal;
+  margin-bottom: 12px;
+
+  &__unit { font-size: 13px; font-weight: 400; color: @text-muted; }
+}
+
+// ============================================================
+// Product Detail
+// ============================================================
+.product-hero {
+  background: @navy;
+  color: #fff;
+}
+
+.product-cover-wrap { .banner-block(); }
+
+.product-cover {
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  display: block;
+}
+
+.product-hero__info {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 56px;
+}
+
+.product-title {
+  font-family: 'Noto Serif SC', serif !important;
+  color: #fff !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  margin-bottom: 16px !important;
+}
+
+.product-summary {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+  max-width: 720px;
+  margin-bottom: 20px !important;
+}
+
+.product-price-range {
+  font-size: 28px;
+  font-weight: 700;
+  color: @teal;
+  margin-bottom: 24px;
+}
+
+.product-detail-html {
+  font-size: 15px;
+  line-height: 1.8;
+  color: @text;
+
+  img { max-width: 100%; border-radius: @radius; }
+
+  h1, h2, h3 { color: @navy; margin: 24px 0 12px; }
+}
+
+.variants-table .ant-table {
+  border-radius: @radius !important;
+  overflow: hidden;
+}
+
+.variant-price-tag {
+  color: @teal !important;
+  border-color: @teal !important;
+  background: @teal-light !important;
+}
+
+// ============================================================
+// Book Button
+// ============================================================
+.book-btn {
+  background: @teal !important;
+  border-color: @teal !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  transition: all 0.2s !important;
+
+  &:hover {
+    background: darken(@teal, 6%) !important;
+    border-color: darken(@teal, 6%) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14,165,160,0.3) !important;
+  }
+
+  &--hero {
+    height: 48px !important;
+    font-size: 16px !important;
+    padding: 0 32px !important;
+  }
+}
+
+// ============================================================
+// Booking Modal
+// ============================================================
+.booking-modal {
+  .ant-modal-title {
+    font-family: 'Noto Serif SC', serif;
+    color: @navy;
+    font-size: 18px;
+  }
+
+  &__content {
+    padding: 16px 0;
+
+    p { font-size: 15px; line-height: 1.8; color: @text; }
+  }
+}
+
+// ============================================================
+// Auth Pages
+// ============================================================
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, @navy 0%, @navy-mid 50%, @teal 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: @radius-lg;
+  box-shadow: @shadow-lg;
+  padding: 40px 40px 32px;
+  width: 100%;
+  max-width: 440px;
+
+  &--wide { max-width: 520px; }
+
+  &__logo { text-align: center; margin-bottom: 28px; }
+}
+
+.auth-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: @navy !important;
+  font-size: 18px;
+  font-weight: 600;
+
+  .logo-divider { color: @teal; }
+}
+
+.auth-title {
+  font-family: 'Noto Serif SC', serif !important;
+  color: @navy !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  text-align: center;
+  margin-bottom: 28px !important;
+}
+
+.auth-form {
+  .ant-form-item-label > label { color: @text; font-weight: 500; }
+
+  .ant-input-affix-wrapper,
+  .ant-input {
+    border-radius: @radius !important;
+    border-color: @border !important;
+  }
+
+  .ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-focused {
+    border-color: @teal !important;
+    box-shadow: 0 0 0 2px rgba(14,165,160,0.15) !important;
+  }
+}
+
+.auth-submit-btn {
+  height: 44px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: @radius !important;
+  background: @teal !important;
+  border-color: @teal !important;
+  margin-top: 4px;
+
+  &:hover { background: darken(@teal, 6%) !important; border-color: darken(@teal, 6%) !important; }
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.auth-switch-link {
+  color: @teal !important;
+  font-weight: 600;
+  &:hover { color: @navy !important; }
+}
+
+// ============================================================
+// Profile Page
+// ============================================================
+.profile-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.profile-username { font-size: 15px; }
+
+.profile-section-label {
+  font-family: 'Noto Serif SC', serif !important;
+  color: @navy !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin-bottom: 20px !important;
+}
+
+.profile-empty { padding: 48px 0; }
+
+.history-list {
+  border: 1px solid @border;
+  border-radius: @radius-lg;
+  overflow: hidden;
+  background: #fff;
+}
+
+.history-item {
+  padding: 16px 20px !important;
+  transition: background 0.15s;
+  &:hover { background: @bg-section; }
+
+  &__name { font-size: 15px; font-weight: 600; color: @navy; }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 13px;
+    color: @text-muted;
+    margin-top: 4px;
+  }
+}
+
+.history-avatar {
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+
+  &--hospital { background: #dbeafe !important; color: #1d4ed8 !important; }
+  &--product  { background: #dcfce7 !important; color: #15803d !important; }
+}
+
+// ============================================================
+// Responsive
+// ============================================================
+.send-code-btn {
+  padding: 0 4px !important;
+  height: auto !important;
+}
+
+.section-title-icon {
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .hospital-title,
+  .product-title { font-size: 26px !important; }
+
+  .section-block { padding: 36px 0; }
+
+  .auth-card { padding: 28px 24px 24px; }
+
+  .site-header__logo .logo-en { display: none; }
+  .logo-divider { display: none; }
+
+  .book-btn--hero {
+    height: 42px !important;
+    font-size: 15px !important;
+    padding: 0 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hospital-hero,
+  .product-hero { padding: 32px 0 40px; }
+
+  .profile-header { flex-direction: column; gap: 4px; }
+}

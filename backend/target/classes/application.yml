@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/international_medical?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: noreply@example.com
+    password: your-mail-password
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 3000ms
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.intlmedical.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+jwt:
+  secret: international-medical-jwt-secret-key-2026-must-be-at-least-256-bits
+  expiration: 86400000   # 24h in ms
+  admin-expiration: 28800000  # 8h for admin
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:3001
+      - http://localhost:3002
+  mail:
+    from: noreply@example.com
+    verify-code-ttl: 600   # seconds
+    verify-code-resend-interval: 60
