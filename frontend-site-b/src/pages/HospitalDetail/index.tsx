@@ -65,7 +65,6 @@ export default function HospitalDetailPage() {
         targetId: Number(id),
       });
     } catch {
-      // history recording failure is non-critical
     }
     setBookingModal({
       visible: true,
@@ -87,7 +86,6 @@ export default function HospitalDetailPage() {
   const { hospital, doctors, equipments, mediaList } = data;
   const hospitalName = isZh ? hospital.nameZh : hospital.nameEn;
   const hospitalIntro = isZh ? hospital.introZh : hospital.introEn;
-  // const hospitalAddress = isZh ? hospital.addressZh : hospital.addressEn;
 
   return (
     <div className="page-wrapper">
@@ -104,21 +102,6 @@ export default function HospitalDetailPage() {
               {hospitalName}
             </Title>
             <Paragraph className="hospital-intro">{hospitalIntro}</Paragraph>
-
-            {/* <div className="hospital-meta">
-              {hospitalAddress && (
-                <span className="hospital-meta__item">
-                  <EnvironmentOutlined />
-                  {hospitalAddress}
-                </span>
-              )}
-              {hospital.phone && (
-                <span className="hospital-meta__item">
-                  <PhoneOutlined />
-                  {hospital.phone}
-                </span>
-              )}
-            </div> */}
           </div>
         </section>
 

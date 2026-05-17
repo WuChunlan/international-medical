@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import api from '../../api';
-import type { ApiResult } from '../../api';
-import type { Hospital } from '../../types';
-import './HospitalsSection.less';
+import api from '../../../api';
+import type { ApiResult } from '../../../api';
+import type { Hospital } from '../../../types';
+import './index.less';
 
 export default function HospitalsSection() {
   const { t, i18n } = useTranslation();

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './TabSection.less';
+import './index.less';
 
 interface TabSectionProps {
   activeTab: 'professional' | 'special';

@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleBook = async (variant?: ProductVariant) => {
+  const handleBook = async () => {
     if (!user) {
       const redirect = encodeURIComponent(location.pathname);
       navigate(`/login?redirect=${redirect}`);
@@ -59,14 +59,12 @@ export default function ProductDetailPage() {
         targetId: Number(id),
       });
     } catch {
-      // non-critical
     }
     setBookingModal({
       visible: true,
       contactPerson: data?.product.contactPerson ?? null,
       contactInfo: data?.product.contactInfo ?? null,
     });
-    void variant; // variant info available if needed
   };
 
   if (loading) {
@@ -119,7 +117,7 @@ export default function ProductDetailPage() {
           type="primary"
           size="small"
           className="book-btn"
-          onClick={() => handleBook(record)}
+          onClick={() => handleBook()}
         >
           {t('product.book')}
         </Button>

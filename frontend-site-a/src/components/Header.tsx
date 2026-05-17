@@ -29,6 +29,7 @@ export default function Header() {
   const { i18n } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeAnchor, setActiveAnchor] = useState('#hero');
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -41,6 +42,11 @@ export default function Header() {
 
   const scrollTo = (anchor: string) => {
     setMobileOpen(false);
+    setActiveAnchor(anchor);
+    if (anchor === '#products') {
+      window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'special', anchor: 'products' } }));
+      return;
+    }
     if (anchor === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     document.getElementById(anchor.replace('#', ''))?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -77,7 +83,7 @@ export default function Header() {
             {navLinks.map(link => (
               <button
                 key={link.anchor}
-                className="header-nav-link"
+                className={`header-nav-link${activeAnchor === link.anchor ? ' header-nav-link--active' : ''}`}
                 onClick={() => scrollTo(link.anchor)}
               >
                 {link.label}

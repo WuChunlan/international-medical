@@ -1,8 +1,8 @@
 // ── scotemp.org design tokens ─────────────────────────────────────────────────
-@sco-navy:      #013489;
+@sco-navy:      rgba(1, 52, 137, 1);
 @sco-primary:   #0067ED;
 @sco-theme:     #1e50ae;   // nav link color: rgb(30,80,174) from scotemp.org
-@sco-cyan:      #25F1FF;
+@sco-cyan:      rgba(100, 181, 246, 1);
 @sco-topbar-bg: rgba(255, 255, 255, 0.137);  // row679 background
 
 // ── Site-A Header — matches scotemp.org #gridHeader (188.953px total) ─────────
@@ -27,14 +27,14 @@
     background: @sco-topbar-bg;
     height: 80px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
   }
 
   &__topbar-inner {
     max-width: 1280px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 200px;
     display: flex;
     align-items: center;
     justify-content: flex-start;  // LEFT — matches scotemp jz_col_5 position
@@ -49,13 +49,12 @@
 
   // ── Row 2: nav 109px, WHITE background ───────────────────────────────────
   &__main {
-    background: #ffffff;  // white nav row — scotemp second row
+    background: @sco-topbar-bg;
   }
 
   &__inner {
-    max-width: 1280px;
     margin: 0 auto;
-    padding: 0 40px;
+    padding: 0 180px 0 80px;
     height: 109px;  // 188.953 - 80 = 108.953 ≈ 109px
     display: flex;
     align-items: center;
@@ -70,7 +69,7 @@
   }
 
   &__logo-img {
-    height: 52px;
+    height: 80px;
     width: auto;
     object-fit: contain;
     display: block;
@@ -118,9 +117,9 @@
 // ── Nav links — #1e50ae on white, matches scotemp nav_item_text ───────────────
 .header-nav-link {
   font-family: '微软雅黑', 'Source Sans 3', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
-  color: @sco-theme;  // rgb(30,80,174) = #1e50ae
+  color: rgba(255, 255, 255, 1);  // rgb(30,80,174) = #1e50ae
   text-decoration: none;
   padding: 0 20px;
   height: 109px;
@@ -137,19 +136,16 @@
     position: absolute;
     bottom: 0; left: 20px; right: 20px;
     height: 3px;
-    background: @sco-cyan;
+    background: #25F1FF;
     transform: scaleX(0);
     transition: transform 0.25s ease;
     border-radius: 2px 2px 0 0;
   }
 
-  &:hover {
-    color: @sco-cyan;
+  &:hover,
+  &--active {
+    color: #25F1FF;
     &::after { transform: scaleX(1); }
-  }
-
-  & + & {
-    border-left: 1px solid rgba(30, 80, 174, 0.12);
   }
 
   &--mobile {
@@ -171,27 +167,26 @@
 // white text, active = cyan, divider between items
 .header-lang-item {
   font-family: '微软雅黑', 'Source Sans 3', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400;
   color: rgba(255, 255, 255, 1);  // --s_ml-t-c-color: rgba(255,255,255,1)
   background: none;
   border: none;
   cursor: pointer;
   padding: 0 10px;
-  height: 28px;
-  line-height: 28px;
+  height: 16px;
+  line-height: 16px;
   transition: color 0.2s;
   white-space: nowrap;
-
   & + & {
-    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid #b68686;
   }
 
   &:hover {
-    color: @sco-cyan;  // --s_ml-t-hc-color: rgba(37,241,255,1)
+    color: #25F1FF;  // --s_ml-t-hc-color: rgba(37,241,255,1)
   }
 
   &--active {
-    color: @sco-cyan;  // isActived: rgb(37,241,255)
+    color: #25F1FF;  // isActived: rgb(37,241,255)
   }
 }

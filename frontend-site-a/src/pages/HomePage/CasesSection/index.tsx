@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import api from '../../api';
-import type { ApiResult } from '../../api';
-import type { MedicalCase } from '../../types';
-import './CasesSection.less';
+import api from '../../../api';
+import type { ApiResult } from '../../../api';
+import type { MedicalCase } from '../../../types';
+import './index.less';
 
 export default function CasesSection() {
   const { t, i18n } = useTranslation();
@@ -39,20 +39,20 @@ export default function CasesSection() {
       <div className="section-container">
         <div className="section-header">
           <div className="section-header__eyebrow">
-            <div className="section-header__line section-header__line--light" />
-            <span className="section-header__label section-header__label--light">{t('cases.section_subtitle')}</span>
-            <div className="section-header__line section-header__line--light" />
+            <div className="section-header__line" />
+            <span className="section-header__label">{t('cases.section_subtitle')}</span>
+            <div className="section-header__line" />
           </div>
-          <h2 className="section-header__title section-header__title--light">
+          <h2 className="section-header__title">
             {t('cases.section_title')}
           </h2>
-          <div className="gold-divider gold-divider--light" />
+          <div className="gold-divider" />
         </div>
 
         {loading ? (
-          <div className="section-state section-state--light">{t('common.loading')}</div>
+          <div className="section-state">{t('common.loading')}</div>
         ) : cases.length === 0 ? (
-          <div className="section-state section-state--dark">{t('cases.no_data')}</div>
+          <div className="section-state">{t('cases.no_data')}</div>
         ) : (
           <div className="cards-grid cards-grid--cases">
             {cases.map((c, idx) => (
