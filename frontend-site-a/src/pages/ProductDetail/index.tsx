@@ -84,15 +84,6 @@ export default function ProductDetailPage() {
       ),
     },
     {
-      title: isZh ? '价格' : 'Price',
-      key: 'price',
-      width: 120,
-      render: (_: unknown, record: ProductVariant) =>
-        record.price != null
-          ? <span style={{ fontWeight: 600, color: '#d4380d' }}>¥{Number(record.price).toLocaleString()}</span>
-          : <span style={{ color: '#8c8c8c' }}>{isZh ? '面议' : 'On request'}</span>,
-    },
-    {
       title: isZh ? '操作' : 'Action',
       key: 'action',
       width: 110,

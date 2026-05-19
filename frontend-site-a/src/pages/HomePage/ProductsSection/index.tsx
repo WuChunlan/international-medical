@@ -99,12 +99,6 @@ function ProductCard({ product, lang, index }: {
   const name = lang === 'zh' ? product.nameZh : product.nameEn;
   const summary = lang === 'zh' ? product.summaryZh : product.summaryEn;
 
-  const priceText = product.priceMin != null
-    ? product.priceMin === product.priceMax
-      ? `${product.priceMin.toLocaleString()} ${t('products.price_unit')}`
-      : `${product.priceMin.toLocaleString()} - ${product.priceMax?.toLocaleString()} ${t('products.price_unit')}`
-    : null;
-
   return (
     <div className="product-card">
       <div className="product-card__cover">
@@ -130,13 +124,6 @@ function ProductCard({ product, lang, index }: {
       <div className="product-card__content">
         <h3 className="product-card__name">{name}</h3>
         <p className="product-card__summary">{summary}</p>
-
-        {priceText && (
-          <div className="product-card__price-row">
-            <span className="product-card__price-label">{t('products.price_range')}</span>
-            <span className="product-card__price-value">{priceText}</span>
-          </div>
-        )}
 
         <div className="product-card__actions">
           <button

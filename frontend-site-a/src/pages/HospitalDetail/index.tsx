@@ -43,22 +43,28 @@ function SectionCarousel<T>({
 
   return (
     <div className="hd-carousel-wrap">
-      <div className="hd-cards-row">
-        {visible.map((i, slot) => (
-          <div key={`${i}-${slot}`} className="hd-card-slot" style={{ animationDelay: `${slot * 70}ms` }}>
-            {renderCard(items[i], slot)}
-          </div>
-        ))}
+      <div className="hd-cards-row-wrap">
+        {hasMultiple && (
+          <button className="hd-nav__btn hd-side-btn hd-side-btn--prev" onClick={prev} aria-label="上一组"><ArrowLeft /></button>
+        )}
+        <div className="hd-cards-row">
+          {visible.map((i, slot) => (
+            <div key={`${i}-${slot}`} className="hd-card-slot" style={{ animationDelay: `${slot * 70}ms` }}>
+              {renderCard(items[i], slot)}
+            </div>
+          ))}
+        </div>
+        {hasMultiple && (
+          <button className="hd-nav__btn hd-side-btn hd-side-btn--next" onClick={next} aria-label="下一组"><ArrowRight /></button>
+        )}
       </div>
       {hasMultiple && (
         <div className={`hd-nav hd-nav--${theme}`}>
-          <button className="hd-nav__btn" onClick={prev} aria-label="上一组"><ArrowLeft /></button>
           <div className="hd-nav__dots">
             {items.map((_, i) => (
               <span key={i} className={`hd-nav__dot${i === index ? ' hd-nav__dot--active' : ''}`} />
             ))}
           </div>
-          <button className="hd-nav__btn" onClick={next} aria-label="下一组"><ArrowRight /></button>
         </div>
       )}
     </div>

@@ -88,6 +88,26 @@
   position: relative;
 }
 
+.hd-cards-row-wrap {
+  position: relative;
+}
+
+// Side arrow buttons — absolutely positioned on left/right of the cards row
+.hd-side-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+
+  &--prev { left: -50px; }
+  &--next { right: -50px; }
+
+  @media (max-width: 768px) {
+    &--prev { left: 4px; }
+    &--next { right: 4px; }
+  }
+}
+
 .hd-cards-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -111,8 +131,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  margin-top: 32px;
+  margin-top: 24px;
 
   &__btn {
     width: 42px;

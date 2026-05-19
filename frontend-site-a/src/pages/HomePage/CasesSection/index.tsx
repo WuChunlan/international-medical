@@ -57,24 +57,30 @@ export default function CasesSection() {
           <div className="section-state">{t('cases.no_data')}</div>
         ) : (
           <div className="carousel-wrap">
-            <div className="cards-grid cards-grid--cases">
-              {visibleIdx.map((i, slot) => (
-                <CaseCard key={`${cases[i].id}-${slot}`} medCase={cases[i]} lang={lang} index={slot} />
-              ))}
+            <div className="carousel-cards-wrap">
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--light carousel-side-btn carousel-side-btn--prev" onClick={prev} aria-label="上一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </button>
+              )}
+              <div className="cards-grid cards-grid--cases">
+                {visibleIdx.map((i, slot) => (
+                  <CaseCard key={`${cases[i].id}-${slot}`} medCase={cases[i]} lang={lang} index={slot} />
+                ))}
+              </div>
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--light carousel-side-btn carousel-side-btn--next" onClick={next} aria-label="下一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </button>
+              )}
             </div>
             {hasMultiple && (
               <div className="carousel-nav">
-                <button className="carousel-nav__btn carousel-nav__btn--light" onClick={prev} aria-label="上一组">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
-                </button>
                 <div className="carousel-nav__dots">
                   {cases.map((_, i) => (
                     <span key={i} className={`carousel-nav__dot carousel-nav__dot--light${i === index ? ' carousel-nav__dot--active' : ''}`} />
                   ))}
                 </div>
-                <button className="carousel-nav__btn carousel-nav__btn--light" onClick={next} aria-label="下一组">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
-                </button>
               </div>
             )}
           </div>
