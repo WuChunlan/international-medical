@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 public class LoginRequest {
     @NotBlank
-    private String account;  // email or username
+    @jakarta.validation.constraints.Email
+    private String email;
 
     @NotBlank
     private String password;

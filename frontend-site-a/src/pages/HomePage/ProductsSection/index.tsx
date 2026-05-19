@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { ApiResult } from '../../../api';
 import type { SpecialProduct } from '../../../types';
+import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
 export default function ProductsSection() {
@@ -23,12 +25,13 @@ export default function ProductsSection() {
 
   useEffect(() => {
     api.get<ApiResult<SpecialProduct[]>>('/api/products')
-      .then(res => setProducts(res.data.data))
+      .then(res => setProducts(res.data ?? []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(products.length);
 
   return (
     <section
@@ -54,10 +57,33 @@ export default function ProductsSection() {
         ) : products.length === 0 ? (
           <div className="section-state section-state--dark">{t('products.no_data')}</div>
         ) : (
-          <div className="cards-grid cards-grid--products">
-            {products.map((p, idx) => (
-              <ProductCard key={p.id} product={p} lang={lang} index={idx} />
-            ))}
+          <div className="carousel-wrap">
+            <div className="carousel-cards-wrap">
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--prev" onClick={prev} aria-label="上一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </button>
+              )}
+              <div className="cards-grid cards-grid--products">
+                {visibleIdx.map((i, slot) => (
+                  <ProductCard key={`${products[i].id}-${slot}`} product={products[i]} lang={lang} index={slot} />
+                ))}
+              </div>
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--next" onClick={next} aria-label="下一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </button>
+              )}
+            </div>
+            {hasMultiple && (
+              <div className="carousel-nav">
+                <div className="carousel-nav__dots">
+                  {products.map((_, i) => (
+                    <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -69,7 +95,7 @@ function ProductCard({ product, lang, index }: {
   product: SpecialProduct; lang: string; index: number;
 }) {
   const { t } = useTranslation();
-  const siteBUrl = import.meta.env.VITE_SITE_B_URL || 'http://localhost:3001';
+  const navigate = useNavigate();
   const name = lang === 'zh' ? product.nameZh : product.nameEn;
   const summary = lang === 'zh' ? product.summaryZh : product.summaryEn;
 
@@ -113,22 +139,18 @@ function ProductCard({ product, lang, index }: {
         )}
 
         <div className="product-card__actions">
-          <a
-            href={`${siteBUrl}/product/${product.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
             className="product-card__btn-outline"
+            onClick={() => navigate(`/product/${product.id}`)}
           >
             {t('products.view_detail')}
-          </a>
-          <a
-            href={`${siteBUrl}/product/${product.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          </button>
+          <button
             className="product-card__btn-primary"
+            onClick={() => navigate(`/product/${product.id}`)}
           >
             {t('products.consult')}
-          </a>
+          </button>
         </div>
       </div>
     </div>

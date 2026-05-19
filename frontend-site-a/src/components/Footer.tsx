@@ -16,7 +16,7 @@ export default function Footer() {
               </svg>
             </div>
             <div>
-              <div className="site-footer__logo-name">国际医疗</div>
+              <div className="site-footer__logo-name">国际医疗共享平台</div>
               <div className="site-footer__logo-sub">International Medical</div>
             </div>
           </div>

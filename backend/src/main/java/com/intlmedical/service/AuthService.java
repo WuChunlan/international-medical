@@ -54,19 +54,22 @@ public class AuthService {
 
         long count = userMapper.selectCount(
             new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, req.getUsername())
-                .or().eq(User::getEmail, req.getEmail())
+                .eq(User::getEmail, req.getEmail())
         );
         if (count > 0) {
-            throw new RuntimeException("用户名或邮箱已存在");
+            throw new RuntimeException("该邮箱已注册");
         }
 
         User user = new User();
-        user.setRoleId(1);  // user role
-        user.setUsername(req.getUsername());
+        user.setRoleId(1);
+        user.setFirstName(req.getFirstName());
+        user.setLastName(req.getLastName());
+        user.setGender(req.getGender());
         user.setEmail(req.getEmail());
+        user.setPhone(req.getPhone());
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         user.setIdCardNumber(req.getIdCardNumber());
+        user.setPassportNumber(req.getPassportNumber());
         user.setIdCardCountry(req.getIdCardCountry());
         user.setIsActive(1);
         userMapper.insert(user);
@@ -77,17 +80,19 @@ public class AuthService {
     public LoginResponse login(LoginRequest req) {
         User user = userMapper.selectOne(
             new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, req.getAccount())
-                .or().eq(User::getEmail, req.getAccount())
+                .eq(User::getEmail, req.getEmail())
         );
         if (user == null || !passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            throw new RuntimeException("账号或密码错误");
+            throw new RuntimeException("邮箱或密码错误");
         }
         if (user.getIsActive() != 1) {
             throw new RuntimeException("账号已被禁用");
         }
         String role = user.getRoleId() == 2 ? "admin" : "user";
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), role);
-        return new LoginResponse(token, user.getUsername(), role);
+        String displayName = (user.getLastName() != null ? user.getLastName() : "") +
+                             (user.getFirstName() != null ? user.getFirstName() : "");
+        if (displayName.isBlank()) displayName = user.getEmail();
+        String token = jwtUtil.generateToken(user.getId(), displayName, role);
+        return new LoginResponse(token, displayName, role);
     }
 }

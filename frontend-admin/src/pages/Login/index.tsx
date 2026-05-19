@@ -8,7 +8,7 @@ import { useAdminAuthStore } from '../../store/authStore';
 const { Title } = Typography;
 
 interface LoginForm {
-  account: string;
+  email: string;
   password: string;
 }
 
@@ -21,27 +21,25 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await api.post('/api/auth/login', {
-        account: values.account,
+        email: values.email,
         password: values.password,
       });
-      const data = res.data;
-      const payload = data.data || data;
+      const payload = res.data;
       if (payload.role && payload.role !== 'admin') {
-        message.error('无管理员权限');
+        message.error('无管理员权限，请使用管理员账号登录');
         return;
       }
-      const token = payload.token || payload.accessToken || payload.access_token;
-      const username = payload.username || values.account;
+      const token = payload.token;
       if (!token) {
         message.error('登录失败：未获取到令牌');
         return;
       }
-      setAuth(token, username);
+      setAuth(token, payload.username || values.email);
       message.success('登录成功');
       navigate('/dashboard');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      message.error(error.response?.data?.message || '登录失败，请检查账号密码');
+      message.error(error.response?.data?.message || '登录失败，请检查邮箱和密码');
     } finally {
       setLoading(false);
     }
@@ -72,12 +70,16 @@ const Login: React.FC = () => {
           size="large"
         >
           <Form.Item
-            name="account"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            name="email"
+            rules={[
+              { required: true, message: '请输入邮箱' },
+              { type: 'email', message: '邮箱格式不正确' },
+            ]}
           >
             <Input
               prefix={<UserOutlined className="login-input-icon" />}
-              placeholder="用户名"
+              placeholder="管理员邮箱"
+              autoComplete="email"
             />
           </Form.Item>
 

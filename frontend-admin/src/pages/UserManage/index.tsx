@@ -55,8 +55,28 @@ const UserManage: React.FC = () => {
 
   const columns: ColumnsType<User> = [
     { title: 'ID', dataIndex: 'id', width: 70 },
-    { title: '用户名', dataIndex: 'username', width: 120 },
+    {
+      title: '姓名',
+      key: 'name',
+      width: 120,
+      render: (_: unknown, record: User) => {
+        const name = [record.lastName, record.firstName].filter(Boolean).join(' ');
+        return name || record.username || '-';
+      },
+    },
     { title: '邮箱', dataIndex: 'email', ellipsis: true },
+    {
+      title: '性别',
+      dataIndex: 'gender',
+      width: 70,
+      render: (val: string | null) => {
+        if (val === 'male') return '男';
+        if (val === 'female') return '女';
+        if (val === 'other') return '其他';
+        return '-';
+      },
+    },
+    { title: '联系方式', dataIndex: 'phone', width: 130, render: (v: string | null) => v || '-' },
     {
       title: '证件国家',
       dataIndex: 'idCardCountry',

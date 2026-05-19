@@ -28,18 +28,20 @@ CREATE TABLE IF NOT EXISTS roles (
 CREATE TABLE IF NOT EXISTS users (
   id              BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
   role_id         TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1=user 2=admin',
-  username        VARCHAR(100)     NOT NULL,
+  first_name      VARCHAR(100)     DEFAULT NULL COMMENT '名',
+  last_name       VARCHAR(100)     DEFAULT NULL COMMENT '姓',
+  gender          VARCHAR(10)      DEFAULT NULL COMMENT 'male | female | other',
   email           VARCHAR(200)     NOT NULL,
+  phone           VARCHAR(50)      DEFAULT NULL COMMENT '联系方式',
   password_hash   VARCHAR(255)     NOT NULL COMMENT 'bcrypt',
-  id_card_number  VARCHAR(200)     DEFAULT NULL COMMENT '当地身份证号（AES加密存储）',
+  id_card_number  VARCHAR(200)     DEFAULT NULL COMMENT '身份证号',
+  passport_number VARCHAR(200)     DEFAULT NULL COMMENT '护照号',
   id_card_country VARCHAR(100)     DEFAULT NULL COMMENT '证件签发国',
   is_active       TINYINT(1)       NOT NULL DEFAULT 1,
   created_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uk_username (username),
-  UNIQUE KEY uk_email (email),
-  KEY idx_role (role_id)
+  UNIQUE KEY uk_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
 -- ============================================================
@@ -96,6 +98,23 @@ CREATE TABLE IF NOT EXISTS equipments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医疗设备表';
 
 -- ============================================================
+-- 医院诊疗环境表
+-- ============================================================
+CREATE TABLE IF NOT EXISTS hospital_environments (
+  id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  hospital_id  BIGINT UNSIGNED NOT NULL,
+  name_zh      VARCHAR(200)    NOT NULL,
+  name_en      VARCHAR(200)    NOT NULL,
+  desc_zh      TEXT            DEFAULT NULL,
+  desc_en      TEXT            DEFAULT NULL,
+  image_url    VARCHAR(500)    DEFAULT NULL,
+  sort_order   INT             NOT NULL DEFAULT 0,
+  is_active    TINYINT(1)      NOT NULL DEFAULT 1,
+  PRIMARY KEY (id),
+  KEY idx_hospital (hospital_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医院诊疗环境表';
+
+-- ============================================================
 -- 医生表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS doctors (
@@ -133,7 +152,8 @@ CREATE TABLE IF NOT EXISTS cases (
   sort_order      INT             NOT NULL DEFAULT 0,
   is_active       TINYINT(1)      NOT NULL DEFAULT 1,
   created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  KEY idx_hospital (hospital_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='成功案例表';
 
 -- ============================================================
@@ -179,6 +199,23 @@ CREATE TABLE IF NOT EXISTS product_variants (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品细分套餐';
 
 -- ============================================================
+-- 服务团队表
+-- ============================================================
+CREATE TABLE IF NOT EXISTS service_teams (
+  id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name_zh      VARCHAR(200)    NOT NULL,
+  name_en      VARCHAR(200)    NOT NULL,
+  intro_zh     TEXT            DEFAULT NULL,
+  intro_en     TEXT            DEFAULT NULL,
+  image_url    VARCHAR(500)    DEFAULT NULL,
+  sort_order   INT             NOT NULL DEFAULT 0,
+  is_active    TINYINT(1)      NOT NULL DEFAULT 1,
+  created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='服务团队表';
+
+-- ============================================================
 -- 浏览/预约记录表
 -- ============================================================
 CREATE TABLE IF NOT EXISTS browse_history (
@@ -200,8 +237,8 @@ CREATE TABLE IF NOT EXISTS browse_history (
 CREATE TABLE IF NOT EXISTS site_configs (
   id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
   config_key  VARCHAR(100)    NOT NULL COMMENT '配置键',
-  value_zh    TEXT            DEFAULT NULL,
-  value_en    TEXT            DEFAULT NULL,
+  value_zh    VARCHAR(2000)   DEFAULT NULL,
+  value_en    VARCHAR(2000)   DEFAULT NULL,
   description VARCHAR(200)    DEFAULT NULL,
   updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),

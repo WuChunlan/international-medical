@@ -450,17 +450,517 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: grid;
   gap: 28px;
 
-  &--hospitals { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-  &--products  { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-  &--cases     { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-  &--equipment { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--hospitals  { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--products   { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--cases      { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--equipment  { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--teams      { grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
   @media (max-width: 1024px) {
-    &--hospitals { grid-template-columns: repeat(2, 1fr); }
+    &--hospitals, &--products, &--cases, &--equipment, &--teams {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
-  @media (max-width: 768px) {
-    &--hospitals { grid-template-columns: 1fr; }
-    &--equipment { grid-template-columns: 1fr; }
+  @media (max-width: 640px) {
+    &--hospitals, &--products, &--cases, &--equipment, &--teams {
+      grid-template-columns: 1fr;
+    }
   }
 }
+
+// ── Shared carousel navigation ────────────────────────────────────────────────
+.carousel-wrap {
+  position: relative;
+}
+
+.carousel-cards-wrap {
+  position: relative;
+}
+
+// Side arrow buttons — absolutely positioned on left/right of the cards row
+.carousel-side-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+
+  &--prev { left: -22px; }
+  &--next { right: -22px; }
+
+  @media (max-width: 768px) {
+    &--prev { left: 4px; }
+    &--next { right: 4px; }
+  }
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+
+  &__btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.22s, color 0.22s, transform 0.18s, box-shadow 0.22s;
+    flex-shrink: 0;
+
+    svg { display: block; }
+
+    &:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    &:active { transform: scale(0.96); }
+
+    &--dark {
+      color: #0067ED;
+      &:hover { background: #0067ED; color: #fff; }
+    }
+
+    &--light {
+      color: rgba(255,255,255,0.85);
+      &:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    }
+  }
+
+  &__dots {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+  }
+
+  &__dot {
+    height: 6px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.28s ease;
+    padding: 0;
+
+    &--dark {
+      background: #c5ddf8;
+      &.carousel-nav__dot--active { background: #0067ED; }
+    }
+
+    &--light {
+      background: rgba(255,255,255,0.3);
+      &.carousel-nav__dot--active { background: rgba(255,255,255,0.9); }
+    }
+
+    &--active { width: 22px; }
+    &:not(&--active) { width: 6px; }
+  }
+}
+
+// ============================================================
+// Page Layout (detail pages + profile)
+// ============================================================
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f5f7fa;
+}
+
+.page-main {
+  flex: 1;
+  padding-top: 190px;
+}
+
+.page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+
+  &--inline {
+    min-height: 200px;
+  }
+}
+
+// ============================================================
+// Section Blocks (detail page sections)
+// ============================================================
+.section-block {
+  background: #ffffff;
+  padding: 60px 0;
+  border-bottom: 1px solid #e8edf5;
+
+  &--alt {
+    background: #f5f7fa;
+  }
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+
+  @media (max-width: 768px) { padding: 0 20px; }
+}
+
+.section-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  color: @sco-navy;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title-icon {
+  color: @sco-primary;
+  font-size: 1.1em;
+}
+
+// ============================================================
+// Hospital Hero
+// ============================================================
+.hospital-hero {
+  background: linear-gradient(135deg, @sco-navy 0%, @sco-dark 100%);
+  padding: 60px 40px;
+  color: #ffffff;
+
+  &__info {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+.hospital-title {
+  color: #ffffff !important;
+  font-size: clamp(1.8rem, 4vw, 2.6rem) !important;
+  margin-bottom: 16px !important;
+}
+
+.hospital-intro {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 700px;
+}
+
+// ============================================================
+// Product Hero
+// ============================================================
+.product-hero {
+  background: linear-gradient(135deg, @sco-navy 0%, @sco-dark 100%);
+  padding: 60px 40px;
+  color: #ffffff;
+
+  &__info {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}
+
+.product-title {
+  color: #ffffff !important;
+  font-size: clamp(1.8rem, 4vw, 2.6rem) !important;
+}
+
+.product-summary {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  max-width: 700px;
+}
+
+.product-detail-html {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #374151;
+
+  img { max-width: 100%; border-radius: 4px; }
+  p { margin-bottom: 12px; }
+}
+
+// ============================================================
+// Equipment Cards (hospital detail)
+// ============================================================
+.equipment-card .ant-card-cover {
+  overflow: hidden;
+}
+
+.equipment-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.equipment-img-placeholder {
+  height: 180px;
+  background: linear-gradient(135deg, @sco-navy 0%, @sco-mid 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: rgba(255,255,255,0.6);
+}
+
+// ============================================================
+// Doctor Cards
+// ============================================================
+.doctor-card {
+  height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  &__name-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.doctor-avatar {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, @sco-navy, @sco-primary) !important;
+}
+
+.doctor-name {
+  font-size: 1rem;
+  color: @sco-navy;
+}
+
+.doctor-title-tag {
+  font-size: 0.75rem;
+}
+
+.doctor-specialty {
+  margin-bottom: 10px;
+}
+
+.doctor-bio {
+  font-size: 0.88rem;
+  color: @text-muted;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+// ============================================================
+// Book Button
+// ============================================================
+.book-btn {
+  background: @sco-primary !important;
+  border-color: @sco-primary !important;
+
+  &:hover {
+    background: @sco-navy !important;
+    border-color: @sco-navy !important;
+  }
+
+  &--hero {
+    font-size: 1rem;
+    height: 44px;
+    padding: 0 28px;
+  }
+}
+
+// ============================================================
+// Variants Table
+// ============================================================
+.variants-table {
+  .ant-table-thead > tr > th {
+    background: @sco-navy;
+    color: #ffffff;
+    font-weight: 500;
+  }
+}
+
+// ============================================================
+// Profile Page
+// ============================================================
+.profile-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.profile-username {
+  font-size: 0.95rem;
+}
+
+.profile-section-label {
+  color: @sco-navy !important;
+  font-size: 1.2rem !important;
+  margin-bottom: 24px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-empty {
+  padding: 60px 0;
+}
+
+.history-list {
+  .ant-list-item { padding: 16px 0; }
+}
+
+.history-item {
+  &__name {
+    font-weight: 500;
+    color: @sco-navy;
+    font-size: 0.95rem;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: @text-muted;
+    margin-top: 4px;
+  }
+}
+
+.history-avatar {
+  &--hospital {
+    background-color: @sco-primary !important;
+  }
+  &--product {
+    background-color: #52c41a !important;
+  }
+}
+
+// ============================================================
+// Auth Pages (Login / Register)
+// ============================================================
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, @sco-navy 0%, @sco-dark 50%, #0a1628 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 48px 48px 40px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+
+  &--wide {
+    max-width: 680px;
+  }
+
+  &__logo {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 32px 24px 28px;
+  }
+}
+
+.auth-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.logo-zh {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: @sco-navy;
+}
+
+.logo-divider {
+  color: @sco-primary;
+  font-size: 1.1rem;
+}
+
+.logo-en {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: @text-muted;
+  letter-spacing: 0.3px;
+}
+
+.auth-title {
+  text-align: center;
+  color: @sco-navy !important;
+  margin-bottom: 28px !important;
+  font-size: 1.6rem !important;
+}
+
+.auth-form {
+  .ant-form-item-label > label {
+    font-weight: 500;
+    color: #374151;
+  }
+
+  &__row {
+    display: flex;
+    gap: 16px;
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 0;
+    }
+  }
+}
+
+.auth-submit-btn {
+  height: 44px;
+  font-size: 1rem;
+  background: @sco-primary !important;
+  border-color: @sco-primary !important;
+  font-weight: 500;
+
+  &:hover {
+    background: @sco-navy !important;
+    border-color: @sco-navy !important;
+  }
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.auth-switch-link {
+  color: @sco-primary;
+  font-weight: 500;
+
+  &:hover { text-decoration: underline; }
+}
+
+.send-code-btn {
+  color: @sco-primary !important;
+  font-weight: 500;
+  padding: 0 8px;
+  white-space: nowrap;
+
+  &:disabled { color: @text-muted !important; }
+}
+

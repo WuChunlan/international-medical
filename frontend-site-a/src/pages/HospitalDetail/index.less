@@ -1,0 +1,310 @@
+@import (reference) '../../index.less';
+
+// ── Section layout ────────────────────────────────────────────────────────────
+.hd-section {
+  background: #ffffff;
+  padding: 64px 0;
+  border-bottom: 1px solid #e8edf5;
+
+  &--alt {
+    background: #f5f8fc;
+  }
+
+  &__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 48px;
+
+    @media (max-width: 768px) { padding: 0 20px; }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  &__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0067ED 0%, #0047b3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  &__rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #c5ddf8 0%, transparent 100%);
+    margin-left: 8px;
+  }
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────────
+.hd-hero {
+  background: linear-gradient(135deg, #0a1628 0%, #0d2247 100%);
+  padding: 60px 48px;
+
+  @media (max-width: 768px) { padding: 40px 20px; }
+
+  &__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  &__title {
+    color: #ffffff !important;
+    font-size: clamp(1.8rem, 4vw, 2.6rem) !important;
+    margin-bottom: 16px !important;
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  &__intro {
+    color: rgba(255, 255, 255, 0.82) !important;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    max-width: 720px;
+    margin: 0 !important;
+  }
+}
+
+// ── Carousel wrapper ──────────────────────────────────────────────────────────
+.hd-carousel-wrap {
+  position: relative;
+}
+
+.hd-cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+}
+
+.hd-card-slot {
+  animation: hd-fade-in 0.38s ease both;
+}
+
+@keyframes hd-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Nav ───────────────────────────────────────────────────────────────────────
+.hd-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 32px;
+
+  &__btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid #0067ED;
+    background: transparent;
+    color: #0067ED;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    flex-shrink: 0;
+
+    &:hover {
+      background: #0067ED;
+      color: #fff;
+      transform: scale(1.08);
+    }
+    &:active { transform: scale(0.95); }
+  }
+
+  &__dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  &__dot {
+    height: 5px;
+    border-radius: 3px;
+    background: #c5ddf8;
+    transition: all 0.28s ease;
+    width: 5px;
+
+    &--active {
+      width: 20px;
+      background: #0067ED;
+    }
+  }
+}
+
+// ── Shared card base ──────────────────────────────────────────────────────────
+.hd-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 40, 100, 0.08);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 40, 100, 0.14);
+  }
+
+  // ── Cover image area — FIXED HEIGHT for all card types ──────────────────
+  &__cover {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #e8edf5;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    &:hover img { transform: scale(1.04); }
+  }
+
+  &__cover-ph {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #e8f0fb 0%, #d0e4f7 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: rgba(0, 103, 237, 0.35);
+
+    &--env {
+      background: linear-gradient(135deg, #edf4fb 0%, #daeaf7 100%);
+    }
+  }
+
+  // ── Text body ────────────────────────────────────────────────────────────
+  &__body {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0a1628;
+    margin: 0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__desc {
+    font-size: 0.82rem;
+    color: #6b7a99;
+    line-height: 1.6;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  // ── Doctor variant ───────────────────────────────────────────────────────
+  &--doctor {
+    padding: 20px;
+
+    .hd-card__cover { display: none; } // doctor uses avatar, not cover
+  }
+
+  &__doctor-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+}
+
+// ── Doctor specifics ──────────────────────────────────────────────────────────
+.hd-doctor-avatar {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #0a1628, #0067ED) !important;
+}
+
+.hd-doctor-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hd-doctor-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0a1628;
+  line-height: 1.3;
+}
+
+.hd-doctor-title,
+.hd-doctor-specialty {
+  font-size: 0.75rem;
+  margin: 0 !important;
+}
+
+.hd-doctor-bio {
+  font-size: 0.82rem;
+  color: #6b7a99;
+  line-height: 1.6;
+  margin: 0 0 12px !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.hd-book-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 9px 0;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(90deg, #0067ED 0%, #0047b3 100%);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+
+  &:hover  { opacity: 0.88; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}

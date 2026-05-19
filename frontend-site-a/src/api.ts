@@ -19,4 +19,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (res) => {
+    if (res.data && typeof res.data === 'object' && 'data' in res.data && 'code' in res.data) {
+      res.data = res.data.data;
+    }
+    return res;
+  },
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(err);
+  }
+);
+
 export default api;

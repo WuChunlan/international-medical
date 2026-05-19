@@ -1,18 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { ApiResult } from '../../../api';
 import type { Equipment } from '../../../types';
+import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
 export default function EquipmentSection() {
   const { t, i18n } = useTranslation();
   const [items, setItems] = useState<Equipment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [current, setCurrent] = useState(0);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLElement>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,24 +25,13 @@ export default function EquipmentSection() {
 
   useEffect(() => {
     api.get<ApiResult<Equipment[]>>('/api/equipments')
-      .then(res => setItems(res.data.data))
+      .then(res => setItems(res.data ?? []))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (items.length <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setCurrent(c => (c + 1) % items.length);
-    }, 4000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [items.length]);
-
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const visibleCount = 3;
-  const displayItems = items.length > 0
-    ? Array.from({ length: visibleCount }, (_, i) => items[(current + i) % items.length])
-    : [];
+  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(items.length);
 
   return (
     <section
@@ -68,22 +57,28 @@ export default function EquipmentSection() {
         ) : items.length === 0 ? (
           <div className="section-state section-state--dark">{t('equipment.no_data')}</div>
         ) : (
-          <>
+          <div className="carousel-wrap">
             <div className="cards-grid cards-grid--equipment equipment-grid">
-              {displayItems.map((eq, idx) => (
-                <EquipmentCard key={`${eq.id}-${idx}`} equipment={eq} lang={lang} />
+              {visibleIdx.map((i, slot) => (
+                <EquipmentCard key={`${items[i].id}-${slot}`} equipment={items[i]} lang={lang} />
               ))}
             </div>
-            <div className="equipment-dots">
-              {items.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrent(i)}
-                  className={`equipment-dot${i === current ? ' equipment-dot--active' : ''}`}
-                />
-              ))}
-            </div>
-          </>
+            {hasMultiple && (
+              <div className="carousel-nav">
+                <button className="carousel-nav__btn carousel-nav__btn--dark" onClick={prev} aria-label="上一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </button>
+                <div className="carousel-nav__dots">
+                  {items.map((_, i) => (
+                    <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
+                  ))}
+                </div>
+                <button className="carousel-nav__btn carousel-nav__btn--dark" onClick={next} aria-label="下一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </button>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </section>
@@ -91,11 +86,17 @@ export default function EquipmentSection() {
 }
 
 function EquipmentCard({ equipment, lang }: { equipment: Equipment; lang: string }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const name = lang === 'zh' ? equipment.nameZh : equipment.nameEn;
   const desc = lang === 'zh' ? equipment.descZh : equipment.descEn;
 
   return (
-    <div className="equip-card">
+    <div
+      className="equip-card equip-card--clickable"
+      onClick={() => navigate(`/hospital/${equipment.hospitalId}`)}
+      title={t('equipment.view_hospital')}
+    >
       <div className="equip-card__cover">
         {equipment.imageUrl ? (
           <img src={equipment.imageUrl} alt={name} />

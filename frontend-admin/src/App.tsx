@@ -6,7 +6,10 @@ import Dashboard from './pages/Dashboard';
 import HospitalManage from './pages/HospitalManage';
 import DoctorManage from './pages/DoctorManage';
 import EquipmentManage from './pages/EquipmentManage';
+import EnvironmentManage from './pages/EnvironmentManage';
+import ServiceTeamManage from './pages/ServiceTeamManage';
 import ProductManage from './pages/ProductManage';
+import CaseManage from './pages/CaseManage';
 import UserManage from './pages/UserManage';
 import SiteConfig from './pages/SiteConfig';
 
@@ -25,7 +28,10 @@ function App() {
                 <Route path="hospitals" element={<HospitalManage />} />
                 <Route path="doctors" element={<DoctorManage />} />
                 <Route path="equipments" element={<EquipmentManage />} />
+                <Route path="environments" element={<EnvironmentManage />} />
+                <Route path="service-teams" element={<ServiceTeamManage />} />
                 <Route path="products" element={<ProductManage />} />
+                <Route path="cases" element={<CaseManage />} />
                 <Route path="users" element={<UserManage />} />
                 <Route path="config" element={<SiteConfig />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />

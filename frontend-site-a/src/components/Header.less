@@ -25,13 +25,12 @@
   // ── Row 1: topbar 80px, rgba(255,255,255,0.137), lang switcher LEFT ──────
   &__topbar {
     background: @sco-topbar-bg;
-    height: 80px;
+    height: 60px;
     display: flex;
     align-items: flex-end;
   }
 
   &__topbar-inner {
-    max-width: 1280px;
     width: 100%;
     margin: 0 auto;
     padding: 0 200px;
@@ -54,8 +53,8 @@
 
   &__inner {
     margin: 0 auto;
-    padding: 0 180px 0 80px;
-    height: 109px;  // 188.953 - 80 = 108.953 ≈ 109px
+    padding: 0 80px;
+    height: 130px;  // 188.953 - 80 = 108.953 ≈ 109px
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -189,4 +188,81 @@
   &--active {
     color: #25F1FF;  // isActived: rgb(37,241,255)
   }
+}
+
+// ── Auth links in topbar ──────────────────────────────────────────────────────
+.site-a-header__topbar-inner {
+  justify-content: space-between;
+}
+
+.site-a-header__auth-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-a-header__mobile-auth {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+}
+
+.header-auth-link {
+  font-family: '微软雅黑', 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: #25F1FF; }
+
+  &--btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  &--register {
+    background: rgba(37, 241, 255, 0.15);
+    border: 1px solid rgba(37, 241, 255, 0.5);
+    border-radius: 4px;
+    padding: 3px 10px;
+    color: #25F1FF;
+
+    &:hover {
+      background: rgba(37, 241, 255, 0.25);
+    }
+  }
+}
+
+// ── Logo text fallback ────────────────────────────────────────────────────────
+.site-a-header__logo-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.site-a-header__logo-text {
+  padding-left: 24px;
+  font-family: '微软雅黑', 'Source Sans 3', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.site-a-header__logo-subtitle {
+  padding-left: 24px;
+  font-family: '微软雅黑', 'Source Sans 3', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.72);
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  padding-top: 6px;
 }

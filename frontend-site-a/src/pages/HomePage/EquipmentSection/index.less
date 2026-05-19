@@ -10,21 +10,8 @@
   border-bottom: 1px solid #DAEDfd;
 }
 
-.equipment-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.equipment-dot {
-  height: 6px;
-  border-radius: 3px;
-  background: #c5ddf8;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 0;
-
+// old dot styles removed — now using shared .carousel-nav from index.less
+.equipment-dot-UNUSED {
   &--active {
     width: 24px;
     background: #0067ED;
@@ -39,6 +26,10 @@
   border-radius: 0;
   overflow: hidden;
   transition: all 0.35s ease;
+
+  &--clickable {
+    cursor: pointer;
+  }
 
   &:hover {
     border-color: #0067ED;

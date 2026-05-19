@@ -1,0 +1,138 @@
+// ServiceTeamsSection
+.service-teams-section {
+  background: #ffffff;
+  padding: 100px 0;
+  border-top: 1px solid #e8edf5;
+}
+
+// 3个：三列等宽
+.cards-grid--teams-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+// 2个：两列居中，卡片更宽（最大560px），整体居中
+.cards-grid--teams-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 560px));
+  gap: 36px;
+  justify-content: center;
+
+  @media (max-width: 700px) { grid-template-columns: 1fr; }
+}
+
+// 1个：单列居中，卡片更大
+.cards-grid--teams-1 {
+  display: grid;
+  grid-template-columns: minmax(0, 680px);
+  gap: 0;
+  justify-content: center;
+}
+
+.team-card {
+  background: #ffffff;
+  border: 1px solid #DAEDfd;
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.35s ease;
+
+  &:hover {
+    border-color: #0067ED;
+    box-shadow: 0 8px 32px rgba(1, 52, 137, 0.12);
+    transform: translateY(-4px);
+  }
+
+  &__cover {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+  }
+
+  &:hover &__cover img { transform: scale(1.04); }
+
+  // 2个或1个时封面更高
+  .cards-grid--teams-2 &__cover,
+  .cards-grid--teams-1 &__cover {
+    height: 280px;
+  }
+
+  &__cover-placeholder {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #013489 0%, #1E5096 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__cover-gradient {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: linear-gradient(to top, rgba(1,52,137,0.15), transparent);
+  }
+
+  &__content {
+    padding: 20px 24px 24px;
+  }
+
+  // 2个或1个时内容区更宽松
+  .cards-grid--teams-2 &__content,
+  .cards-grid--teams-1 &__content {
+    padding: 28px 32px 32px;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  &__accent-bar {
+    width: 3px; height: 16px;
+    background: #0067ED;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: #013489;
+    line-height: 1.3;
+  }
+
+  .cards-grid--teams-2 &__name,
+  .cards-grid--teams-1 &__name {
+    font-size: 1.25rem;
+  }
+
+  &__intro {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: #515A71;
+    line-height: 1.75;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cards-grid--teams-2 &__intro,
+  .cards-grid--teams-1 &__intro {
+    font-size: 0.95rem;
+    -webkit-line-clamp: 5;
+  }
+}

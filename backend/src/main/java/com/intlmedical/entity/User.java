@@ -10,10 +10,14 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Integer roleId;
-    private String username;
+    private String firstName;
+    private String lastName;
+    private String gender;
     private String email;
+    private String phone;
     private String passwordHash;
     private String idCardNumber;
+    private String passportNumber;
     private String idCardCountry;
     private Integer isActive;
     @TableField(fill = FieldFill.INSERT)

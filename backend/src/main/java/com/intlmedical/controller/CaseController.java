@@ -1,6 +1,6 @@
 package com.intlmedical.controller;
 
-import com.intlmedical.entity.Case;
+import com.intlmedical.dto.response.CaseVO;
 import com.intlmedical.service.CaseService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class CaseController {
     private final CaseService caseService;
 
     @GetMapping
-    public Result<List<Case>> list() {
+    public Result<List<CaseVO>> list() {
         return Result.ok(caseService.listActive());
     }
 }

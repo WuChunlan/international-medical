@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import './index.less';
 
 const CONTENT = {
@@ -35,7 +36,7 @@ export default function CtaSection() {
   const ref = useRef<HTMLElement>(null);
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
   const c = CONTENT[lang];
-  const siteBUrl = import.meta.env.VITE_SITE_B_URL || 'http://localhost:3001';
+  const navigate = useNavigate();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -63,12 +64,12 @@ export default function CtaSection() {
         <p className="cta-section__subtitle">{c.subtitle}</p>
 
         <div className="cta-section__buttons">
-          <a href={`${siteBUrl}/consult`} target="_blank" rel="noopener noreferrer" className="cta-btn-primary">
+          <button className="cta-btn-primary" onClick={() => navigate('/login')}>
             {c.primary}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
-          </a>
+          </button>
           <a href="#hospitals" className="cta-btn-secondary">{c.secondary}</a>
         </div>
 

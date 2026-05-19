@@ -7,21 +7,22 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-    @NotBlank
-    @Size(min = 3, max = 50)
-    private String username;
+    private String firstName;
+    private String lastName;
+    private String gender;
 
     @NotBlank
     @Email
     private String email;
 
+    private String phone;
+
     @NotBlank
     @Size(min = 8, max = 100)
     private String password;
 
-    @NotBlank
     private String idCardNumber;
-
+    private String passportNumber;
     private String idCardCountry;
 
     @NotBlank

@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { ApiResult } from '../../../api';
 import type { Hospital } from '../../../types';
+import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
 export default function HospitalsSection() {
@@ -23,12 +25,13 @@ export default function HospitalsSection() {
 
   useEffect(() => {
     api.get<ApiResult<Hospital[]>>('/api/hospitals')
-      .then(res => setHospitals(res.data.data))
+      .then(res => setHospitals(res.data ?? []))
       .catch(() => setHospitals([]))
       .finally(() => setLoading(false));
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(hospitals.length);
 
   return (
     <section
@@ -54,10 +57,33 @@ export default function HospitalsSection() {
         ) : hospitals.length === 0 ? (
           <div className="section-state section-state--dark">{t('hospitals.no_data')}</div>
         ) : (
-          <div className="cards-grid cards-grid--hospitals">
-            {hospitals.map((h, idx) => (
-              <HospitalCard key={h.id} hospital={h} lang={lang} delay={idx * 150} />
-            ))}
+          <div className="carousel-wrap">
+            <div className="carousel-cards-wrap">
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--prev" onClick={prev} aria-label="上一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
+                </button>
+              )}
+              <div className="cards-grid cards-grid--hospitals">
+                {visibleIdx.map((i, slot) => (
+                  <HospitalCard key={`${hospitals[i].id}-${slot}`} hospital={hospitals[i]} lang={lang} delay={slot * 80} />
+                ))}
+              </div>
+              {hasMultiple && (
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--next" onClick={next} aria-label="下一组">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                </button>
+              )}
+            </div>
+            {hasMultiple && (
+              <div className="carousel-nav">
+                <div className="carousel-nav__dots">
+                  {hospitals.map((_, i) => (
+                    <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -69,9 +95,9 @@ function HospitalCard({ hospital, lang, delay }: {
   hospital: Hospital; lang: string; delay: number;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const name = lang === 'zh' ? hospital.nameZh : hospital.nameEn;
   const intro = lang === 'zh' ? hospital.introZh : hospital.introEn;
-  const siteBUrl = import.meta.env.VITE_SITE_B_URL || 'http://localhost:3001';
 
   return (
     <div className="hospital-card" style={{ animationDelay: `${delay}ms` }}>
@@ -94,17 +120,15 @@ function HospitalCard({ hospital, lang, delay }: {
           <h3 className="hospital-card__name">{name}</h3>
         </div>
         <p className="hospital-card__intro">{intro}</p>
-        <a
-          href={`${siteBUrl}/hospital/${hospital.id}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
           className="hospital-card__link"
+          onClick={() => navigate(`/hospital/${hospital.id}`)}
         >
           {t('hospitals.view_more')}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
           </svg>
-        </a>
+        </button>
       </div>
     </div>
   );

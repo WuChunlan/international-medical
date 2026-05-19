@@ -1,9 +1,9 @@
 package com.intlmedical.controller.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intlmedical.dto.response.CaseVO;
 import com.intlmedical.entity.Case;
 import com.intlmedical.mapper.CaseMapper;
 import com.intlmedical.util.Result;
@@ -18,13 +18,10 @@ public class AdminCaseController {
     private final CaseMapper caseMapper;
 
     @GetMapping
-    public Result<IPage<Case>> list(
+    public Result<IPage<CaseVO>> list(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        IPage<Case> result = caseMapper.selectPage(
-            new Page<>(page, size),
-            new LambdaQueryWrapper<Case>().orderByAsc(Case::getSortOrder)
-        );
+        IPage<CaseVO> result = caseMapper.selectPageWithHospital(new Page<>(page, size));
         return Result.ok(result);
     }
 
