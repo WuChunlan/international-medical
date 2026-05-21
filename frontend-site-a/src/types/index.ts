@@ -124,6 +124,17 @@ export interface ServiceTeam {
   isActive: number;
 }
 
+export interface ServiceFeature {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  introZh: string | null;
+  introEn: string | null;
+  imageUrl: string | null;
+  sortOrder: number;
+  isActive: number;
+}
+
 export interface BrowseHistory {
   id: number;
   userId: number;

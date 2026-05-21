@@ -55,6 +55,12 @@
   }
 }
 
+// ── Intro wrapper (banner + hero combined) ────────────────────────────────────
+.hd-intro-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
 // ── Hero ──────────────────────────────────────────────────────────────────────
 .hd-hero {
   background: linear-gradient(135deg, #0a1628 0%, #0d2247 100%);
@@ -92,20 +98,30 @@
   position: relative;
 }
 
-// Side arrow buttons — absolutely positioned on left/right of the cards row
+// Side arrow buttons — hidden by default, revealed on section hover
 .hd-side-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 
   &--prev { left: -50px; }
   &--next { right: -50px; }
 
   @media (max-width: 768px) {
+    opacity: 1;
+    pointer-events: auto;
     &--prev { left: 4px; }
     &--next { right: 4px; }
   }
+}
+
+.hd-section:hover .hd-side-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .hd-cards-row {
@@ -134,25 +150,25 @@
   margin-top: 24px;
 
   &__btn {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: 1.5px solid #0067ED;
-    background: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(0, 103, 237, 0.1);
     color: #0067ED;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, color 0.2s, transform 0.15s;
+    transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
     flex-shrink: 0;
 
     &:hover {
       background: #0067ED;
       color: #fff;
-      transform: scale(1.08);
+      box-shadow: 0 4px 14px rgba(0,103,237,0.3);
     }
-    &:active { transform: scale(0.95); }
+    &:active { transform: scale(0.94); }
   }
 
   &__dots {

@@ -70,3 +70,7 @@ npm run dev -- --port 3002
 | 缓存 | Redis（验证码） |
 | 前端 | React 18 + TypeScript + Vite + Ant Design + i18next |
 | 国际化 | i18next（中/英文切换） |
+
+
+邮箱: admin@international-medical.com
+新密码: Admin@123456

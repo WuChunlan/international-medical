@@ -455,15 +455,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   &--cases      { grid-template-columns: repeat(3, 1fr); gap: 24px; }
   &--equipment  { grid-template-columns: repeat(3, 1fr); gap: 24px; }
   &--teams      { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  &--doctors    { grid-template-columns: repeat(3, 1fr); gap: 24px; }
 
   @media (max-width: 1024px) {
-    &--hospitals, &--products, &--cases, &--equipment, &--teams {
+    &--hospitals, &--products, &--cases, &--equipment, &--teams, &--doctors {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
   @media (max-width: 640px) {
-    &--hospitals, &--products, &--cases, &--equipment, &--teams {
+    &--hospitals, &--products, &--cases, &--equipment, &--teams, &--doctors {
       grid-template-columns: 1fr;
     }
   }
@@ -478,20 +479,31 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   position: relative;
 }
 
-// Side arrow buttons — absolutely positioned on left/right of the cards row
+// Side arrow buttons — hidden by default, revealed on section hover
 .carousel-side-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
 
   &--prev { left: -50px; }
   &--next { right: -50px; }
 
   @media (max-width: 768px) {
+    opacity: 1;
+    pointer-events: auto;
     &--prev { left: 4px; }
     &--next { right: 4px; }
   }
+}
+
+// Show buttons when the parent section is hovered
+section:hover .carousel-side-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .carousel-nav {
@@ -501,35 +513,31 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-top: 24px;
 
   &__btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1.5px solid currentColor;
-    background: transparent;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.22s, color 0.22s, transform 0.18s, box-shadow 0.22s;
+    transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
     flex-shrink: 0;
 
     svg { display: block; }
 
-    &:hover {
-      transform: scale(1.08);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-
-    &:active { transform: scale(0.96); }
+    &:active { transform: scale(0.94); }
 
     &--dark {
+      background: rgba(0, 103, 237, 0.1);
       color: #0067ED;
-      &:hover { background: #0067ED; color: #fff; }
+      &:hover { background: #0067ED; color: #fff; box-shadow: 0 4px 14px rgba(0,103,237,0.3); }
     }
 
     &--light {
-      color: rgba(255,255,255,0.85);
-      &:hover { background: rgba(255,255,255,0.18); color: #fff; }
+      background: rgba(255, 255, 255, 0.15);
+      color: rgba(255,255,255,0.9);
+      &:hover { background: rgba(255,255,255,0.28); color: #fff; }
     }
   }
 
@@ -652,6 +660,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 // ============================================================
 // Product Hero
 // ============================================================
+.pd-intro-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
 .product-hero {
   background: linear-gradient(135deg, @sco-navy 0%, @sco-dark 100%);
   padding: 60px 40px;

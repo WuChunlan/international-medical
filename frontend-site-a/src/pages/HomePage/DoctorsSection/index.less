@@ -1,0 +1,90 @@
+// DoctorsSection
+.doctors-section {
+  background: #EFF6FF;
+  padding: 100px 0;
+  border-top: 1px solid #DAEDfd;
+  border-bottom: 1px solid #DAEDfd;
+}
+
+.dc-card {
+  background: #fff;
+  border-radius: 0;
+  overflow: hidden;
+  border: 1px solid #DAEDfd;
+  transition: all 0.35s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px 28px;
+
+  &:hover {
+    border-color: #0067ED;
+    box-shadow: 0 12px 40px rgba(1, 52, 137, 0.14);
+    transform: translateY(-4px);
+  }
+
+  &__top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0a1628, #0067ED) !important;
+  }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #013489;
+    line-height: 1.3;
+  }
+
+  &__tag {
+    font-size: 0.78rem;
+    margin: 0 !important;
+  }
+
+  &__bio {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.92rem;
+    color: #515A71;
+    line-height: 1.8;
+    margin: 0 0 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  &__book-btn {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 2px;
+    border: 1px solid #0067ED;
+    background: transparent;
+    color: #0067ED;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background: #0067ED;
+      color: #fff;
+    }
+  }
+}

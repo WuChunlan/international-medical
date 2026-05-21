@@ -99,26 +99,28 @@ export default function ProductDetailPage() {
     <div className="page-wrapper">
       <Header />
       <main className="page-main">
-        <MediaCarousel mediaList={mediaList ?? []} />
+        <section id="pd-intro" className="pd-intro-wrap">
+          <MediaCarousel mediaList={mediaList ?? []} />
 
-        <section className="product-hero">
-          <div className="product-hero__info">
-            <Title level={1} className="product-title">{productName}</Title>
-            <Paragraph className="product-summary">{productSummary}</Paragraph>
-            <Button
-              type="primary"
-              size="large"
-              icon={<ShoppingOutlined />}
-              className="book-btn book-btn--hero"
-              onClick={handleBook}
-            >
-              {t('product.book')}
-            </Button>
+          <div className="product-hero">
+            <div className="product-hero__info">
+              <Title level={1} className="product-title">{productName}</Title>
+              <Paragraph className="product-summary">{productSummary}</Paragraph>
+              <Button
+                type="primary"
+                size="large"
+                icon={<ShoppingOutlined />}
+                className="book-btn book-btn--hero"
+                onClick={handleBook}
+              >
+                {t('product.book')}
+              </Button>
+            </div>
           </div>
         </section>
 
         {productDetail && (
-          <section className="section-block">
+          <section id="pd-detail" className="section-block">
             <div className="section-inner">
               <Title level={2} className="section-title">{t('product.title')}</Title>
               <Divider />
@@ -128,7 +130,7 @@ export default function ProductDetailPage() {
         )}
 
         {variants.length > 0 && (
-          <section className="section-block section-block--alt">
+          <section id="pd-variants" className="section-block section-block--alt">
             <div className="section-inner">
               <Title level={2} className="section-title">{t('product.variants')}</Title>
               <Divider />

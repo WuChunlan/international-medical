@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import type { AuthState } from '../store/authStore';
@@ -10,18 +10,48 @@ const NAV_LINKS = {
   zh: [
     { label: '首页', anchor: '#hero' },
     { label: '中国顶尖医院', anchor: '#hospitals' },
-    { label: '先进医疗设备', anchor: '#equipment' },
-    { label: '专业服务团队', anchor: '#service-teams' },
+    { label: '高端医疗设备', anchor: '#equipment' },
+    { label: '专业医护人员', anchor: '#doctors' },
+    { label: '省心品质服务', anchor: '#service-features' },
     { label: '过往成功案例', anchor: '#cases' },
     { label: '特需治疗', anchor: '#products' },
   ],
   en: [
     { label: 'Home', anchor: '#hero' },
     { label: 'Top Hospitals', anchor: '#hospitals' },
-    { label: 'Advanced Equipment', anchor: '#equipment' },
-    { label: 'Service Teams', anchor: '#service-teams' },
+    { label: 'Premium Equipment', anchor: '#equipment' },
+    { label: 'Medical Staff', anchor: '#doctors' },
+    { label: 'Quality Services', anchor: '#service-features' },
     { label: 'Success Cases', anchor: '#cases' },
     { label: 'Special Care', anchor: '#products' },
+  ],
+};
+
+const HD_NAV_LINKS = {
+  zh: [
+    { label: '医院简介', anchor: '#hd-intro' },
+    { label: '高端医疗设备', anchor: '#hd-equipment' },
+    { label: '舒适诊疗环境', anchor: '#hd-environment' },
+    { label: '专业医护团队', anchor: '#hd-doctors' },
+  ],
+  en: [
+    { label: 'Hospital Overview', anchor: '#hd-intro' },
+    { label: 'Premium Equipment', anchor: '#hd-equipment' },
+    { label: 'Treatment Environment', anchor: '#hd-environment' },
+    { label: 'Medical Team', anchor: '#hd-doctors' },
+  ],
+};
+
+const PD_NAV_LINKS = {
+  zh: [
+    { label: '产品简介', anchor: '#pd-intro' },
+    { label: '产品详情', anchor: '#pd-detail' },
+    { label: '套餐选择', anchor: '#pd-variants' },
+  ],
+  en: [
+    { label: 'Overview', anchor: '#pd-intro' },
+    { label: 'Details', anchor: '#pd-detail' },
+    { label: 'Packages', anchor: '#pd-variants' },
   ],
 };
 
@@ -33,11 +63,24 @@ const LANGUAGES = [
 export default function Header() {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useAuthStore((s: AuthState) => s.user);
   const logout = useAuthStore((s: AuthState) => s.logout);
+
+  const isHospitalDetail = location.pathname.startsWith('/hospital/');
+  const isProductDetail  = location.pathname.startsWith('/product/');
+  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const navLinks = isHospitalDetail
+    ? HD_NAV_LINKS[lang]
+    : isProductDetail
+      ? PD_NAV_LINKS[lang]
+      : NAV_LINKS[lang];
+
+  const defaultAnchor = isHospitalDetail ? '#hd-intro' : isProductDetail ? '#pd-intro' : '#hero';
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeAnchor, setActiveAnchor] = useState('#hero');
+  const [activeAnchor, setActiveAnchor] = useState(defaultAnchor);
   const [siteName, setSiteName] = useState('国际医疗');
   const [siteSubtitle, setSiteSubtitle] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
@@ -67,12 +110,14 @@ export default function Header() {
     });
   }, [i18n.language]);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const navLinks = NAV_LINKS[lang];
-
   const scrollTo = (anchor: string) => {
     setMobileOpen(false);
     setActiveAnchor(anchor);
+    if (isHospitalDetail || isProductDetail) {
+      const id = anchor.replace('#', '');
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
     if (anchor === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     if (anchor === '#products') {
       window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'special', anchor: 'products' } }));
@@ -128,7 +173,7 @@ export default function Header() {
       {/* Row 2: logo + nav */}
       <div className="site-a-header__main">
         <div className="site-a-header__inner">
-          <div className="site-a-header__logo" onClick={() => scrollTo('#hero')}>
+          <div className="site-a-header__logo" onClick={() => (isHospitalDetail || isProductDetail) ? navigate('/') : scrollTo('#hero')}>
             {logoUrl && (
               <img src={logoUrl} alt={siteName} className="site-a-header__logo-img" />
             )}

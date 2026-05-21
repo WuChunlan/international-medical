@@ -13,7 +13,7 @@ const resources = {
         profile: '个人中心',
         logout: '退出登录',
         hospitals: '中国顶尖医院',
-        equipment: '先进医疗设备',
+        equipment: '高端医疗设备',
         service_teams: '专业服务团队',
         cases: '过往成功案例',
       },
@@ -35,8 +35,8 @@ const resources = {
         no_data: '暂无医院信息',
       },
       equipment: {
-        section_title: '先进医疗设备',
-        section_subtitle: 'Advanced Medical Equipment',
+        section_title: '高端医疗设备',
+        section_subtitle: 'Premium Medical Equipment',
         no_data: '暂无设备信息',
         view_hospital: '查看所属医院',
       },
@@ -44,6 +44,16 @@ const resources = {
         section_title: '专业服务团队',
         section_subtitle: 'Professional Service Teams',
         no_data: '暂无服务团队信息',
+      },
+      doctors: {
+        section_title: '专业医护人员',
+        section_subtitle: 'Professional Medical Staff',
+        no_data: '暂无医护人员信息',
+      },
+      service_features: {
+        section_title: '省心品质服务',
+        section_subtitle: 'Quality Care Services',
+        no_data: '暂无服务信息',
       },
       cases: {
         section_title: '过往成功案例',
@@ -66,8 +76,8 @@ const resources = {
         book: '立即预约',
       },
       hospital: {
-        doctors: '专家团队',
-        book: '预约就诊',
+        doctors: '专业医护团队',
+        book: '预约咨询',
       },
       booking: {
         title: '预约咨询',
@@ -124,7 +134,7 @@ const resources = {
         profile: 'My Profile',
         logout: 'Logout',
         hospitals: 'Top Hospitals in China',
-        equipment: 'Advanced Equipment',
+        equipment: 'Premium Equipment',
         service_teams: 'Service Teams',
         cases: 'Past Success Cases',
       },
@@ -146,8 +156,8 @@ const resources = {
         no_data: 'No hospital information available',
       },
       equipment: {
-        section_title: 'Advanced Medical Equipment',
-        section_subtitle: '先进医疗设备',
+        section_title: 'Premium Medical Equipment',
+        section_subtitle: '高端医疗设备',
         no_data: 'No equipment information available',
         view_hospital: 'View Hospital',
       },
@@ -155,6 +165,16 @@ const resources = {
         section_title: 'Professional Service Teams',
         section_subtitle: '专业服务团队',
         no_data: 'No service team information available',
+      },
+      doctors: {
+        section_title: 'Professional Medical Staff',
+        section_subtitle: '专业医护人员',
+        no_data: 'No medical staff available',
+      },
+      service_features: {
+        section_title: 'Quality Care Services',
+        section_subtitle: '省心品质服务',
+        no_data: 'No services available',
       },
       cases: {
         section_title: 'Past Success Cases',
@@ -177,8 +197,8 @@ const resources = {
         book: 'Book Now',
       },
       hospital: {
-        doctors: 'Expert Team',
-        book: 'Book Appointment',
+        doctors: 'Medical Team',
+        book: 'Book Consultation',
       },
       booking: {
         title: 'Book Consultation',

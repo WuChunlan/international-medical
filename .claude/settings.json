@@ -20,7 +20,31 @@
       "Bash(wait)",
       "Bash(npx tsc *)",
       "WebFetch(domain:www.startupindia.gov.in)",
-      "Bash(mysql -u root -p123456 international_medical -e \"SELECT id, username, password, role FROM users WHERE username='admin';\")"
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT id, username, password, role FROM users WHERE username='admin';\")",
+      "Bash(/Users/wuchunlan/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh --project-dir /Users/wuchunlan/Desktop/项目/International-medical-mst)",
+      "Bash(mysql -u root -p123456 international_medical -e \"SHOW TABLES LIKE 'service%';\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT * FROM service_teams LIMIT 5;\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT config_key, value_zh, value_en FROM site_configs;\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT config_key, value_zh, value_en FROM site_configs WHERE config_key LIKE 'contact%';\")",
+      "Bash(curl -s -X POST \"http://localhost:8080/api/admin/upload\" -H \"Authorization: Bearer test\")",
+      "Bash(curl -s \"http://localhost:8080/api/hospitals\")",
+      "Bash(curl -s \"http://localhost:8080/api/service-features\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT config_key, value_zh FROM site_configs WHERE config_key LIKE 'upload%';\")",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/admin/login -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"admin123\"}')",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT id, username, role_id FROM users WHERE role_id=2 LIMIT 3;\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"DESCRIBE users;\")",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT id, email, role_id FROM users WHERE role_id=2 LIMIT 3;\")",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@international-medical.com\",\"password\":\"admin123456\"}')",
+      "Bash(curl -s \"http://localhost:8080/api/admin/service-features\" -H \"Authorization: Bearer invalid\")",
+      "Bash(curl -v \"http://localhost:8080/api/admin/service-features\")",
+      "Bash(curl -s \"http://localhost:8080/api/admin/service-features\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:8080/api/admin/service-features\")",
+      "Bash(curl -v -X OPTIONS http://localhost:8080/api/admin/upload -H 'Origin: http://localhost:3002' -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: authorization,content-type')",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"admin@international-medical.com\",\"password\":\"Admin@123456\"}')",
+      "Bash(node -e \"const bcrypt = require\\('bcrypt'\\); bcrypt.hash\\('Admin@123456', 12\\).then\\(h => console.log\\(h\\)\\);\")",
+      "Bash(python3 -c \"import bcrypt; print\\(bcrypt.hashpw\\(b'Admin@123456', bcrypt.gensalt\\(12\\)\\).decode\\(\\)\\)\")",
+      "Bash(mysql -u root -p123456 international_medical -e 'UPDATE users SET password_hash='\\\\''$2b$12$DIp4J281v71q5fthv17aK.uop8SeJbJxsi6IXFhftQuZ9dYydebvW'\\\\'' WHERE email='\\\\''admin@international-medical.com'\\\\'';')",
+      "Bash(mysql -u root -p123456 international_medical -e \"SELECT email, password_hash FROM users WHERE email='admin@international-medical.com';\")"
     ]
   }
 }

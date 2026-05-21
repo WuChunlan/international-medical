@@ -30,7 +30,7 @@ export default function CasesSection() {
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(cases.length);
+  const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(cases.length);
 
   return (
     <section
@@ -77,7 +77,7 @@ export default function CasesSection() {
             {hasMultiple && (
               <div className="carousel-nav">
                 <div className="carousel-nav__dots">
-                  {cases.map((_, i) => (
+                  {Array.from({ length: pages }, (_, i) => (
                     <span key={i} className={`carousel-nav__dot carousel-nav__dot--light${i === index ? ' carousel-nav__dot--active' : ''}`} />
                   ))}
                 </div>

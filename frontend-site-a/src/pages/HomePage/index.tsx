@@ -3,9 +3,11 @@ import ScoSection from './ScoSection/index';
 import TabSection from './TabSection/index';
 import HospitalsSection from './HospitalsSection/index';
 import EquipmentSection from './EquipmentSection/index';
-import ServiceTeamsSection from './ServiceTeamsSection/index';
+import DoctorsSection from './DoctorsSection/index';
+import ServiceFeaturesSection from './ServiceFeaturesSection/index';
 import CasesSection from './CasesSection/index';
 import ProductsSection from './ProductsSection/index';
+import Footer from '../../components/Footer';
 import './index.less';
 
 export default function HomePage() {
@@ -46,14 +48,14 @@ export default function HomePage() {
         <>
           <HospitalsSection />
           <EquipmentSection />
-          <ServiceTeamsSection />
+          <DoctorsSection />
+          <ServiceFeaturesSection />
           <CasesSection />
         </>
       ) : (
         <ProductsSection />
       )}
-      {/* <CtaSection />
-      <Footer /> */}
+      <Footer />
     </main>
   );
 }

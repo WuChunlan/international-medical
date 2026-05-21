@@ -29,7 +29,7 @@ export default function ServiceTeamsSection() {
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(teams.length, 3);
+  const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(teams.length, 3);
 
   return (
     <section
@@ -76,7 +76,7 @@ export default function ServiceTeamsSection() {
             {hasMultiple && (
               <div className="carousel-nav">
                 <div className="carousel-nav__dots">
-                  {teams.map((_, i) => (
+                  {Array.from({ length: pages }, (_, i) => (
                     <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
                   ))}
                 </div>

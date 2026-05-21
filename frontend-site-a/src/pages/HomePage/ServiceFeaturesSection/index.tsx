@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
-import type { ApiResult } from '../../../api';
-import type { SpecialProduct } from '../../../types';
+import type { ServiceFeature } from '../../../types';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
-export default function ProductsSection() {
+interface IPage<T> {
+  records: T[];
+  total: number;
+}
+
+export default function ServiceFeaturesSection() {
   const { t, i18n } = useTranslation();
-  const [products, setProducts] = useState<SpecialProduct[]>([]);
+  const [items, setItems] = useState<ServiceFeature[]>([]);
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLElement>(null);
@@ -24,38 +27,38 @@ export default function ProductsSection() {
   }, []);
 
   useEffect(() => {
-    api.get<ApiResult<SpecialProduct[]>>('/api/products')
-      .then(res => setProducts(res.data ?? []))
-      .catch(() => setProducts([]))
+    api.get<IPage<ServiceFeature>>('/api/service-features', { params: { page: 1, size: 6 } })
+      .then(res => setItems(res.data?.records ?? []))
+      .catch(() => setItems([]))
       .finally(() => setLoading(false));
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(products.length);
+  const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(items.length);
 
   return (
     <section
-      id="products"
+      id="service-features"
       ref={ref}
-      className={`products-section section-reveal${visible ? ' section-reveal--visible' : ''}`}
+      className={`service-features-section section-reveal${visible ? ' section-reveal--visible' : ''}`}
     >
       <div className="section-container">
         <div className="section-header">
           <div className="section-header__eyebrow">
             <div className="section-header__line" />
-            <span className="section-header__label">{t('products.section_subtitle')}</span>
+            <span className="section-header__label">{t('service_features.section_subtitle')}</span>
             <div className="section-header__line" />
           </div>
           <h2 className="section-header__title section-header__title--dark">
-            {t('products.section_title')}
+            {t('service_features.section_title')}
           </h2>
           <div className="gold-divider" />
         </div>
 
         {loading ? (
           <div className="section-state section-state--dark">{t('common.loading')}</div>
-        ) : products.length === 0 ? (
-          <div className="section-state section-state--dark">{t('products.no_data')}</div>
+        ) : items.length === 0 ? (
+          <div className="section-state section-state--dark">{t('service_features.no_data')}</div>
         ) : (
           <div className="carousel-wrap">
             <div className="carousel-cards-wrap">
@@ -64,9 +67,9 @@ export default function ProductsSection() {
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
                 </button>
               )}
-              <div className="cards-grid cards-grid--products">
+              <div className="cards-grid cards-grid--equipment">
                 {visibleIdx.map((i, slot) => (
-                  <ProductCard key={`${products[i].id}-${slot}`} product={products[i]} lang={lang} index={slot} />
+                  <ServiceFeatureCard key={`${items[i].id}-${slot}`} feature={items[i]} lang={lang} delay={slot * 80} />
                 ))}
               </div>
               {hasMultiple && (
@@ -91,54 +94,29 @@ export default function ProductsSection() {
   );
 }
 
-function ProductCard({ product, lang, index }: {
-  product: SpecialProduct; lang: string; index: number;
-}) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const name = lang === 'zh' ? product.nameZh : product.nameEn;
-  const summary = lang === 'zh' ? product.summaryZh : product.summaryEn;
+function ServiceFeatureCard({ feature, lang, delay }: { feature: ServiceFeature; lang: string; delay: number }) {
+  const name  = lang === 'zh' ? feature.nameZh  : feature.nameEn;
+  const intro = lang === 'zh' ? feature.introZh : feature.introEn;
 
   return (
-    <div className="product-card">
-      <div className="product-card__cover">
-        {product.coverImageUrl ? (
-          <img src={product.coverImageUrl} alt={name} />
+    <div className="sf-card" style={{ animationDelay: `${delay}ms` }}>
+      <div className="sf-card__cover">
+        {feature.imageUrl ? (
+          <img src={feature.imageUrl} alt={name} />
         ) : (
-          <div
-            className="product-card__cover-placeholder"
-            style={{
-              background: `linear-gradient(135deg, hsl(${200 + index * 30}, 35%, 18%) 0%, hsl(${210 + index * 30}, 45%, 12%) 100%)`,
-            }}
-          >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(59,130,246,0.5)">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          <div className="sf-card__cover-placeholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(59,130,246,0.4)">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
             </svg>
           </div>
         )}
-        <div className="product-card__badge">
-          <span>{String(index + 1).padStart(2, '0')}</span>
-        </div>
       </div>
-
-      <div className="product-card__content">
-        <h3 className="product-card__name">{name}</h3>
-        <p className="product-card__summary">{summary}</p>
-
-        <div className="product-card__actions">
-          <button
-            className="product-card__btn-outline"
-            onClick={() => navigate(`/product/${product.id}`)}
-          >
-            {t('products.view_detail')}
-          </button>
-          <button
-            className="product-card__btn-primary"
-            onClick={() => navigate(`/product/${product.id}`)}
-          >
-            {t('products.consult')}
-          </button>
+      <div className="sf-card__content">
+        <div className="sf-card__name-row">
+          <div className="sf-card__accent-bar" />
+          <h3 className="sf-card__name">{name}</h3>
         </div>
+        {intro && <p className="sf-card__intro">{intro}</p>}
       </div>
     </div>
   );

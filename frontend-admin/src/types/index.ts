@@ -145,6 +145,18 @@ export interface SiteConfig {
   description: string;
 }
 
+export interface ServiceFeature {
+  id: number;
+  nameZh: string;
+  nameEn: string;
+  introZh: string | null;
+  introEn: string | null;
+  imageUrl: string | null;
+  sortOrder: number;
+  isActive: number;
+  teamIds?: number[];
+}
+
 export interface PageResult<T> {
   records: T[];
   total: number;

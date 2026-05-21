@@ -39,7 +39,7 @@ function SectionCarousel<T>({
   renderCard: (item: T, idx: number) => React.ReactNode;
   theme?: 'light' | 'dark';
 }) {
-  const { visible, prev, next, hasMultiple, index } = useCarousel(items.length, PER_PAGE, 4500);
+  const { visible, prev, next, hasMultiple, index, pages } = useCarousel(items.length, PER_PAGE, 4500);
 
   return (
     <div className="hd-carousel-wrap">
@@ -61,7 +61,7 @@ function SectionCarousel<T>({
       {hasMultiple && (
         <div className={`hd-nav hd-nav--${theme}`}>
           <div className="hd-nav__dots">
-            {items.map((_, i) => (
+            {Array.from({ length: pages }, (_, i) => (
               <span key={i} className={`hd-nav__dot${i === index ? ' hd-nav__dot--active' : ''}`} />
             ))}
           </div>
@@ -146,12 +146,12 @@ function DoctorCard({
 
 // ── Section wrapper ───────────────────────────────────────────────────────────
 function SectionBlock({
-  icon, title, alt = false, children,
+  id, icon, title, alt = false, children,
 }: {
-  icon: React.ReactNode; title: string; alt?: boolean; children: React.ReactNode;
+  id?: string; icon: React.ReactNode; title: string; alt?: boolean; children: React.ReactNode;
 }) {
   return (
-    <section className={`hd-section${alt ? ' hd-section--alt' : ''}`}>
+    <section id={id} className={`hd-section${alt ? ' hd-section--alt' : ''}`}>
       <div className="hd-section__inner">
         <div className="hd-section__header">
           <span className="hd-section__icon">{icon}</span>
@@ -215,19 +215,22 @@ export default function HospitalDetailPage() {
     <div className="page-wrapper">
       <Header />
       <main className="page-main">
-        <MediaCarousel mediaList={mediaList ?? []} />
+        <section id="hd-intro" className="hd-intro-wrap">
+          <MediaCarousel mediaList={mediaList ?? []} />
 
-        <section className="hd-hero">
-          <div className="hd-hero__inner">
-            <Title level={1} className="hd-hero__title">{hospitalName}</Title>
-            <Paragraph className="hd-hero__intro">{hospitalIntro}</Paragraph>
+          <div className="hd-hero">
+            <div className="hd-hero__inner">
+              <Title level={1} className="hd-hero__title">{hospitalName}</Title>
+              <Paragraph className="hd-hero__intro">{hospitalIntro}</Paragraph>
+            </div>
           </div>
         </section>
 
         {equipments.length > 0 && (
           <SectionBlock
+            id="hd-equipment"
             icon={<MedicineBoxOutlined />}
-            title={isZh ? '先进医疗设备' : 'Advanced Medical Equipment'}
+            title={isZh ? '高端医疗设备' : 'Premium Medical Equipment'}
           >
             <SectionCarousel
               items={equipments}
@@ -239,6 +242,7 @@ export default function HospitalDetailPage() {
 
         {environments && environments.length > 0 && (
           <SectionBlock
+            id="hd-environment"
             icon={<HomeOutlined />}
             title={isZh ? '舒适诊疗环境' : 'Comfortable Treatment Environment'}
             alt
@@ -253,6 +257,7 @@ export default function HospitalDetailPage() {
 
         {doctors.length > 0 && (
           <SectionBlock
+            id="hd-doctors"
             icon={<UserOutlined />}
             title={t('hospital.doctors')}
           >

@@ -31,7 +31,7 @@ export default function HospitalsSection() {
   }, []);
 
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const { visible: visibleIdx, prev, next, hasMultiple, index } = useCarousel(hospitals.length);
+  const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(hospitals.length);
 
   return (
     <section
@@ -78,7 +78,7 @@ export default function HospitalsSection() {
             {hasMultiple && (
               <div className="carousel-nav">
                 <div className="carousel-nav__dots">
-                  {hospitals.map((_, i) => (
+                  {Array.from({ length: pages }, (_, i) => (
                     <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
                   ))}
                 </div>

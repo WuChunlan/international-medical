@@ -1,0 +1,204 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  Table, Button, Modal, Form, Input, InputNumber, Switch,
+  Space, Popconfirm, message, Image, Tooltip, Select
+} from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, TranslationOutlined } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
+import api from '../../api';
+import type { ServiceFeature, ServiceTeam, PageResult } from '../../types';
+import ImageUpload from '../../components/ImageUpload';
+import { useAutoTranslate } from '../../hooks/useAutoTranslate';
+
+const { TextArea } = Input;
+
+const ServiceFeatureManage: React.FC = () => {
+  'use no memo';
+  const [features, setFeatures] = useState<ServiceFeature[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState<ServiceFeature | null>(null);
+  const [translating, setTranslating] = useState(false);
+  const [teamOptions, setTeamOptions] = useState<{ value: number; label: string }[]>([]);
+  const [form] = Form.useForm();
+  const { translateField, translateAll } = useAutoTranslate(form);
+
+  const fetchFeatures = useCallback(async (p: number) => {
+    setLoading(true);
+    try {
+      const res = await api.get<PageResult<ServiceFeature>>('/api/admin/service-features', {
+        params: { page: p, size: 10 },
+      });
+      setFeatures(res.data.records);
+      setTotal(res.data.total);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchFeatures(page); }, [fetchFeatures, page]);
+
+  const loadTeamOptions = useCallback(async () => {
+    try {
+      const res = await api.get<PageResult<ServiceTeam>>('/api/admin/service-teams', {
+        params: { page: 1, size: 200 },
+      });
+      setTeamOptions((res.data?.records ?? []).map(t => ({
+        value: t.id,
+        label: t.nameZh,
+      })));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => { loadTeamOptions(); }, [loadTeamOptions]);
+
+  const openCreate = () => {
+    setEditing(null);
+    form.resetFields();
+    form.setFieldsValue({ sortOrder: 0, isActive: true, teamIds: [] });
+    setModalOpen(true);
+  };
+
+  const openEdit = (record: ServiceFeature) => {
+    setEditing(record);
+    form.setFieldsValue({
+      ...record,
+      isActive: record.isActive === 1,
+      teamIds: record.teamIds ?? [],
+    });
+    setModalOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    await api.delete(`/api/admin/service-features/${id}`);
+    message.success('删除成功');
+    fetchFeatures(page);
+  };
+
+  const handleSubmit = async () => {
+    const values = await form.validateFields();
+    const payload = { ...values, isActive: values.isActive ? 1 : 0 };
+    if (editing) {
+      await api.put(`/api/admin/service-features/${editing.id}`, payload);
+      message.success('更新成功');
+    } else {
+      await api.post('/api/admin/service-features', payload);
+      message.success('创建成功');
+    }
+    setModalOpen(false);
+    fetchFeatures(page);
+  };
+
+  const handleTranslateAll = async () => {
+    setTranslating(true);
+    await translateAll();
+    setTranslating(false);
+    message.success('翻译完成');
+  };
+
+  const columns: ColumnsType<ServiceFeature> = [
+    { title: 'ID', dataIndex: 'id', width: 60 },
+    {
+      title: '图片', dataIndex: 'imageUrl', width: 80,
+      render: (url) => url ? <Image src={url} width={50} height={50} style={{ objectFit: 'cover' }} /> : '-',
+    },
+    { title: '服务名称（中）', dataIndex: 'nameZh' },
+    { title: '服务名称（英）', dataIndex: 'nameEn' },
+    {
+      title: '简介（中）', dataIndex: 'introZh',
+      render: (v) => v ? <span style={{ fontSize: 12 }}>{v.slice(0, 40)}{v.length > 40 ? '...' : ''}</span> : '-',
+    },
+    {
+      title: '关联团队数', dataIndex: 'teamIds', width: 90,
+      render: (ids) => ids ? ids.length : 0,
+    },
+    { title: '排序', dataIndex: 'sortOrder', width: 70 },
+    {
+      title: '状态', dataIndex: 'isActive', width: 70,
+      render: (v) => <Switch checked={v === 1} disabled size="small" />,
+    },
+    {
+      title: '操作', width: 120,
+      render: (_, record) => (
+        <Space>
+          <Button size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>编辑</Button>
+          <Popconfirm title="确认删除？" onConfirm={() => handleDelete(record.id)}>
+            <Button size="small" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 style={{ margin: 0 }}>服务功能管理</h2>
+        <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}>新增服务功能</Button>
+      </div>
+
+      <Table
+        rowKey="id"
+        columns={columns}
+        dataSource={features}
+        loading={loading}
+        pagination={{ current: page, total, pageSize: 10, onChange: setPage }}
+      />
+
+      <Modal
+        title={editing ? '编辑服务功能' : '新增服务功能'}
+        open={modalOpen}
+        onOk={handleSubmit}
+        onCancel={() => setModalOpen(false)}
+        width={640}
+        okText="保存"
+        cancelText="取消"
+      >
+        <div style={{ textAlign: 'right', marginBottom: 12 }}>
+          <Tooltip title="将所有中文字段自动翻译到对应英文字段（不覆盖已填写的英文内容）">
+            <Button icon={<TranslationOutlined />} loading={translating} onClick={handleTranslateAll} size="small">
+              一键翻译中→英
+            </Button>
+          </Tooltip>
+        </div>
+        <Form form={form} layout="vertical">
+          <Form.Item name="nameZh" label="服务名称（中文）" rules={[{ required: true }]}>
+            <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
+          </Form.Item>
+          <Form.Item name="nameEn" label="服务名称（英文）" rules={[{ required: true }]}>
+            <Input placeholder="输入中文名称后可自动翻译" />
+          </Form.Item>
+          <Form.Item name="introZh" label="服务简介（中文）">
+            <TextArea rows={3} placeholder="请输入中文简介" onBlur={() => translateField('introZh')} />
+          </Form.Item>
+          <Form.Item name="introEn" label="服务简介（英文）">
+            <TextArea rows={3} placeholder="输入中文简介后可自动翻译" />
+          </Form.Item>
+          <Form.Item name="imageUrl" label="简介图片">
+            <ImageUpload category="service-features/images" label="上传图片" />
+          </Form.Item>
+          <Form.Item name="teamIds" label="提供服务的团队">
+            <Select
+              mode="multiple"
+              placeholder="选择关联的服务团队"
+              options={teamOptions}
+              allowClear
+            />
+          </Form.Item>
+          <Form.Item name="sortOrder" label="排序">
+            <InputNumber min={0} />
+          </Form.Item>
+          <Form.Item name="isActive" label="启用" valuePropName="checked">
+            <Switch />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
+  );
+};
+
+export default ServiceFeatureManage;

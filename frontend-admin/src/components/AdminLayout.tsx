@@ -12,6 +12,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FileTextOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../store/authStore';
@@ -31,6 +32,7 @@ const menuItems = [
   { key: '/equipments', icon: <MedicineBoxOutlined />, label: '设备管理' },
   { key: '/environments', icon: <BankOutlined />, label: '诊疗环境' },
   { key: '/service-teams', icon: <TeamOutlined />, label: '服务团队' },
+  { key: '/service-features', icon: <AppstoreOutlined />, label: '服务功能' },
   { key: '/products', icon: <ShoppingOutlined />, label: '产品管理' },
   { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },

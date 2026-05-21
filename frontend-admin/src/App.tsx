@@ -8,6 +8,7 @@ import DoctorManage from './pages/DoctorManage';
 import EquipmentManage from './pages/EquipmentManage';
 import EnvironmentManage from './pages/EnvironmentManage';
 import ServiceTeamManage from './pages/ServiceTeamManage';
+import ServiceFeatureManage from './pages/ServiceFeatureManage';
 import ProductManage from './pages/ProductManage';
 import CaseManage from './pages/CaseManage';
 import UserManage from './pages/UserManage';
@@ -30,6 +31,7 @@ function App() {
                 <Route path="equipments" element={<EquipmentManage />} />
                 <Route path="environments" element={<EnvironmentManage />} />
                 <Route path="service-teams" element={<ServiceTeamManage />} />
+                <Route path="service-features" element={<ServiceFeatureManage />} />
                 <Route path="products" element={<ProductManage />} />
                 <Route path="cases" element={<CaseManage />} />
                 <Route path="users" element={<UserManage />} />

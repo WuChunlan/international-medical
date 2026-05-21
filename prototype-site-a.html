@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国际医疗共享平台 — Site A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:#1B4FD8; --primary-dark:#1239A8; --primary-light:#3B82F6;
+  --primary-pale:#EFF6FF; --primary-mid:#DBEAFE;
+  --gold:#C9A84C; --gold-l:#E8C97A;
+  --dark:#0F172A; --text2:#475569; --text3:#94A3B8;
+  --bg:#F8FAFC; --border:#E2E8F0;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--dark);line-height:1.6}
+h1,h2,h3,h4{font-family:'Playfair Display',serif}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:80px 0}
+.eyebrow{font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.sec-title{font-size:clamp(26px,3.5vw,40px);font-weight:700;margin-bottom:14px}
+.sec-sub{font-size:16px;color:var(--text2);max-width:560px}
+.sec-hd{margin-bottom:48px}
+/* HEADER */
+#site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:linear-gradient(135deg,#0F2460 0%,#1B4FD8 80%,#3B82F6 100%);transition:box-shadow .3s}
+#site-header.scrolled{box-shadow:0 4px 24px rgba(0,0,0,.35)}
+.topbar{height:40px;border-bottom:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;color:rgba(255,255,255,.8)}
+.topbar a{color:rgba(255,255,255,.8);margin-left:16px;transition:color .2s}
+.topbar a:hover{color:#fff}
+.lang-sw a{margin:0 6px}
+.lang-sw a.active{color:#fff;font-weight:600}
+.mainnav{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.logo-wrap{display:flex;align-items:center;gap:12px}
+.logo-wrap img{height:44px;width:auto}
+.logo-text{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;line-height:1.2}
+.logo-text span{display:block;font-family:'Source Sans 3',sans-serif;font-size:11px;font-weight:400;letter-spacing:2px;opacity:.75}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links a{color:rgba(255,255,255,.85);font-size:14px;padding:6px 12px;border-radius:4px;transition:all .2s;position:relative}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.nav-links a.active{color:#fff}
+.nav-links a.active::after{content:'';position:absolute;bottom:-2px;left:12px;right:12px;height:2px;background:var(--gold);border-radius:2px}
+/* BANNER */
+#banner{margin-top:108px;position:relative;overflow:hidden}
+.banner-track{position:relative;width:100%;padding-bottom:37.5%;background:#0F2460}
+.banner-slide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease}
+.banner-slide.active{opacity:1}
+.banner-slide img{width:100%;height:100%;object-fit:cover}
+.banner-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,36,96,.85) 0%,rgba(15,36,96,.5) 50%,transparent 100%);display:flex;align-items:center}
+.banner-content{padding:0 80px;max-width:620px}
+.banner-eyebrow{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--gold-l);margin-bottom:16px}
+.banner-title{font-size:clamp(32px,5vw,60px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:16px}
+.banner-sub{font-size:16px;color:rgba(255,255,255,.85);margin-bottom:32px;line-height:1.7}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap}
+.btn-primary{background:var(--gold);color:#fff;padding:13px 28px;border-radius:6px;font-weight:600;font-size:15px;transition:all .25s;border:2px solid var(--gold)}
+.btn-primary:hover{background:var(--gold-l);border-color:var(--gold-l);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:#fff;padding:13px 28px;border-radius:6px;font-weight:600;font-size:15px;border:2px solid rgba(255,255,255,.6);transition:all .25s}
+.btn-ghost:hover{background:rgba(255,255,255,.15);border-color:#fff;transform:translateY(-2px)}
+.banner-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}
+.banner-arrow:hover{background:rgba(255,255,255,.3)}
+.banner-arrow.prev{left:20px}
+.banner-arrow.next{right:20px}
+.banner-dots{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all .3s;border:none}
+.dot.active{background:#fff;width:24px;border-radius:4px}
+/* STATS BAR */
+.stats-bar{background:linear-gradient(135deg,#0F2460 0%,#1239A8 100%);padding:40px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.stat-item{text-align:center;padding:20px 16px;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:20%;height:60%;width:1px;background:rgba(255,255,255,.2)}
+.stat-num{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,52px);font-weight:700;color:var(--gold);line-height:1}
+.stat-label{font-size:14px;color:rgba(255,255,255,.8);margin-top:8px;letter-spacing:.5px}
+/* TABS */
+.tabs-section{background:#fff;padding:0}
+.tabs-bar{display:flex;border-bottom:3px solid var(--border)}
+.tab-btn{flex:1;padding:22px 32px;border:none;background:#fff;cursor:pointer;font-family:'Source Sans 3',sans-serif;font-size:16px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:12px;transition:all .25s;position:relative}
+.tab-btn.active{background:var(--primary);color:#fff}
+.tab-btn.active::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:3px;background:var(--gold)}
+.tab-icon{width:28px;height:28px;flex-shrink:0}
+.tab-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.7;display:block;margin-bottom:2px}
+.tab-label{font-size:16px;font-weight:600}
+/* CARDS COMMON */
+.card-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.card-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--border);transition:all .3s;cursor:pointer}
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(27,79,216,.15)}
+.card-cover{height:180px;background:linear-gradient(135deg,var(--primary-dark),var(--primary-light));display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:48px;position:relative;overflow:hidden}
+.card-cover img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:20px}
+.card-name{font-size:17px;font-weight:700;margin-bottom:8px;color:var(--dark)}
+.card-desc{font-size:14px;color:var(--text2);line-height:1.6}
+.card-link{display:inline-block;margin-top:14px;font-size:14px;font-weight:600;color:var(--primary);transition:color .2s}
+.card-link:hover{color:var(--primary-dark)}
+/* HOSPITALS */
+.hospitals-section{background:#fff}
+/* EQUIPMENT */
+.equipment-section{background:var(--bg)}
+.equip-card .card-cover{height:150px;background:linear-gradient(135deg,#1239A8,#3B82F6)}
+/* TEAMS */
+.teams-section{background:#fff}
+.team-card .card-cover{height:160px;background:linear-gradient(135deg,#0F2460,#1B4FD8);border-radius:50%;width:100px;height:100px;margin:24px auto 0;border-radius:50%}
+.team-card .card-body{text-align:center}
+/* CASES */
+.cases-section{background:var(--dark);padding:80px 0}
+.cases-section .sec-title{color:#fff}
+.case-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;transition:all .3s}
+.case-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.1)}
+.case-cover{height:180px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:64px;font-weight:700;color:rgba(255,255,255,.15);background:linear-gradient(135deg,rgba(27,79,216,.4),rgba(59,130,246,.2))}
+.case-body{padding:20px}
+.case-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:8px}
+.case-desc{font-size:14px;color:var(--text3);line-height:1.6}
+.btn-case{display:inline-block;margin-top:16px;font-size:13px;font-weight:600;color:var(--gold);border:1px solid var(--gold);padding:7px 16px;border-radius:4px;transition:all .2s}
+.btn-case:hover{background:var(--gold);color:#fff}
+/* PRODUCTS */
+.products-section{background:#fff}
+.prod-card{background:#fff;border-radius:12px;overflow:hidden;border:1px solid var(--border);transition:all .3s}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(27,79,216,.15)}
+.prod-cover{height:200px;background:linear-gradient(135deg,var(--primary),var(--primary-light));position:relative;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font-size:56px}
+.prod-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px}
+.prod-body{padding:20px}
+.prod-name{font-size:17px;font-weight:700;margin-bottom:8px}
+.prod-desc{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px}
+.prod-btns{display:flex;gap:10px}
+.btn-detail{flex:1;text-align:center;padding:9px 0;border:1px solid var(--primary);color:var(--primary);border-radius:5px;font-size:13px;font-weight:600;transition:all .2s}
+.btn-detail:hover{background:var(--primary);color:#fff}
+.btn-consult{flex:1;text-align:center;padding:9px 0;background:var(--primary);color:#fff;border-radius:5px;font-size:13px;font-weight:600;transition:all .2s;border:1px solid var(--primary)}
+.btn-consult:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+/* FOOTER */
+footer{background:var(--dark);padding:48px 0 28px;text-align:center}
+.footer-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
+.footer-logo img{height:40px;width:auto;opacity:.9}
+.footer-name{font-family:'Playfair Display',serif;font-size:20px;color:#fff;font-weight:700}
+.footer-tagline{font-size:14px;color:var(--text3);margin-bottom:24px}
+.footer-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+.footer-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);opacity:.6}
+.footer-dot:nth-child(3){opacity:1;width:10px;height:10px}
+.footer-copy{font-size:13px;color:var(--text3)}
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+/* HIDDEN */
+.tab-content{display:none}
+.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<header id="site-header">
+  <div class="topbar">
+    <div class="lang-sw">
+      <a href="#" class="active">中文</a>|<a href="#">English</a>
+    </div>
+    <div>
+      <a href="#">登录</a>
+      <a href="#" style="background:var(--gold);color:#fff;padding:4px 14px;border-radius:4px;margin-left:10px;font-weight:600">注册</a>
+    </div>
+  </div>
+  <nav class="mainnav">
+    <a href="#" class="logo-wrap">
+      <img src="./frontend-site-a/src/assets/scotemp_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <div class="logo-text">国际医疗共享平台<span>INTERNATIONAL MEDICAL PLATFORM</span></div>
+    </a>
+    <div class="nav-links">
+      <a href="#" class="active">首页</a>
+      <a href="#hospitals">中国顶尖医院</a>
+      <a href="#equipment">先进医疗设备</a>
+      <a href="#teams">专业服务团队</a>
+      <a href="#cases">过往成功案例</a>
+      <a href="#products">特需治疗</a>
+    </div>
+  </nav>
+</header>
+<!-- BANNER -->
+<section id="banner">
+  <div class="banner-track">
+    <div class="banner-slide active">
+      <img src="./frontend-site-a/src/assets/scotemp_banner1.webp" alt="Banner 1" onerror="this.parentElement.style.background='linear-gradient(135deg,#0F2460,#1B4FD8)'">
+      <div class="banner-overlay">
+        <div class="banner-content">
+          <div class="banner-eyebrow">INTERNATIONAL MEDICAL PLATFORM</div>
+          <h1 class="banner-title">国际医疗共享平台</h1>
+          <p class="banner-sub">汇聚中国顶尖医疗资源，为全球患者提供高品质、专业化的医疗服务解决方案。</p>
+          <div class="btn-row"><a href="#" class="btn-primary">了解更多</a><a href="#" class="btn-ghost">立即咨询</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="banner-slide">
+      <img src="./frontend-site-a/src/assets/scotemp_banner2.webp" alt="Banner 2" onerror="this.parentElement.style.background='linear-gradient(135deg,#1239A8,#3B82F6)'">
+      <div class="banner-overlay">
+        <div class="banner-content">
+          <div class="banner-eyebrow">ADVANCED MEDICAL RESOURCES</div>
+          <h1 class="banner-title">先进医疗技术<br>专业服务团队</h1>
+          <p class="banner-sub">整合国内外优质医疗资源，打造一站式国际医疗服务平台，让优质医疗触手可及。</p>
+          <div class="btn-row"><a href="#" class="btn-primary">探索服务</a><a href="#" class="btn-ghost">查看案例</a></div>
+        </div>
+      </div>
+    </div>
+    <button class="banner-arrow prev" onclick="moveBanner(-1)">&#8592;</button>
+    <button class="banner-arrow next" onclick="moveBanner(1)">&#8594;</button>
+    <div class="banner-dots"><button class="dot active" onclick="goBanner(0)"></button><button class="dot" onclick="goBanner(1)"></button></div>
+  </div>
+</section>
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-num" data-target="50">0</div><div class="stat-label">合作顶尖医院</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="200">0</div><div class="stat-label">权威专家团队</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="10000">0</div><div class="stat-label">成功服务患者</div></div>
+      <div class="stat-item"><div class="stat-num" data-target="30">0</div><div class="stat-label">覆盖国家地区</div></div>
+    </div>
+  </div>
+</div>
+<!-- TABS -->
+<div class="tabs-section">
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('specialty')">
+      <svg class="tab-icon" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/><path d="M14 8v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><span class="tab-tag">SPECIALTY</span><span class="tab-label">专科治疗</span></div>
+    </button>
+    <button class="tab-btn" onclick="switchTab('special')">
+      <svg class="tab-icon" viewBox="0 0 28 28" fill="none"><rect x="4" y="4" width="20" height="20" rx="4" stroke="currentColor" stroke-width="2"/><path d="M9 14h10M14 9v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><span class="tab-tag">SPECIAL NEEDS</span><span class="tab-label">特需门诊</span></div>
+    </button>
+  </div>
+</div>
+<!-- SPECIALTY TAB CONTENT -->
+<div id="tab-specialty" class="tab-content active">
+<!-- HOSPITALS -->
+<section id="hospitals" class="section hospitals-section">
+  <div class="container">
+    <div class="sec-hd fade-up">
+      <div class="eyebrow">Top Hospitals in China</div>
+      <h2 class="sec-title">中国顶尖医院</h2>
+      <p class="sec-sub">精选国内权威三甲医院，汇聚各科室顶尖专家，为患者提供最优质的医疗资源。</p>
+    </div>
+    <div class="card-grid-3">
+      <div class="card fade-up"><div class="card-cover">🏥</div><div class="card-body"><div class="card-name">北京协和医院</div><div class="card-desc">中国最顶尖的综合性医院之一，拥有众多国内外知名专家，在疑难杂症诊治方面享有盛誉。</div><a href="#" class="card-link">了解更多 →</a></div></div>
+      <div class="card fade-up"><div class="card-cover">🏥</div><div class="card-body"><div class="card-name">上海瑞金医院</div><div class="card-desc">上海交通大学医学院附属医院，在血液病、内分泌等领域具有国际领先水平的诊疗能力。</div><a href="#" class="card-link">了解更多 →</a></div></div>
+      <div class="card fade-up"><div class="card-cover">🏥</div><div class="card-body"><div class="card-name">广州中山大学附属肿瘤医院</div><div class="card-desc">华南地区规模最大的肿瘤专科医院，在鼻咽癌、肝癌等肿瘤治疗领域处于国际前沿。</div><a href="#" class="card-link">了解更多 →</a></div></div>
+    </div>
+  </div>
+</section>
+<!-- EQUIPMENT -->
+<section id="equipment" class="section equipment-section">
+  <div class="container">
+    <div class="sec-hd fade-up">
+      <div class="eyebrow">Advanced Medical Equipment</div>
+      <h2 class="sec-title">先进医疗设备</h2>
+      <p class="sec-sub">引进国际最先进的医疗设备，确保每位患者都能享受到精准、高效的诊疗服务。</p>
+    </div>
+    <div class="card-grid-4">
+      <div class="card equip-card fade-up"><div class="card-cover">⚕️</div><div class="card-body"><div class="card-name">质子重离子治疗系统</div><div class="card-desc">精准放疗技术，对肿瘤细胞实施精确打击，最大程度保护正常组织。</div></div></div>
+      <div class="card equip-card fade-up"><div class="card-cover">🔬</div><div class="card-body"><div class="card-name">达芬奇手术机器人</div><div class="card-desc">微创手术领域的革命性设备，精准度高，术后恢复快，并发症少。</div></div></div>
+      <div class="card equip-card fade-up"><div class="card-cover">📡</div><div class="card-body"><div class="card-name">PET-CT 全身扫描仪</div><div class="card-desc">融合功能与解剖影像，早期发现肿瘤及转移灶，为精准治疗提供依据。</div></div></div>
+      <div class="card equip-card fade-up"><div class="card-cover">💊</div><div class="card-body"><div class="card-name">基因测序分析平台</div><div class="card-desc">新一代基因组学技术，为个体化精准医疗提供分子层面的诊断支持。</div></div></div>
+    </div>
+  </div>
+</section>
+<!-- TEAMS -->
+<section id="teams" class="section teams-section">
+  <div class="container">
+    <div class="sec-hd fade-up">
+      <div class="eyebrow">Professional Service Teams</div>
+      <h2 class="sec-title">专业服务团队</h2>
+      <p class="sec-sub">由资深医学专家、国际协调员和专业翻译组成的全方位服务团队，全程陪伴您的就医之旅。</p>
+    </div>
+    <div class="card-grid-3">
+      <div class="card fade-up"><div style="background:linear-gradient(135deg,#0F2460,#1B4FD8);border-radius:50%;width:100px;height:100px;margin:24px auto 0;display:flex;align-items:center;justify-content:center;font-size:36px">👨‍⚕️</div><div class="card-body" style="text-align:center"><div class="card-name">医疗专家顾问团</div><div class="card-desc">汇聚各科室权威专家，为患者提供专业的病情评估与治疗方案建议，确保医疗决策的科学性。</div></div></div>
+      <div class="card fade-up"><div style="background:linear-gradient(135deg,#0F2460,#1B4FD8);border-radius:50%;width:100px;height:100px;margin:24px auto 0;display:flex;align-items:center;justify-content:center;font-size:36px">🌐</div><div class="card-body" style="text-align:center"><div class="card-name">国际协调服务团队</div><div class="card-desc">专业的国际医疗协调员，负责全程安排就医行程、协调医院资源，提供无缝衔接的服务体验。</div></div></div>
+      <div class="card fade-up"><div style="background:linear-gradient(135deg,#0F2460,#1B4FD8);border-radius:50%;width:100px;height:100px;margin:24px auto 0;display:flex;align-items:center;justify-content:center;font-size:36px">💬</div><div class="card-body" style="text-align:center"><div class="card-name">多语言翻译团队</div><div class="card-desc">精通医学术语的专业翻译，支持英语、阿拉伯语、俄语等多种语言，消除语言障碍。</div></div></div>
+    </div>
+  </div>
+</section>
+<!-- CASES -->
+<section id="cases" class="section cases-section">
+  <div class="container">
+    <div class="sec-hd fade-up">
+      <div class="eyebrow" style="color:var(--gold)">Past Success Cases</div>
+      <h2 class="sec-title">过往成功案例</h2>
+    </div>
+    <div class="card-grid-3">
+      <div class="case-card fade-up"><div class="case-cover">01</div><div class="case-body"><div class="case-title">肺癌晚期患者的质子治疗奇迹</div><div class="case-desc">来自中东的患者经过北京协和医院质子重离子治疗，肿瘤显著缩小，生活质量大幅提升。</div><a href="#" class="btn-case">查看详情 →</a></div></div>
+      <div class="case-card fade-up"><div class="case-cover">02</div><div class="case-body"><div class="case-title">复杂心脏手术成功救治</div><div class="case-desc">俄罗斯患者在上海瑞金医院接受复杂先天性心脏病手术，术后恢复良好，顺利回国。</div><a href="#" class="btn-case">查看详情 →</a></div></div>
+      <div class="case-card fade-up"><div class="case-cover">03</div><div class="case-body"><div class="case-title">鼻咽癌精准放疗显著疗效</div><div class="case-desc">东南亚患者在广州中山大学附属肿瘤医院接受精准放疗，五年生存率达到国际领先水平。</div><a href="#" class="btn-case">查看详情 →</a></div></div>
+    </div>
+  </div>
+</section>
+</div><!-- end tab-specialty -->
+<!-- SPECIAL NEEDS TAB CONTENT -->
+<div id="tab-special" class="tab-content">
+<section id="products" class="section products-section">
+  <div class="container">
+    <div class="sec-hd fade-up">
+      <div class="eyebrow">Special Needs Treatment</div>
+      <h2 class="sec-title">特需门诊</h2>
+      <p class="sec-sub">为有特殊需求的患者提供个性化、高端化的医疗服务，享受专属医疗资源与尊贵体验。</p>
+    </div>
+    <div class="card-grid-3">
+      <div class="prod-card fade-up"><div class="prod-cover"><span class="prod-badge">01</span>🏆</div><div class="prod-body"><div class="prod-name">VIP 专家门诊</div><div class="prod-desc">预约国内顶尖专家，享受一对一深度问诊，获得最权威的诊断意见与个性化治疗方案。</div><div class="prod-btns"><a href="#" class="btn-detail">查看详情</a><a href="#" class="btn-consult">立即咨询</a></div></div></div>
+      <div class="prod-card fade-up"><div class="prod-cover"><span class="prod-badge">02</span>🌟</div><div class="prod-body"><div class="prod-name">多学科联合会诊</div><div class="prod-desc">汇聚多个科室权威专家，针对复杂疑难病症进行联合会诊，制定最优综合治疗方案。</div><div class="prod-btns"><a href="#" class="btn-detail">查看详情</a><a href="#" class="btn-consult">立即咨询</a></div></div></div>
+      <div class="prod-card fade-up"><div class="prod-cover"><span class="prod-badge">03</span>💎</div><div class="prod-body"><div class="prod-name">全程管家式服务</div><div class="prod-desc">从入境到出院，提供签证协助、接送机、住宿安排、翻译陪同等全方位管家式服务。</div><div class="prod-btns"><a href="#" class="btn-detail">查看详情</a><a href="#" class="btn-consult">立即咨询</a></div></div></div>
+    </div>
+  </div>
+</section>
+</div><!-- end tab-special -->
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-logo">
+      <img src="./frontend-site-a/src/assets/scotemp_logo.png" alt="Logo" onerror="this.style.display='none'">
+      <div class="footer-name">国际医疗共享平台</div>
+    </div>
+    <div class="footer-tagline">为全球患者提供高品质中国医疗服务</div>
+    <div class="footer-dots">
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+    </div>
+    <div class="footer-copy">© 2024 国际医疗项目. 保留所有权利。</div>
+  </div>
+</footer>
+<script>
+// --- BANNER CAROUSEL ---
+let bannerIdx = 0;
+const slides = document.querySelectorAll('.banner-slide');
+const dots = document.querySelectorAll('.dot');
+let bannerTimer = setInterval(() => moveBanner(1), 5000);
+
+function goBanner(n) {
+  slides[bannerIdx].classList.remove('active');
+  dots[bannerIdx].classList.remove('active');
+  bannerIdx = n;
+  slides[bannerIdx].classList.add('active');
+  dots[bannerIdx].classList.add('active');
+}
+function moveBanner(dir) {
+  clearInterval(bannerTimer);
+  goBanner((bannerIdx + dir + slides.length) % slides.length);
+  bannerTimer = setInterval(() => moveBanner(1), 5000);
+}
+
+// --- TAB SWITCHING ---
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  const btn = document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`);
+  if (btn) btn.classList.add('active');
+  const content = document.getElementById('tab-' + name);
+  if (content) content.classList.add('active');
+}
+
+// --- HEADER SCROLL SHADOW ---
+window.addEventListener('scroll', () => {
+  document.getElementById('site-header').classList.toggle('scrolled', window.scrollY > 10);
+});
+
+// --- SCROLL FADE-UP ANIMATIONS ---
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+// --- STATS COUNTER ---
+function animateCounter(el) {
+  const target = parseInt(el.dataset.target, 10);
+  const suffix = target >= 10000 ? '+' : '+';
+  const duration = 1800;
+  const step = Math.ceil(target / (duration / 16));
+  let current = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current.toLocaleString() + suffix;
+    if (current >= target) clearInterval(timer);
+  }, 16);
+}
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.stat-num').forEach(animateCounter);
+      statsObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3 });
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) statsObs.observe(statsBar);
+</script>
+</body>
+</html>
