@@ -180,7 +180,7 @@ export default function Header() {
             <div className="site-a-header__logo-info">
               <span className="site-a-header__logo-text">{siteName}</span>
               {siteSubtitle && (
-                <span className="site-a-header__logo-subtitle">{siteSubtitle}</span>
+                <span className="site-a-header__logo-text">{siteSubtitle}</span>
               )}
             </div>
           </div>
