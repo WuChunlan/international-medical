@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Card, Typography, Descriptions, Button, Tag, message, Form, Input, Spin } from 'antd';
-import { EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { Card, Typography, Descriptions, Button, Tag, message, Form, Input, Spin, Alert } from 'antd';
+import { EditOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api';
+import { useAdminAuthStore } from '../../store/authStore';
 import type { Hospital } from '../../types';
 
 const { Title } = Typography;
@@ -16,17 +17,33 @@ const auditStatusTag = (status?: string) => {
   return <Tag color={s.color}>{s.label}</Tag>;
 };
 
+const HospitalForm: React.FC<{ form: ReturnType<typeof Form.useForm>[0] }> = ({ form }) => (
+  <Form form={form} layout="vertical">
+    <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
+    <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+    <Form.Item name="phone" label="联系电话"><Input /></Form.Item>
+    <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
+    <Form.Item name="contactInfo" label="联系方式"><Input /></Form.Item>
+    <Form.Item name="addressZh" label="中文地址"><Input /></Form.Item>
+    <Form.Item name="addressEn" label="英文地址"><Input /></Form.Item>
+    <Form.Item name="introZh" label="中文简介"><Input.TextArea rows={4} /></Form.Item>
+    <Form.Item name="introEn" label="英文简介"><Input.TextArea rows={4} /></Form.Item>
+  </Form>
+);
+
 const HAHospitalPage: React.FC = () => {
-  const [hospital, setHospital] = useState<Hospital | null>(null);
+  const [hospital, setHospital] = useState<Hospital | null | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
+  const { setAuth, token, username, role } = useAdminAuthStore();
 
   const fetchHospital = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get('/api/hospital-admin/hospital');
-      setHospital(res.data?.data ?? res.data);
+      setHospital(res.data ?? null);
     } catch {
       message.error('获取医院信息失败');
     } finally {
@@ -36,6 +53,29 @@ const HAHospitalPage: React.FC = () => {
 
   useEffect(() => { fetchHospital(); }, [fetchHospital]);
 
+  const handleCreate = async () => {
+    try {
+      const values = await form.validateFields();
+      setSaving(true);
+      const res = await api.post('/api/hospital-admin/hospital', values);
+      // Backend returns a new token with the hospitalId claim baked in
+      const newToken = res.data as string;
+      if (newToken) {
+        // Parse hospitalId from the new token payload
+        const payload = JSON.parse(atob(newToken.split('.')[1]));
+        setAuth(newToken, username ?? '', role ?? 'hospital_admin', payload.hospital_id ?? null);
+      }
+      message.success('医院创建成功，等待审核');
+      form.resetFields();
+      fetchHospital();
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } };
+      message.error(e.response?.data?.message ?? '创建失败');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleEdit = () => {
     form.setFieldsValue(hospital);
     setEditing(true);
@@ -44,16 +84,41 @@ const HAHospitalPage: React.FC = () => {
   const handleSave = async () => {
     try {
       const values = await form.validateFields();
+      setSaving(true);
       await api.put('/api/hospital-admin/hospital', values);
       message.success('保存成功，等待审核');
       setEditing(false);
       fetchHospital();
     } catch {
       message.error('保存失败');
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (loading) return <Spin style={{ margin: 40 }} />;
+  if (loading || hospital === undefined) return <Spin style={{ margin: 40 }} />;
+
+  // No hospital bound — show create form
+  if (!hospital) {
+    return (
+      <div>
+        <Title level={4} className="page-title" style={{ marginBottom: 16 }}>我的医院</Title>
+        <Alert
+          type="info"
+          message="您尚未绑定医院"
+          description="请填写以下信息创建您的医院。创建后不可再新增，只能编辑。"
+          style={{ marginBottom: 16 }}
+          showIcon
+        />
+        <Card>
+          <HospitalForm form={form} />
+          <Button type="primary" icon={<PlusOutlined />} loading={saving} onClick={handleCreate}>
+            创建医院
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -62,17 +127,16 @@ const HAHospitalPage: React.FC = () => {
         {!editing ? (
           <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>编辑</Button>
         ) : (
-          <Button type="primary" icon={<SaveOutlined />} onClick={handleSave}>保存</Button>
+          <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>保存</Button>
         )}
       </div>
 
-      {hospital && !editing && (
+      {hospital.auditStatus === 'rejected' && hospital.rejectionReason && (
+        <Alert type="error" message={`驳回原因：${hospital.rejectionReason}`} style={{ marginBottom: 16 }} showIcon />
+      )}
+
+      {!editing && (
         <Card>
-          {hospital.auditStatus === 'rejected' && hospital.rejectionReason && (
-            <div style={{ background: '#fff2f0', border: '1px solid #ffccc7', borderRadius: 4, padding: '8px 12px', marginBottom: 16 }}>
-              <b>驳回原因：</b>{hospital.rejectionReason}
-            </div>
-          )}
           <Descriptions column={2} bordered>
             <Descriptions.Item label="审核状态">{auditStatusTag(hospital.auditStatus)}</Descriptions.Item>
             <Descriptions.Item label="中文名称">{hospital.nameZh}</Descriptions.Item>
@@ -90,25 +154,7 @@ const HAHospitalPage: React.FC = () => {
 
       {editing && (
         <Card>
-          <Form form={form} layout="vertical">
-            <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}>
-              <Input />
-            </Form.Item>
-            <Form.Item name="phone" label="联系电话"><Input /></Form.Item>
-            <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
-            <Form.Item name="contactInfo" label="联系方式"><Input /></Form.Item>
-            <Form.Item name="addressZh" label="中文地址"><Input /></Form.Item>
-            <Form.Item name="addressEn" label="英文地址"><Input /></Form.Item>
-            <Form.Item name="introZh" label="中文简介">
-              <Input.TextArea rows={4} />
-            </Form.Item>
-            <Form.Item name="introEn" label="英文简介">
-              <Input.TextArea rows={4} />
-            </Form.Item>
-          </Form>
+          <HospitalForm form={form} />
         </Card>
       )}
     </div>

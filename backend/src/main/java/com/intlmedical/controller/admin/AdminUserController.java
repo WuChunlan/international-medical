@@ -50,9 +50,7 @@ public class AdminUserController {
         if (req.getRoleId() != 3 && req.getRoleId() != 4) {
             return Result.fail(400, "roleId 必须为 3(医院管理员) 或 4(审核员)");
         }
-        if (req.getRoleId() == 3 && req.getHospitalId() == null) {
-            return Result.fail(400, "医院管理员必须绑定医院");
-        }
+        // hospitalId is optional for hospital_admin — they can create their hospital later
         long exists = userMapper.selectCount(
             new LambdaQueryWrapper<User>().eq(User::getEmail, req.getEmail())
         );
@@ -91,9 +89,6 @@ public class AdminUserController {
         User target = userMapper.selectById(id);
         if (target == null || target.getRoleId() != 3) {
             return Result.fail(404, "账号不存在");
-        }
-        if (req.getHospitalId() == null) {
-            return Result.fail(400, "医院管理员必须绑定医院");
         }
         // email uniqueness check (exclude self)
         if (req.getEmail() != null && !req.getEmail().equals(target.getEmail())) {

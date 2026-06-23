@@ -102,7 +102,7 @@ const HospitalAdminManage: React.FC = () => {
     { title: '邮箱', dataIndex: 'email', ellipsis: true },
     {
       title: '绑定医院', dataIndex: 'hospitalId',
-      render: (v: number | null | undefined) => hospitalName(v),
+      render: (v: number | null | undefined) => v ? hospitalName(v) : <Tag color="warning">未绑定</Tag>,
     },
     {
       title: '状态', dataIndex: 'isActive', width: 90,
@@ -156,8 +156,8 @@ const HospitalAdminManage: React.FC = () => {
           </Form.Item>
           <Form.Item name="lastName" label="姓"><Input /></Form.Item>
           <Form.Item name="firstName" label="名"><Input /></Form.Item>
-          <Form.Item name="hospitalId" label="绑定医院" rules={[{ required: true, message: '必须绑定一个医院' }]}>
-            <Select placeholder="选择医院" showSearch
+          <Form.Item name="hospitalId" label="绑定医院（可留空，让管理员自行创建）">
+            <Select placeholder="选择已有医院，或留空由管理员创建" allowClear showSearch
               filterOption={(input, option) =>
                 String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())
               }>
