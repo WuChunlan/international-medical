@@ -12,6 +12,8 @@ export interface Hospital {
   contactInfo: string | null;
   sortOrder: number;
   isActive: number;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface Doctor {
@@ -29,6 +31,8 @@ export interface Doctor {
   titleEn: string | null;
   sortOrder: number;
   isActive: number;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface Equipment {
@@ -41,6 +45,8 @@ export interface Equipment {
   imageUrl: string | null;
   sortOrder: number;
   isActive: number;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface HospitalEnvironment {
@@ -53,6 +59,8 @@ export interface HospitalEnvironment {
   imageUrl: string | null;
   sortOrder: number;
   isActive: number;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface ServiceTeam {
@@ -82,6 +90,8 @@ export interface SpecialProduct {
   contactInfo: string | null;
   sortOrder: number;
   isActive: number;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface ProductVariant {
@@ -135,6 +145,8 @@ export interface MedicalCase {
   sortOrder: number;
   isActive: number;
   createdAt?: string;
+  auditStatus?: 'pending' | 'approved' | 'rejected';
+  rejectionReason?: string | null;
 }
 
 export interface SiteConfig {

@@ -25,7 +25,9 @@ const Login: React.FC = () => {
         password: values.password,
       });
       const payload = res.data;
-      if (payload.role && payload.role !== 'admin') {
+      const role = payload.role;
+      const allowedRoles = ['admin', 'hospital_admin', 'reviewer'];
+      if (!role || !allowedRoles.includes(role)) {
         message.error('无管理员权限，请使用管理员账号登录');
         return;
       }
@@ -34,7 +36,7 @@ const Login: React.FC = () => {
         message.error('登录失败：未获取到令牌');
         return;
       }
-      setAuth(token, payload.username || values.email);
+      setAuth(token, payload.username || values.email, role, payload.hospitalId ?? null);
       message.success('登录成功');
       navigate('/dashboard');
     } catch (err: unknown) {
