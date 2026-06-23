@@ -20,6 +20,8 @@ public class User {
     private String passportNumber;
     private String idCardCountry;
     private Integer isActive;
+    @TableField("hospital_id")
+    private Long hospitalId;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)

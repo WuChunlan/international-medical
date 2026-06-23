@@ -17,6 +17,10 @@ public class Case {
     private String coverImageUrl;
     private Integer sortOrder;
     private Integer isActive;
+    @TableField("audit_status")
+    private String auditStatus;
+    @TableField("rejection_reason")
+    private String rejectionReason;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 }

@@ -22,6 +22,10 @@ public class Hospital {
     private String contactInfo;
     private Integer sortOrder;
     private Integer isActive;
+    @TableField("audit_status")
+    private String auditStatus;
+    @TableField("rejection_reason")
+    private String rejectionReason;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)

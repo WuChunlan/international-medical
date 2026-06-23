@@ -16,4 +16,8 @@ public class HospitalEnvironment {
     private String imageUrl;
     private Integer sortOrder;
     private Integer isActive;
+    @TableField("audit_status")
+    private String auditStatus;
+    @TableField("rejection_reason")
+    private String rejectionReason;
 }
