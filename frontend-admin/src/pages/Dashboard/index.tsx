@@ -20,7 +20,7 @@ interface StatItem {
 }
 
 const Dashboard: React.FC = () => {
-  const { username } = useAdminAuthStore();
+  const { username, role } = useAdminAuthStore();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ hospitals: 0, products: 0, users: 0, cases: 0 });
 
@@ -28,30 +28,31 @@ const Dashboard: React.FC = () => {
     const fetchStats = async () => {
       setLoading(true);
       try {
-        const [hospitalsRes, productsRes, usersRes, casesRes] = await Promise.allSettled([
-          api.get('/api/admin/hospitals', { params: { page: 1, size: 1 } }),
-          api.get('/api/admin/products', { params: { page: 1, size: 1 } }),
-          api.get('/api/admin/users', { params: { page: 1, size: 1 } }),
-          api.get('/api/admin/cases', { params: { page: 1, size: 1 } }),
-        ]);
-
-        const getTotal = (res: PromiseSettledResult<{ data: { total?: number } }>) => {
-          if (res.status === 'fulfilled') return res.value.data?.total ?? 0;
-          return 0;
-        };
-
-        setStats({
-          hospitals: getTotal(hospitalsRes as PromiseSettledResult<{ data: { total?: number } }>),
-          products: getTotal(productsRes as PromiseSettledResult<{ data: { total?: number } }>),
-          users: getTotal(usersRes as PromiseSettledResult<{ data: { total?: number } }>),
-          cases: getTotal(casesRes as PromiseSettledResult<{ data: { total?: number } }>),
-        });
+        if (role === 'admin') {
+          const [hospitalsRes, productsRes, usersRes, casesRes] = await Promise.allSettled([
+            api.get('/api/admin/hospitals', { params: { page: 1, size: 1 } }),
+            api.get('/api/admin/products', { params: { page: 1, size: 1 } }),
+            api.get('/api/admin/users', { params: { page: 1, size: 1 } }),
+            api.get('/api/admin/cases', { params: { page: 1, size: 1 } }),
+          ]);
+          const getTotal = (res: PromiseSettledResult<{ data: { total?: number } }>) => {
+            if (res.status === 'fulfilled') return res.value.data?.total ?? 0;
+            return 0;
+          };
+          setStats({
+            hospitals: getTotal(hospitalsRes as PromiseSettledResult<{ data: { total?: number } }>),
+            products: getTotal(productsRes as PromiseSettledResult<{ data: { total?: number } }>),
+            users: getTotal(usersRes as PromiseSettledResult<{ data: { total?: number } }>),
+            cases: getTotal(casesRes as PromiseSettledResult<{ data: { total?: number } }>),
+          });
+        }
+        // hospital_admin and reviewer don't call admin-only endpoints
       } finally {
         setLoading(false);
       }
     };
     fetchStats();
-  }, []);
+  }, [role]);
 
   const statItems: StatItem[] = [
     { title: '医院总数', value: stats.hospitals, icon: <BankOutlined className="stat-icon-blue" />, color: '#e6f4ff' },

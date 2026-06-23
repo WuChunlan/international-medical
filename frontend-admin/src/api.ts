@@ -20,8 +20,11 @@ api.interceptors.response.use(
     return res;
   },
   (err) => {
-    if (err.response?.status === 401 || err.response?.status === 403) {
+    if (err.response?.status === 401) {
       localStorage.removeItem('admin_token');
+      localStorage.removeItem('admin_username');
+      localStorage.removeItem('admin_role');
+      localStorage.removeItem('admin_hospital_id');
       window.location.href = '/login';
     }
     return Promise.reject(err);
