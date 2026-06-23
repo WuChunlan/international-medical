@@ -14,7 +14,6 @@ public class Hospital {
     private String introZh;
     private String introEn;
     private String coverImageUrl;
-    private String videoUrl;
     private String addressZh;
     private String addressEn;
     private String phone;

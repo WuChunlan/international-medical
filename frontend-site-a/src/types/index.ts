@@ -5,7 +5,6 @@ export interface Hospital {
   introZh: string;
   introEn: string;
   coverImageUrl: string | null;
-  videoUrl: string | null;
   addressZh: string | null;
   addressEn: string | null;
   phone: string | null;
@@ -79,6 +78,8 @@ export interface MedicalCase {
   titleEn: string;
   summaryZh: string;
   summaryEn: string;
+  detailZh: string | null;
+  detailEn: string | null;
   coverImageUrl: string | null;
 }
 

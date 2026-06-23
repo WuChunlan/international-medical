@@ -142,6 +142,8 @@ export interface MedicalCase {
   titleEn: string;
   summaryZh: string | null;
   summaryEn: string | null;
+  detailZh: string | null;
+  detailEn: string | null;
   coverImageUrl: string | null;
   sortOrder: number;
   isActive: number;

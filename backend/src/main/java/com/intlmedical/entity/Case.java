@@ -14,6 +14,8 @@ public class Case {
     private String titleEn;
     private String summaryZh;
     private String summaryEn;
+    private String detailZh;
+    private String detailEn;
     private String coverImageUrl;
     private Integer sortOrder;
     private Integer isActive;
