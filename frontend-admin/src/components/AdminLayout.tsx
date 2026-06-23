@@ -38,8 +38,8 @@ const adminMenuItems = [
   { key: '/products', icon: <ShoppingOutlined />, label: '产品管理' },
   { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
+  { key: '/hospital-admins', icon: <SafetyCertificateOutlined />, label: '医院管理员' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
-  { key: '/create-staff', icon: <SafetyCertificateOutlined />, label: '创建账号' },
 ];
 
 const hospitalAdminMenuItems = [

@@ -125,6 +125,7 @@ export interface User {
   email: string;
   phone: string | null;
   roleId: number;
+  hospitalId?: number | null;
   idCardNumber: string | null;
   passportNumber: string | null;
   idCardCountry: string | null;

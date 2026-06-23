@@ -14,6 +14,7 @@ import CaseManage from './pages/CaseManage';
 import UserManage from './pages/UserManage';
 import SiteConfig from './pages/SiteConfig';
 import CreateStaffPage from './pages/CreateStaff';
+import HospitalAdminManage from './pages/HospitalAdminManage';
 import HAHospitalPage from './pages/HospitalAdmin/HAHospitalPage';
 import HADoctorsPage from './pages/HospitalAdmin/HADoctorsPage';
 import HAEquipmentsPage from './pages/HospitalAdmin/HAEquipmentsPage';
@@ -46,6 +47,7 @@ function App() {
                 <Route path="users" element={<UserManage />} />
                 <Route path="config" element={<SiteConfig />} />
                 <Route path="create-staff" element={<CreateStaffPage />} />
+                <Route path="hospital-admins" element={<HospitalAdminManage />} />
                 {/* Hospital admin routes */}
                 <Route path="ha/hospital" element={<HAHospitalPage />} />
                 <Route path="ha/doctors" element={<HADoctorsPage />} />

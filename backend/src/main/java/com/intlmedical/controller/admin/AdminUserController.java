@@ -71,6 +71,71 @@ public class AdminUserController {
         return Result.ok();
     }
 
+    // ---- Hospital Admin CRUD ----
+
+    @GetMapping("/hospital-admins")
+    public Result<IPage<User>> listHospitalAdmins(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        IPage<User> result = userMapper.selectPage(
+            new Page<>(page, size),
+            new LambdaQueryWrapper<User>().eq(User::getRoleId, 3)
+        );
+        result.getRecords().forEach(u -> u.setPasswordHash(null));
+        return Result.ok(result);
+    }
+
+    @PutMapping("/hospital-admins/{id}")
+    public Result<Void> updateHospitalAdmin(@PathVariable Long id,
+                                             @RequestBody UpdateHospitalAdminRequest req) {
+        User target = userMapper.selectById(id);
+        if (target == null || target.getRoleId() != 3) {
+            return Result.fail(404, "账号不存在");
+        }
+        if (req.getHospitalId() == null) {
+            return Result.fail(400, "医院管理员必须绑定医院");
+        }
+        // email uniqueness check (exclude self)
+        if (req.getEmail() != null && !req.getEmail().equals(target.getEmail())) {
+            long exists = userMapper.selectCount(
+                new LambdaQueryWrapper<User>()
+                    .eq(User::getEmail, req.getEmail())
+                    .ne(User::getId, id)
+            );
+            if (exists > 0) return Result.fail(400, "该邮箱已被使用");
+        }
+        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
+            .eq(User::getId, id)
+            .set(req.getEmail() != null, User::getEmail, req.getEmail())
+            .set(req.getFirstName() != null, User::getFirstName, req.getFirstName())
+            .set(req.getLastName() != null, User::getLastName, req.getLastName())
+            .set(User::getHospitalId, req.getHospitalId());
+        if (req.getPassword() != null && !req.getPassword().isBlank()) {
+            wrapper.set(User::getPasswordHash, passwordEncoder.encode(req.getPassword()));
+        }
+        userMapper.update(null, wrapper);
+        return Result.ok();
+    }
+
+    @DeleteMapping("/hospital-admins/{id}")
+    public Result<Void> deleteHospitalAdmin(@PathVariable Long id) {
+        User target = userMapper.selectById(id);
+        if (target == null || target.getRoleId() != 3) {
+            return Result.fail(404, "账号不存在");
+        }
+        userMapper.deleteById(id);
+        return Result.ok();
+    }
+
+    @Data
+    public static class UpdateHospitalAdminRequest {
+        private String email;
+        private String password;
+        private String firstName;
+        private String lastName;
+        private Long hospitalId;
+    }
+
     @Data
     public static class CreateStaffRequest {
         private String email;
