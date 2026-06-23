@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Button, Typography, Space, Avatar } from 'antd';
+import { Layout, Menu, Button, Typography, Space, Avatar, Tag } from 'antd';
 import {
   DashboardOutlined,
   BankOutlined,
@@ -13,6 +13,8 @@ import {
   MenuUnfoldOutlined,
   FileTextOutlined,
   AppstoreOutlined,
+  AuditOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuthStore } from '../store/authStore';
@@ -25,7 +27,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
-const menuItems = [
+const adminMenuItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
   { key: '/hospitals', icon: <BankOutlined />, label: '医院管理' },
   { key: '/doctors', icon: <UserOutlined />, label: '医生管理' },
@@ -37,13 +39,40 @@ const menuItems = [
   { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
+  { key: '/create-staff', icon: <SafetyCertificateOutlined />, label: '创建账号' },
 ];
+
+const hospitalAdminMenuItems = [
+  { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
+  { key: '/ha/hospital', icon: <BankOutlined />, label: '我的医院' },
+  { key: '/ha/doctors', icon: <UserOutlined />, label: '医生管理' },
+  { key: '/ha/equipments', icon: <MedicineBoxOutlined />, label: '设备管理' },
+  { key: '/ha/environments', icon: <BankOutlined />, label: '诊疗环境' },
+  { key: '/ha/products', icon: <ShoppingOutlined />, label: '产品管理' },
+  { key: '/ha/cases', icon: <FileTextOutlined />, label: '过往案例' },
+];
+
+const reviewerMenuItems = [
+  { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
+  { key: '/reviewer/pending', icon: <AuditOutlined />, label: '待审核内容' },
+];
+
+const roleLabels: Record<string, { text: string; color: string }> = {
+  admin: { text: '超级管理员', color: 'red' },
+  hospital_admin: { text: '医院管理员', color: 'blue' },
+  reviewer: { text: '审核员', color: 'green' },
+};
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { username, logout } = useAdminAuthStore();
+  const { username, role, logout } = useAdminAuthStore();
+
+  const menuItems =
+    role === 'hospital_admin' ? hospitalAdminMenuItems :
+    role === 'reviewer' ? reviewerMenuItems :
+    adminMenuItems;
 
   const handleMenuClick = ({ key }: { key: string }) => navigate(key);
 
@@ -53,6 +82,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   const selectedKey = '/' + location.pathname.split('/').filter(Boolean)[0] || '/dashboard';
+
+  const roleInfo = role ? roleLabels[role] : null;
 
   return (
     <Layout className="admin-layout">
@@ -91,6 +122,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             className="admin-header__collapse-btn"
           />
           <Space>
+            {roleInfo && !collapsed && (
+              <Tag color={roleInfo.color}>{roleInfo.text}</Tag>
+            )}
             <Avatar size="small" className="admin-avatar" icon={<UserOutlined />} />
             <Text className="admin-header__user-text">{username || 'admin'}</Text>
             <Button
