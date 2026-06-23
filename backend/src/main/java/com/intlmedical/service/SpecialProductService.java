@@ -26,6 +26,7 @@ public class SpecialProductService {
         return productMapper.selectList(
             new LambdaQueryWrapper<SpecialProduct>()
                 .eq(SpecialProduct::getIsActive, 1)
+                .eq(SpecialProduct::getAuditStatus, "approved")
                 .orderByAsc(SpecialProduct::getSortOrder)
         );
     }

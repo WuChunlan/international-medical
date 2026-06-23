@@ -33,6 +33,7 @@ public class HospitalService {
         return hospitalMapper.selectList(
             new LambdaQueryWrapper<Hospital>()
                 .eq(Hospital::getIsActive, 1)
+                .eq(Hospital::getAuditStatus, "approved")
                 .orderByAsc(Hospital::getSortOrder)
         );
     }
@@ -43,18 +44,21 @@ public class HospitalService {
             new LambdaQueryWrapper<Doctor>()
                 .eq(Doctor::getHospitalId, id)
                 .eq(Doctor::getIsActive, 1)
+                .eq(Doctor::getAuditStatus, "approved")
                 .orderByAsc(Doctor::getSortOrder)
         );
         List<Equipment> equipments = equipmentMapper.selectList(
             new LambdaQueryWrapper<Equipment>()
                 .eq(Equipment::getHospitalId, id)
                 .eq(Equipment::getIsActive, 1)
+                .eq(Equipment::getAuditStatus, "approved")
                 .orderByAsc(Equipment::getSortOrder)
         );
         List<HospitalEnvironment> environments = hospitalEnvironmentMapper.selectList(
             new LambdaQueryWrapper<HospitalEnvironment>()
                 .eq(HospitalEnvironment::getHospitalId, id)
                 .eq(HospitalEnvironment::getIsActive, 1)
+                .eq(HospitalEnvironment::getAuditStatus, "approved")
                 .orderByAsc(HospitalEnvironment::getSortOrder)
         );
         List<EntityMedia> mediaList = entityMediaMapper.selectList(

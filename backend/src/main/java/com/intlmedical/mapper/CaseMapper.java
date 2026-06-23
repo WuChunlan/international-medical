@@ -20,7 +20,7 @@ public interface CaseMapper extends BaseMapper<Case> {
 
     @Select("SELECT c.*, h.name_zh AS hospital_name_zh, h.name_en AS hospital_name_en " +
             "FROM cases c LEFT JOIN hospitals h ON c.hospital_id = h.id " +
-            "WHERE c.is_active = 1 " +
+            "WHERE c.is_active = 1 AND c.audit_status = 'approved' " +
             "ORDER BY c.sort_order ASC, c.id DESC")
     List<CaseVO> selectActiveWithHospital();
 }
