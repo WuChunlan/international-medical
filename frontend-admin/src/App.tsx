@@ -13,6 +13,14 @@ import ProductManage from './pages/ProductManage';
 import CaseManage from './pages/CaseManage';
 import UserManage from './pages/UserManage';
 import SiteConfig from './pages/SiteConfig';
+import CreateStaffPage from './pages/CreateStaff';
+import HAHospitalPage from './pages/HospitalAdmin/HAHospitalPage';
+import HADoctorsPage from './pages/HospitalAdmin/HADoctorsPage';
+import HAEquipmentsPage from './pages/HospitalAdmin/HAEquipmentsPage';
+import HAEnvironmentsPage from './pages/HospitalAdmin/HAEnvironmentsPage';
+import HACasesPage from './pages/HospitalAdmin/HACasesPage';
+import HAProductsPage from './pages/HospitalAdmin/HAProductsPage';
+import ReviewerPendingPage from './pages/Reviewer/ReviewerPendingPage';
 
 function App() {
   return (
@@ -25,6 +33,7 @@ function App() {
           <PrivateRoute>
             <AdminLayout>
               <Routes>
+                {/* Super admin routes */}
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="hospitals" element={<HospitalManage />} />
                 <Route path="doctors" element={<DoctorManage />} />
@@ -36,6 +45,16 @@ function App() {
                 <Route path="cases" element={<CaseManage />} />
                 <Route path="users" element={<UserManage />} />
                 <Route path="config" element={<SiteConfig />} />
+                <Route path="create-staff" element={<CreateStaffPage />} />
+                {/* Hospital admin routes */}
+                <Route path="ha/hospital" element={<HAHospitalPage />} />
+                <Route path="ha/doctors" element={<HADoctorsPage />} />
+                <Route path="ha/equipments" element={<HAEquipmentsPage />} />
+                <Route path="ha/environments" element={<HAEnvironmentsPage />} />
+                <Route path="ha/cases" element={<HACasesPage />} />
+                <Route path="ha/products" element={<HAProductsPage />} />
+                {/* Reviewer routes */}
+                <Route path="reviewer/pending" element={<ReviewerPendingPage />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </AdminLayout>
