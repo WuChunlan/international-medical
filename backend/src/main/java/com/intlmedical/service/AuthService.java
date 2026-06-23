@@ -88,11 +88,16 @@ public class AuthService {
         if (user.getIsActive() != 1) {
             throw new RuntimeException("账号已被禁用");
         }
-        String role = user.getRoleId() == 2 ? "admin" : "user";
+        String role = switch (user.getRoleId()) {
+            case 2 -> "admin";
+            case 3 -> "hospital_admin";
+            case 4 -> "reviewer";
+            default -> "user";
+        };
         String displayName = (user.getLastName() != null ? user.getLastName() : "") +
                              (user.getFirstName() != null ? user.getFirstName() : "");
         if (displayName.isBlank()) displayName = user.getEmail();
-        String token = jwtUtil.generateToken(user.getId(), displayName, role);
-        return new LoginResponse(token, displayName, role);
+        String token = jwtUtil.generateToken(user.getId(), displayName, role, user.getHospitalId());
+        return new LoginResponse(token, displayName, role, user.getHospitalId());
     }
 }

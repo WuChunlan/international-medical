@@ -30,10 +30,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && jwtUtil.isTokenValid(token)) {
             Long userId = jwtUtil.getUserId(token);
             String role = jwtUtil.getRole(token);
+            Long hospitalId = jwtUtil.getHospitalId(token);
             var auth = new UsernamePasswordAuthenticationToken(
                     userId, null,
                     List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
             );
+            auth.setDetails(hospitalId);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);

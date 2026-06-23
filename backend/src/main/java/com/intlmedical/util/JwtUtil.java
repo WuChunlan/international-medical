@@ -23,14 +23,20 @@ public class JwtUtil {
     }
 
     public String generateToken(Long userId, String username, String role) {
-        return Jwts.builder()
+        return generateToken(userId, username, role, null);
+    }
+
+    public String generateToken(Long userId, String username, String role, Long hospitalId) {
+        var builder = Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(getKey())
-                .compact();
+                .expiration(new Date(System.currentTimeMillis() + expiration));
+        if (hospitalId != null) {
+            builder.claim("hospital_id", hospitalId);
+        }
+        return builder.signWith(getKey()).compact();
     }
 
     public Claims parseToken(String token) {
@@ -56,5 +62,11 @@ public class JwtUtil {
 
     public String getRole(String token) {
         return parseToken(token).get("role", String.class);
+    }
+
+    public Long getHospitalId(String token) {
+        Object v = parseToken(token).get("hospital_id");
+        if (v == null) return null;
+        return v instanceof Long ? (Long) v : Long.valueOf(v.toString());
     }
 }
