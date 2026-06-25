@@ -1,0 +1,1 @@
+/bin/sh -c cd /Users/wuchunlan/Desktop/project/international-medical/backend && /opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home/bin/javac @/Users/wuchunlan/Desktop/project/international-medical/backend/target/org.codehaus.plexus.compiler.javac.JavacCompiler12490684824680449925arguments

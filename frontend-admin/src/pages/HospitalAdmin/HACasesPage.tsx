@@ -6,6 +6,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import api from '../../api';
 import type { MedicalCase } from '../../types';
+import ImageUpload from '../../components/ImageUpload';
 
 const { Title } = Typography;
 
@@ -107,6 +108,9 @@ const HACasesPage: React.FC = () => {
           <Form.Item name="summaryZh" label="摘要(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="summaryEn" label="摘要(英文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
+          <Form.Item name="coverImageUrl" label="封面图片">
+            <ImageUpload category="cases/images" label="上传封面图" uploadUrl="/api/hospital-admin/upload" />
+          </Form.Item>
         </Form>
       </Modal>
     </div>

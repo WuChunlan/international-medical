@@ -15,9 +15,16 @@ import './MediaUploadList.less';
 interface MediaUploadListProps {
   entityType: string;
   entityId: number | null;
+  uploadUrl?: string;
+  mediaApiUrl?: string;
 }
 
-const MediaUploadList: React.FC<MediaUploadListProps> = ({ entityType, entityId }) => {
+const MediaUploadList: React.FC<MediaUploadListProps> = ({
+  entityType,
+  entityId,
+  uploadUrl = '/api/admin/upload',
+  mediaApiUrl = '/api/admin/media',
+}) => {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<'image' | 'video' | null>(null);
@@ -26,7 +33,7 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({ entityType, entityId 
     if (!entityId) return;
     setLoading(true);
     try {
-      const res = await api.get<MediaItem[]>('/api/admin/media', {
+      const res = await api.get<MediaItem[]>(mediaApiUrl, {
         params: { entityType, entityId },
       });
       setItems(res.data);
@@ -53,11 +60,11 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({ entityType, entityId 
         const formData = new FormData();
         formData.append('file', file);
         formData.append('category', `${entityType}s/${mediaType}s`);
-        const uploadRes = await api.post<string>('/api/admin/upload', formData, {
+        const uploadRes = await api.post<string>(uploadUrl, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         const url = uploadRes.data;
-        await api.post('/api/admin/media', {
+        await api.post(mediaApiUrl, {
           entityType,
           entityId,
           mediaType,
@@ -77,7 +84,7 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({ entityType, entityId 
 
   const handleSetCover = async (id: number) => {
     try {
-      await api.put(`/api/admin/media/${id}/set-cover`);
+      await api.put(`${mediaApiUrl}/${id}/set-cover`);
       message.success('已设为主图');
       fetchMedia();
     } catch {
@@ -87,7 +94,7 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({ entityType, entityId 
 
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`/api/admin/media/${id}`);
+      await api.delete(`${mediaApiUrl}/${id}`);
       message.success('已删除');
       fetchMedia();
     } catch {

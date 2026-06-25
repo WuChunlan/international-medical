@@ -10,6 +10,7 @@ interface ImageUploadProps {
   category: string;
   accept?: string;
   label?: string;
+  uploadUrl?: string;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -18,6 +19,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   category,
   accept = 'image/*',
   label = '上传图片',
+  uploadUrl = '/api/admin/upload',
 }) => {
   const [uploading, setUploading] = useState(false);
 
@@ -32,7 +34,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     formData.append('category', category);
     setUploading(true);
     try {
-      const res = await api.post<string>('/api/admin/upload', formData, {
+      const res = await api.post<string>(uploadUrl, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       const url = res.data;

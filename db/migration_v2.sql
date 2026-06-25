@@ -34,3 +34,8 @@ ALTER TABLE cases
 ALTER TABLE special_products
   ADD COLUMN audit_status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'approved' COMMENT '审核状态' AFTER is_active,
   ADD COLUMN rejection_reason TEXT DEFAULT NULL AFTER audit_status;
+
+-- 信息审核员测试账号 (密码: reviewer123)
+INSERT IGNORE INTO users (role_id, email, password_hash, is_active) VALUES
+(4, 'reviewer@international-medical.com',
+ '$2b$12$Xj0E3MAl7xoKxVUPz2tVlu7iid0KLNVQaVpcSTx77ANDxRhsp3KbC', 1);

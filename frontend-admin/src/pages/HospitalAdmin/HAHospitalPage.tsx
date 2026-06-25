@@ -4,6 +4,8 @@ import { EditOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api';
 import { useAdminAuthStore } from '../../store/authStore';
 import type { Hospital } from '../../types';
+import ImageUpload from '../../components/ImageUpload';
+import MediaUploadList from '../../components/MediaUploadList';
 
 const { Title } = Typography;
 
@@ -28,6 +30,9 @@ const HospitalForm: React.FC<{ form: ReturnType<typeof Form.useForm>[0] }> = ({ 
     <Form.Item name="addressEn" label="英文地址"><Input /></Form.Item>
     <Form.Item name="introZh" label="中文简介"><Input.TextArea rows={4} /></Form.Item>
     <Form.Item name="introEn" label="英文简介"><Input.TextArea rows={4} /></Form.Item>
+    <Form.Item name="coverImageUrl" label="封面图片（首页列表展示，仅图片）">
+      <ImageUpload category="hospitals/images" label="上传封面图" uploadUrl="/api/hospital-admin/upload" />
+    </Form.Item>
   </Form>
 );
 
@@ -155,6 +160,17 @@ const HAHospitalPage: React.FC = () => {
       {editing && (
         <Card>
           <HospitalForm form={form} />
+        </Card>
+      )}
+
+      {hospital.id && (
+        <Card title="轮播图片 / 视频（详情页展示，支持图片和视频）" style={{ marginTop: 16 }}>
+          <MediaUploadList
+            entityType="hospital"
+            entityId={hospital.id}
+            uploadUrl="/api/hospital-admin/upload"
+            mediaApiUrl="/api/hospital-admin/media"
+          />
         </Card>
       )}
     </div>

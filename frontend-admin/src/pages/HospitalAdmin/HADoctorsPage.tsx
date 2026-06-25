@@ -6,6 +6,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import api from '../../api';
 import type { Doctor } from '../../types';
+import ImageUpload from '../../components/ImageUpload';
 
 const { Title } = Typography;
 
@@ -130,6 +131,9 @@ const HADoctorsPage: React.FC = () => {
           <Form.Item name="bioEn" label="简介(英文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="pricePerVisit" label="出诊费"><Input type="number" /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
+          <Form.Item name="photoUrl" label="医生照片">
+            <ImageUpload category="doctors/images" label="上传照片" uploadUrl="/api/hospital-admin/upload" />
+          </Form.Item>
         </Form>
       </Modal>
     </div>

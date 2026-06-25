@@ -100,35 +100,28 @@ function HospitalCard({ hospital, lang, delay }: {
   const intro = lang === 'zh' ? hospital.introZh : hospital.introEn;
 
   return (
-    <div className="hospital-card" style={{ animationDelay: `${delay}ms` }}>
-      <div className="hospital-card__cover">
+    <div
+      className="hospital-card"
+      style={{ animationDelay: `${delay}ms` }}
+      onClick={() => navigate(`/hospital/${hospital.id}`)}
+    >
+      <div className="hospital-card__img">
         {hospital.coverImageUrl ? (
           <img src={hospital.coverImageUrl} alt={name} />
         ) : (
-          <div className="hospital-card__cover-placeholder">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="rgba(59,130,246,0.3)">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
-            </svg>
-          </div>
+          <div className="hospital-card__img-placeholder" />
         )}
-        <div className="hospital-card__cover-gradient" />
       </div>
 
-      <div className="hospital-card__content">
-        <div className="hospital-card__name-row">
-          <div className="hospital-card__accent-bar" />
-          <h3 className="hospital-card__name">{name}</h3>
-        </div>
+      <div className="hospital-card__overlay">
+        <h3 className="hospital-card__name">{name}</h3>
         <p className="hospital-card__intro">{intro}</p>
-        <button
-          className="hospital-card__link"
-          onClick={() => navigate(`/hospital/${hospital.id}`)}
-        >
+        <span className="hospital-card__link">
           {t('hospitals.view_more')}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
           </svg>
-        </button>
+        </span>
       </div>
     </div>
   );

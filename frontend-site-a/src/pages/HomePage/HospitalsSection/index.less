@@ -5,114 +5,118 @@
   border-bottom: 1px solid #DAEDfd;
 }
 
+// ── Overlay-style card (inspired by chcmu featured-medical section) ──────────
 .hospital-card {
-  border-radius: 0;
+  position: relative;
+  border-radius: 12px;
   overflow: hidden;
-  transition: all 0.35s ease;
-  background: #ffffff;
-  border: 1px solid #DAEDfd;
-  display: flex;
-  flex-direction: column;
+  height: 400px;
+  cursor: pointer;
+  flex-shrink: 0;
 
-  &:hover {
-    border-color: #0067ED;
-    box-shadow: 0 12px 40px rgba(1, 52, 137, 0.14);
-    transform: translateY(-4px);
-  }
-
-  &__cover {
-    position: relative;
-    height: 220px;
-    overflow: hidden;
-    flex-shrink: 0;
+  // Image layer
+  &__img {
+    position: absolute;
+    inset: 0;
 
     img {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      transition: transform 0.6s ease;
+      transition: transform 0.65s ease;
     }
   }
 
-  &:hover &__cover img { transform: scale(1.04); }
-
-  &__cover-placeholder {
-    width: 100%; height: 100%;
-    background: linear-gradient(135deg, #013489 0%, #1E5096 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  &__img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(150deg, #013489 0%, #1e5096 55%, #2a6cc4 100%);
   }
 
-  &__cover-gradient {
+  // Dark gradient overlay — bottom-heavy so text is readable
+  &::after {
+    content: '';
     position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 40%;
-    background: linear-gradient(transparent, rgba(1, 52, 137, 0.6));
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 20%,
+      rgba(0, 10, 40, 0.35) 52%,
+      rgba(0, 15, 55, 0.88) 100%
+    );
+    transition: background 0.38s ease;
   }
 
-  &__content {
-    padding: 24px 28px 28px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+  &:hover {
+    &::after {
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 12%,
+        rgba(0, 10, 40, 0.42) 48%,
+        rgba(0, 15, 55, 0.94) 100%
+      );
+    }
+
+    .hospital-card__img img {
+      transform: scale(1.06);
+    }
+
+    .hospital-card__link {
+      background: rgba(255, 255, 255, 0.26);
+      border-color: rgba(255, 255, 255, 0.9);
+      gap: 8px;
+    }
   }
 
-  &__name-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  &__accent-bar {
-    width: 3px; height: 20px;
-    background: #0067ED;
-    border-radius: 2px;
-    flex-shrink: 0;
+  // Text overlay positioned at the bottom
+  &__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 28px 26px;
+    z-index: 1;
   }
 
   &__name {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 1.25rem;
-    font-weight: 500;
-    color: #013489;
-    line-height: 1.3;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.45;
+    margin-bottom: 10px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   &__intro {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 400;
-    color: #515A71;
-    line-height: 1.8;
-    margin-bottom: 24px;
-    flex: 1;
+    font-size: 0.86rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.75;
+    margin-bottom: 16px;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   }
 
   &__link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 24px;
-    background: transparent;
-    border: 1px solid #0067ED;
+    gap: 5px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.52);
     border-radius: 2px;
-    color: #0067ED;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    transition: all 0.25s ease;
-    text-decoration: none;
-    align-self: flex-start;
-  }
-
-  &:hover &__link {
-    background: #0067ED;
     color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    transition: background 0.25s ease, border-color 0.25s ease, gap 0.25s ease;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
 }

@@ -6,6 +6,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import api from '../../api';
 import type { HospitalEnvironment } from '../../types';
+import ImageUpload from '../../components/ImageUpload';
 
 const { Title } = Typography;
 
@@ -103,6 +104,9 @@ const HAEnvironmentsPage: React.FC = () => {
           <Form.Item name="descZh" label="描述(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="descEn" label="描述(英文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
+          <Form.Item name="imageUrl" label="环境图片">
+            <ImageUpload category="environments" label="上传图片" uploadUrl="/api/hospital-admin/upload" />
+          </Form.Item>
         </Form>
       </Modal>
     </div>

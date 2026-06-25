@@ -52,9 +52,10 @@ public class AdminMediaController {
                 .eq(EntityMedia::getEntityId, media.getEntityId())
         );
         boolean isFirst = existing == 0;
-        media.setIsCover(isFirst ? 1 : 0);
+        // Videos cannot be the cover image
+        media.setIsCover(isFirst && !"video".equals(media.getMediaType()) ? 1 : 0);
         entityMediaMapper.insert(media);
-        if (isFirst) {
+        if (media.getIsCover() == 1) {
             syncCoverToEntity(media);
         }
         return Result.ok(media);
@@ -85,6 +86,7 @@ public class AdminMediaController {
     public Result<Void> setCover(@PathVariable Long id) {
         EntityMedia media = entityMediaMapper.selectById(id);
         if (media == null) return Result.fail("媒体资源不存在");
+        if ("video".equals(media.getMediaType())) return Result.fail(400, "视频不能设为主图");
 
         // Clear all covers for this entity
         entityMediaMapper.update(null,
