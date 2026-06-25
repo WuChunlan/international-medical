@@ -1,0 +1,51 @@
+@import './tokens.less';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  background: @color-bg-layout;
+  color: @color-text;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 20px;
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: @color-text;
+    margin: 0;
+  }
+
+  .page-description {
+    font-size: 14px;
+    color: @color-text-secondary;
+    margin: 4px 0 0;
+  }
+}
+
+.page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

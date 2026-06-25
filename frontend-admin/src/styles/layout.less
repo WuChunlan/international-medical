@@ -1,0 +1,79 @@
+@import './tokens.less';
+
+// Sider
+.admin-sider {
+  border-right: 1px solid @color-border !important;
+
+  .sider-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid @color-border;
+    font-size: 16px;
+    font-weight: 700;
+    color: @color-primary;
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+  }
+}
+
+// Menu active item left bar
+.ant-menu-light .ant-menu-item-selected {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: @color-primary;
+    border-radius: 0 2px 2px 0;
+  }
+}
+
+// Header
+.admin-header {
+  height: 48px;
+  line-height: 48px;
+  padding: 0 16px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid @color-border;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: @color-text-secondary;
+
+    .header-divider {
+      color: @color-border;
+    }
+
+    .header-username {
+      color: @color-text;
+      font-weight: 500;
+    }
+  }
+}
+
+// Content area
+.admin-content {
+  padding: 24px;
+  min-height: calc(100vh - 48px);
+}

@@ -1,0 +1,65 @@
+import type { ThemeConfig } from 'antd'
+
+export const adminTheme: ThemeConfig = {
+  token: {
+    colorPrimary:         '#0A2540',
+    colorPrimaryHover:    '#0D3361',
+    colorBgContainer:     '#FFFFFF',
+    colorBgLayout:        '#F5F6F8',
+    colorText:            '#0A0A0A',
+    colorTextSecondary:   '#6B7280',
+    colorBorder:          '#E5E7EB',
+    colorBorderSecondary: '#F3F4F6',
+    colorSuccess:         '#059669',
+    colorWarning:         '#D97706',
+    colorError:           '#DC2626',
+    colorInfo:            '#2563EB',
+    colorFillAlter:       '#F5F6F8',
+    colorBgElevated:      '#FFFFFF',
+    fontFamily:           "'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif",
+    fontSize:             14,
+    fontSizeLG:           16,
+    borderRadius:         4,
+    borderRadiusLG:       6,
+    borderRadiusSM:       2,
+    boxShadow:            'none',
+    boxShadowSecondary:   'none',
+  },
+  components: {
+    Layout: {
+      siderBg:      '#FFFFFF',
+      headerBg:     '#FFFFFF',
+      headerHeight: 48,
+      triggerBg:    '#F5F6F8',
+      triggerColor: '#374151',
+    },
+    Menu: {
+      itemBg:            '#FFFFFF',
+      itemHoverBg:       '#F9FAFB',
+      itemSelectedBg:    '#F0F4FF',
+      itemColor:         '#374151',
+      itemHoverColor:    '#0A2540',
+      itemSelectedColor: '#0A2540',
+      iconSize:          16,
+    },
+    Table: {
+      headerBg:          '#F5F6F8',
+      headerColor:       '#374151',
+      rowHoverBg:        '#F9FAFB',
+      borderColor:       '#E5E7EB',
+      cellPaddingBlock:  12,
+      cellPaddingInline: 16,
+    },
+    Button: {
+      primaryColor:       '#FFFFFF',
+      defaultBorderColor: '#E5E7EB',
+    },
+    Drawer: {
+      footerPaddingBlock:  16,
+      footerPaddingInline: 24,
+    },
+    Card: {
+      paddingLG: 20,
+    },
+  },
+}

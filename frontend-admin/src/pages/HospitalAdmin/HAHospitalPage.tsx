@@ -1,23 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Card, Typography, Descriptions, Button, Tag, message, Form, Input, Spin, Alert } from 'antd';
-import { EditOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons';
-import api from '../../api';
-import { useAdminAuthStore } from '../../store/authStore';
-import type { Hospital } from '../../types';
-import ImageUpload from '../../components/ImageUpload';
-import MediaUploadList from '../../components/MediaUploadList';
-
-const { Title } = Typography;
-
-const auditStatusTag = (status?: string) => {
-  const map: Record<string, { color: string; label: string }> = {
-    approved: { color: 'green', label: '已审核' },
-    pending: { color: 'orange', label: '待审核' },
-    rejected: { color: 'red', label: '已驳回' },
-  };
-  const s = map[status ?? ''] ?? { color: 'default', label: status ?? '-' };
-  return <Tag color={s.color}>{s.label}</Tag>;
-};
+import React, { useEffect, useState, useCallback } from 'react'
+import { Card, Descriptions, Button, message, Form, Input, Spin, Alert } from 'antd'
+import { EditOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons'
+import api from '../../api'
+import { useAdminAuthStore } from '../../store/authStore'
+import type { Hospital } from '../../types'
+import ImageUpload from '../../components/ImageUpload'
+import MediaUploadList from '../../components/MediaUploadList'
+import { StatusTag } from '../../components/StatusTag'
 
 const HospitalForm: React.FC<{ form: ReturnType<typeof Form.useForm>[0] }> = ({ form }) => (
   <Form form={form} layout="vertical">
@@ -34,7 +23,7 @@ const HospitalForm: React.FC<{ form: ReturnType<typeof Form.useForm>[0] }> = ({ 
       <ImageUpload category="hospitals/images" label="上传封面图" uploadUrl="/api/hospital-admin/upload" />
     </Form.Item>
   </Form>
-);
+)
 
 const HAHospitalPage: React.FC = () => {
   const [hospital, setHospital] = useState<Hospital | null | undefined>(undefined);
@@ -42,7 +31,7 @@ const HAHospitalPage: React.FC = () => {
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form] = Form.useForm();
-  const { setAuth, token, username, role } = useAdminAuthStore();
+  const { setAuth, username, role } = useAdminAuthStore()
 
   const fetchHospital = useCallback(async () => {
     setLoading(true);
@@ -101,13 +90,15 @@ const HAHospitalPage: React.FC = () => {
     }
   };
 
-  if (loading || hospital === undefined) return <Spin style={{ margin: 40 }} />;
+  if (loading || hospital === undefined) return <Spin style={{ margin: 40 }} />
 
   // No hospital bound — show create form
   if (!hospital) {
     return (
-      <div>
-        <Title level={4} className="page-title" style={{ marginBottom: 16 }}>我的医院</Title>
+      <div className="page-card">
+        <div className="page-header">
+          <h3 className="page-title">我的医院</h3>
+        </div>
         <Alert
           type="info"
           message="您尚未绑定医院"
@@ -122,18 +113,22 @@ const HAHospitalPage: React.FC = () => {
           </Button>
         </Card>
       </div>
-    );
+    )
   }
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Title level={4} className="page-title">我的医院</Title>
-        {!editing ? (
-          <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>编辑</Button>
-        ) : (
-          <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>保存</Button>
-        )}
+    <div className="page-card">
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h3 className="page-title">我的医院</h3>
+        </div>
+        <div>
+          {!editing ? (
+            <Button type="primary" icon={<EditOutlined />} onClick={handleEdit}>编辑</Button>
+          ) : (
+            <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>保存</Button>
+          )}
+        </div>
       </div>
 
       {hospital.auditStatus === 'rejected' && hospital.rejectionReason && (
@@ -143,7 +138,9 @@ const HAHospitalPage: React.FC = () => {
       {!editing && (
         <Card>
           <Descriptions column={2} bordered>
-            <Descriptions.Item label="审核状态">{auditStatusTag(hospital.auditStatus)}</Descriptions.Item>
+            <Descriptions.Item label="审核状态">
+              <StatusTag status={hospital.auditStatus as 'approved' | 'pending' | 'rejected'} />
+            </Descriptions.Item>
             <Descriptions.Item label="中文名称">{hospital.nameZh}</Descriptions.Item>
             <Descriptions.Item label="英文名称">{hospital.nameEn}</Descriptions.Item>
             <Descriptions.Item label="联系电话">{hospital.phone}</Descriptions.Item>
@@ -174,7 +171,7 @@ const HAHospitalPage: React.FC = () => {
         </Card>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default HAHospitalPage;
+export default HAHospitalPage

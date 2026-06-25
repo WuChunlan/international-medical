@@ -1,27 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import {
-  Table,
-  Button,
-  Tag,
-  message,
-  Card,
-  Typography,
-  Row,
-  Col,
-  Popconfirm,
-} from 'antd';
-import { CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
-import api from '../../api';
-import type { User } from '../../types';
-
-const { Title } = Typography;
+import React, { useEffect, useState, useCallback } from 'react'
+import { Table, Button, Tag, message, Popconfirm } from 'antd'
+import { CheckCircleOutlined, StopOutlined } from '@ant-design/icons'
+import type { ColumnsType } from 'antd/es/table'
+import api from '../../api'
+import type { User } from '../../types'
 
 const UserManage: React.FC = () => {
-  const [data, setData] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [current, setCurrent] = useState(1);
+  const [data, setData] = useState<User[]>([])
+  const [loading, setLoading] = useState(false)
+  const [total, setTotal] = useState(0)
+  const [current, setCurrent] = useState(1)
 
   const fetchData = useCallback(async (page = 1) => {
     setLoading(true);
@@ -127,31 +115,21 @@ const UserManage: React.FC = () => {
   ];
 
   return (
-    <div>
-      <Row justify="space-between" align="middle" className="page-header-row">
-        <Col>
-          <Title level={4} className="page-title">用户管理</Title>
-        </Col>
-      </Row>
-
-      <Card className="page-card">
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={data}
-          loading={loading}
-          pagination={{
-            current,
-            pageSize: 10,
-            total,
-            showSizeChanger: false,
-            showTotal: (t) => `共 ${t} 条`,
-            onChange: (page) => setCurrent(page),
-          }}
-        />
-      </Card>
+    <div className="page-card">
+      <div className="page-header">
+        <h3 className="page-title">用户管理</h3>
+        <p className="page-description">查看和管理平台C端注册用户</p>
+      </div>
+      <Table
+        rowKey="id"
+        size="middle"
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={{ current, pageSize: 10, total, showSizeChanger: false, showTotal: t => `共 ${t} 条`, position: ['bottomRight'], size: 'small', onChange: setCurrent }}
+      />
     </div>
-  );
+  )
 };
 
 export default UserManage;

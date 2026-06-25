@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Button, Typography, Space, Avatar, Tag } from 'antd';
+import React, { useState } from 'react'
+import { Layout, Menu, Button, Tag, Breadcrumb } from 'antd'
 import {
   DashboardOutlined,
   BankOutlined,
@@ -15,16 +15,15 @@ import {
   AppstoreOutlined,
   AuditOutlined,
   SafetyCertificateOutlined,
-} from '@ant-design/icons';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAdminAuthStore } from '../store/authStore';
-import './AdminLayout.less';
+} from '@ant-design/icons'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAdminAuthStore } from '../store/authStore'
+import './AdminLayout.less'
 
-const { Sider, Header, Content } = Layout;
-const { Text } = Typography;
+const { Sider, Header, Content } = Layout
 
 interface AdminLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 
 const adminMenuItems = [
@@ -40,7 +39,7 @@ const adminMenuItems = [
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: '/hospital-admins', icon: <SafetyCertificateOutlined />, label: '医院管理员' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
-];
+]
 
 const hospitalAdminMenuItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
@@ -50,92 +49,124 @@ const hospitalAdminMenuItems = [
   { key: '/ha/environments', icon: <BankOutlined />, label: '诊疗环境' },
   { key: '/ha/products', icon: <ShoppingOutlined />, label: '产品管理' },
   { key: '/ha/cases', icon: <FileTextOutlined />, label: '过往案例' },
-];
+]
 
 const reviewerMenuItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
   { key: '/reviewer/pending', icon: <AuditOutlined />, label: '待审核内容' },
-];
+]
 
 const roleLabels: Record<string, { text: string; color: string }> = {
-  admin: { text: '超级管理员', color: 'red' },
-  hospital_admin: { text: '医院管理员', color: 'blue' },
-  reviewer: { text: '审核员', color: 'green' },
-};
+  admin:          { text: '超级管理员', color: '#0A2540' },
+  hospital_admin: { text: '医院管理员', color: '#2563EB' },
+  reviewer:       { text: '审核员',     color: '#059669' },
+}
+
+function getSelectedKey(pathname: string): string {
+  if (pathname.startsWith('/ha/')) return pathname
+  const first = pathname.split('/').filter(Boolean)[0]
+  return first ? '/' + first : '/dashboard'
+}
+
+function getBreadcrumbLabel(pathname: string, allItems: { key: string; label: string }[]): string {
+  const found = allItems.find(item => item.key === pathname || pathname.startsWith(item.key + '/'))
+  return found?.label ?? ''
+}
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { username, role, logout } = useAdminAuthStore();
+  const [collapsed, setCollapsed] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { username, role, logout } = useAdminAuthStore()
 
   const menuItems =
     role === 'hospital_admin' ? hospitalAdminMenuItems :
     role === 'reviewer' ? reviewerMenuItems :
-    adminMenuItems;
+    adminMenuItems
 
-  const handleMenuClick = ({ key }: { key: string }) => navigate(key);
+  const selectedKey = getSelectedKey(location.pathname)
+  const breadcrumbLabel = getBreadcrumbLabel(selectedKey, menuItems)
+
+  const handleMenuClick = ({ key }: { key: string }) => navigate(key)
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+    logout()
+    navigate('/login')
+  }
 
-  const selectedKey = '/' + location.pathname.split('/').filter(Boolean)[0] || '/dashboard';
-
-  const roleInfo = role ? roleLabels[role] : null;
+  const roleInfo = role ? roleLabels[role] : null
 
   return (
-    <Layout className="admin-layout">
+    <Layout style={{ minHeight: '100vh' }}>
       <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
         trigger={null}
-        theme="dark"
+        theme="light"
         width={220}
         className="admin-sider"
+        style={{ position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 100, overflow: 'auto' }}
       >
-        <div className={`admin-sider__logo${collapsed ? ' admin-sider__logo--collapsed' : ''}`}>
-          {!collapsed ? (
-            <Text className="admin-sider__logo-text">国际医疗管理后台</Text>
-          ) : (
-            <MedicineBoxOutlined className="admin-collapsed-icon" />
-          )}
+        <div className="sider-logo">
+          {collapsed ? <MedicineBoxOutlined style={{ fontSize: 20 }} /> : '国际医疗管理后台'}
         </div>
         <Menu
-          theme="dark"
+          theme="light"
           mode="inline"
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={handleMenuClick}
-          className="admin-sider__menu"
+          style={{ borderRight: 'none', marginTop: 4 }}
         />
       </Sider>
 
-      <Layout className="admin-main" style={{ marginLeft: collapsed ? 80 : 220 }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 220, transition: 'margin-left 0.2s' }}>
         <Header className="admin-header">
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            className="admin-header__collapse-btn"
-          />
-          <Space>
-            {roleInfo && !collapsed && (
-              <Tag color={roleInfo.color}>{roleInfo.text}</Tag>
+          <div className="header-left">
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ fontSize: 16, width: 36, height: 36, padding: 0 }}
+            />
+            {breadcrumbLabel && (
+              <Breadcrumb
+                items={[
+                  { title: '控制台' },
+                  ...(breadcrumbLabel !== '控制台' ? [{ title: breadcrumbLabel }] : []),
+                ]}
+                style={{ fontSize: 13 }}
+              />
             )}
-            <Avatar size="small" className="admin-avatar" icon={<UserOutlined />} />
-            <Text className="admin-header__user-text">{username || 'admin'}</Text>
+          </div>
+          <div className="header-right">
+            {roleInfo && (
+              <Tag
+                style={{
+                  color: roleInfo.color,
+                  background: '#F5F6F8',
+                  borderColor: '#E5E7EB',
+                  borderRadius: 2,
+                  fontSize: 12,
+                  fontWeight: 500,
+                }}
+              >
+                {roleInfo.text}
+              </Tag>
+            )}
+            <span className="header-divider">|</span>
+            <span className="header-username">{username || 'admin'}</span>
             <Button
               type="text"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
-              className="admin-header__logout-btn"
+              size="small"
+              style={{ color: '#6B7280' }}
             >
               退出
             </Button>
-          </Space>
+          </div>
         </Header>
 
         <Content className="admin-content">
@@ -143,7 +174,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </Content>
       </Layout>
     </Layout>
-  );
-};
+  )
+}
 
-export default AdminLayout;
+export default AdminLayout

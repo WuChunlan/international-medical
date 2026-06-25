@@ -1,0 +1,33 @@
+@import './tokens.less';
+
+// Stat cards (Dashboard)
+.stat-card {
+  background: #fff;
+  border: 1px solid @color-border;
+  border-radius: 4px;
+  padding: 20px 24px;
+  box-shadow: none;
+
+  &.accent-primary { border-left: 3px solid @color-primary; }
+  &.accent-blue    { border-left: 3px solid #2563EB; }
+  &.accent-green   { border-left: 3px solid @color-success; }
+  &.accent-amber   { border-left: 3px solid @color-warning; }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: @color-text;
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: @color-text-secondary;
+    margin-top: 4px;
+  }
+}
+
+// Table action dividers
+.ant-table .ant-divider-vertical {
+  margin: 0 2px;
+}
