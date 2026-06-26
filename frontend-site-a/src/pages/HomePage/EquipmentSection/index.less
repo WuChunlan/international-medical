@@ -4,8 +4,8 @@
 }
 
 .equipment-section {
-  background: #EFF6FF;
-  padding: 100px 0;
+  background: @bg-alt;
+  padding: @section-padding-y 0;
   border-top: 1px solid #DAEDfd;
   border-bottom: 1px solid #DAEDfd;
 }
@@ -23,9 +23,9 @@
 .equip-card {
   background: #ffffff;
   border: 1px solid #DAEDfd;
-  border-radius: 0;
+  border-radius: @card-radius;
   overflow: hidden;
-  transition: all 0.35s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 
   &--clickable {
     cursor: pointer;
