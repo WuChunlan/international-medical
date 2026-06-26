@@ -59,7 +59,7 @@ export default function CasesSection() {
           <div className="carousel-wrap">
             <div className="carousel-cards-wrap">
               {hasMultiple && (
-                <button className="carousel-nav__btn carousel-nav__btn--light carousel-side-btn carousel-side-btn--prev" onClick={prev} aria-label="上一组">
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--prev" onClick={prev} aria-label="上一组">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6z"/></svg>
                 </button>
               )}
@@ -69,7 +69,7 @@ export default function CasesSection() {
                 ))}
               </div>
               {hasMultiple && (
-                <button className="carousel-nav__btn carousel-nav__btn--light carousel-side-btn carousel-side-btn--next" onClick={next} aria-label="下一组">
+                <button className="carousel-nav__btn carousel-nav__btn--dark carousel-side-btn carousel-side-btn--next" onClick={next} aria-label="下一组">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
                 </button>
               )}
@@ -78,7 +78,7 @@ export default function CasesSection() {
               <div className="carousel-nav">
                 <div className="carousel-nav__dots">
                   {Array.from({ length: pages }, (_, i) => (
-                    <span key={i} className={`carousel-nav__dot carousel-nav__dot--light${i === index ? ' carousel-nav__dot--active' : ''}`} />
+                    <span key={i} className={`carousel-nav__dot carousel-nav__dot--dark${i === index ? ' carousel-nav__dot--active' : ''}`} />
                   ))}
                 </div>
               </div>
