@@ -29,6 +29,12 @@
 @cream:        @sco-light-bg;
 @cream-dark:   @sco-light-alt;
 
+// ── Inclusive Design tokens ───────────────────────────────────
+@card-radius:       10px;
+@section-padding-y: 80px;
+@bg-alt:            #F4F8FF;
+@focus-ring:        0 0 0 3px rgba(0, 103, 237, 0.45);
+
 // ============================================================
 // CSS Custom Properties
 // ============================================================
@@ -60,6 +66,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+// ── Focus ring (keyboard only) ────────────────────────────────
+:focus-visible {
+  outline: none;
+  box-shadow: @focus-ring;
 }
 
 // ============================================================
@@ -275,7 +287,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
   &__label {
     font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     letter-spacing: 4px;
     text-transform: uppercase;
     color: @sco-primary;
@@ -485,25 +497,27 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   top: 50%;
   transform: translateY(-50%);
   z-index: 2;
-  opacity: 0;
-  pointer-events: none;
+  opacity: 0.45;
+  pointer-events: auto;
   transition: opacity 0.22s ease;
 
   &--prev { left: -50px; }
   &--next { right: -50px; }
 
+  &:hover,
+  &:focus-visible {
+    opacity: 1;
+  }
+
   @media (max-width: 768px) {
     opacity: 1;
-    pointer-events: auto;
     &--prev { left: 4px; }
     &--next { right: 4px; }
   }
 }
 
-// Show buttons when the parent section is hovered
 section:hover .carousel-side-btn {
   opacity: 1;
-  pointer-events: auto;
 }
 
 .carousel-nav {
@@ -513,8 +527,8 @@ section:hover .carousel-side-btn {
   margin-top: 24px;
 
   &__btn {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 6px;
     border: none;
     cursor: pointer;
