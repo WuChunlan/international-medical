@@ -1,14 +1,14 @@
 // DoctorsSection
 .doctors-section {
-  background: #EFF6FF;
-  padding: 100px 0;
+  background: #ffffff;
+  padding: @section-padding-y 0;
   border-top: 1px solid #DAEDfd;
   border-bottom: 1px solid #DAEDfd;
 }
 
 .dc-card {
   background: #fff;
-  border-radius: 0;
+  border-radius: @card-radius;
   overflow: hidden;
   border: 1px solid #DAEDfd;
   transition: all 0.35s ease;
@@ -70,6 +70,7 @@
   &__book-btn {
     margin-top: auto;
     width: 100%;
+    min-height: 44px;
     padding: 10px 0;
     border-radius: 2px;
     border: 1px solid #0067ED;
