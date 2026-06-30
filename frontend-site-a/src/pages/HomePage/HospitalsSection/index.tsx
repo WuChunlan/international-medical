@@ -106,7 +106,12 @@ function HospitalCard({ hospital, lang, delay }: {
       tabIndex={0}
       style={{ animationDelay: `${delay}ms` }}
       onClick={() => navigate(`/hospital/${hospital.id}`)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(`/hospital/${hospital.id}`); }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          navigate(`/hospital/${hospital.id}`);
+        }
+      }}
     >
       <div className="hospital-card__img">
         {hospital.coverImageUrl ? (
