@@ -146,6 +146,21 @@
 
 // ── 5. Footer ───────────────────────────────────────────────
 
+@media (max-width: @bp-tablet) {
+  .site-footer { padding: 40px 0 28px; }
+  .site-footer__inner { padding: 0 16px; }
+
+  .site-footer__top {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: @bp-mobile) {
+  .footer-contact-modal { padding: 32px 20px 28px; }
+}
+
 // ── 6. 通用工具 ─────────────────────────────────────────────
 
 @media (max-width: @bp-tablet) {
