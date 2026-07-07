@@ -6,6 +6,40 @@
 
 // ── 1. Banner + Stats (ScoSection) ──────────────────────────
 
+@media (max-width: @bp-tablet) {
+  .sco-banner__ratio { min-height: 200px; }
+
+  .sco-banner__arrow {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    &--prev { left: 8px; }
+    &--next { right: 8px; }
+  }
+
+  // 统计条：一行 flex -> 2x2 网格
+  .sco-stats__inner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 16px;
+  }
+
+  .sco-stat-item {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 16px 12px;
+
+    // 每行左侧单元加右分隔线（第 1、3 项）
+    &:nth-child(odd) { border-right: 1px solid rgba(255, 255, 255, 0.12); }
+    // 最后一行去掉底边
+    &:nth-last-child(-n + 2) { border-bottom: none; }
+  }
+}
+
+@media (max-width: @bp-mobile) {
+  .sco-banner__ratio { min-height: 180px; }
+}
+
 // ── 2. TabSection ───────────────────────────────────────────
 
 // ── 3. 内容区轮播 → 每屏 1 张大卡横滑 ────────────────────────
