@@ -35,6 +35,11 @@
 @bg-alt:            #F4F8FF;
 @focus-ring:        0 0 0 3px rgba(0, 103, 237, 0.45);
 
+// ── Responsive breakpoints ────────────────────────────────────
+@bp-laptop: 1024px;   // 小笔记本 / 大平板
+@bp-tablet: 768px;    // 平板 / 大屏手机（与 Header 汉堡断点一致）
+@bp-mobile: 480px;    // 手机
+
 // ============================================================
 // CSS Custom Properties
 // ============================================================
@@ -990,4 +995,9 @@ section:hover .carousel-side-btn {
 
   &:disabled { color: @text-muted !important; }
 }
+
+// ============================================================
+// Mobile Responsive Layer (must be last so its @media overrides win)
+// ============================================================
+@import './responsive.less';
 
