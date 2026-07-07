@@ -49,6 +49,68 @@
 
 // ── 4. 卡片内部收缩 ─────────────────────────────────────────
 
+@media (max-width: @bp-tablet) {
+  // 有封面的卡片：封面高度收缩 220 -> 180
+  .equip-card__cover,
+  .sf-card__cover,
+  .case-card__cover,
+  .product-card__cover,
+  .team-card__cover,
+  .cards-grid--teams-1 .team-card__cover,
+  .cards-grid--teams-2 .team-card__cover {
+    height: 180px;
+  }
+
+  // overlay 型医院卡：整卡高度 400 -> 300
+  .hospital-card { height: 300px; }
+
+  // 卡片内容内边距收紧 24px 28px -> 16px 18px
+  .equip-card__content,
+  .dc-card,
+  .sf-card__content,
+  .case-card__content,
+  .product-card__content,
+  .team-card__content,
+  .cards-grid--teams-1 .team-card__content,
+  .cards-grid--teams-2 .team-card__content {
+    padding: 16px 18px 18px;
+  }
+
+  .hospital-card__overlay { padding: 0 18px 18px; }
+}
+
+@media (max-width: @bp-mobile) {
+  .equip-card__cover,
+  .sf-card__cover,
+  .case-card__cover,
+  .product-card__cover,
+  .team-card__cover {
+    height: 160px;
+  }
+  .hospital-card { height: 280px; }
+}
+
 // ── 5. Footer ───────────────────────────────────────────────
 
 // ── 6. 通用工具 ─────────────────────────────────────────────
+
+@media (max-width: @bp-tablet) {
+  // 容器内边距 0 20px -> 0 16px
+  .section-container,
+  .section-inner { padding: 0 16px; }
+
+  // section 上下留白收紧（各 section 用 @section-padding-y=80 或硬编码 100）
+  .hospitals-section,
+  .equipment-section,
+  .doctors-section,
+  .service-features-section,
+  .cases-section,
+  .products-section,
+  .service-teams-section {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
+  // section header 下间距 64 -> 40
+  .section-header { margin-bottom: 40px; }
+}
