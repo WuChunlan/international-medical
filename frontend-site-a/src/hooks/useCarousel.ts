@@ -1,7 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+const MOBILE_QUERY = '(max-width: 768px)';
+
 export function useCarousel(total: number, perPage = 3, interval = 4000) {
-  const totalPages = total <= perPage ? 1 : Math.ceil(total / perPage);
+  // 手机端：一次性展示全部卡片（横滑），关闭分页/自动轮播
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(MOBILE_QUERY).matches
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
+  const effectivePerPage = isMobile ? Math.max(total, 1) : perPage;
+  const totalPages = total <= effectivePerPage ? 1 : Math.ceil(total / effectivePerPage);
   const [page, setPage] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -22,8 +38,8 @@ export function useCarousel(total: number, perPage = 3, interval = 4000) {
     return stop;
   }, [start, stop]);
 
-  // Reset to page 0 when total changes (e.g. data loads)
-  useEffect(() => { setPage(0); }, [total]);
+  // Reset to page 0 when total changes (e.g. data loads) or viewport crosses breakpoint
+  useEffect(() => { setPage(0); }, [total, isMobile]);
 
   const prev = useCallback(() => {
     setPage(p => (p - 1 + totalPages) % totalPages);
@@ -35,10 +51,10 @@ export function useCarousel(total: number, perPage = 3, interval = 4000) {
     start();
   }, [totalPages, start]);
 
-  const startIdx = page * perPage;
+  const startIdx = page * effectivePerPage;
   const visible = total === 0
     ? []
-    : Array.from({ length: Math.min(perPage, total - startIdx) }, (_, k) => startIdx + k);
+    : Array.from({ length: Math.min(effectivePerPage, total - startIdx) }, (_, k) => startIdx + k);
 
   return {
     index: page,
