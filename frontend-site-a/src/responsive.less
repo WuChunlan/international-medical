@@ -10,6 +10,43 @@
 
 // ── 3. 内容区轮播 → 每屏 1 张大卡横滑 ────────────────────────
 
+@media (max-width: @bp-tablet) {
+  // 横向 scroll-snap 容器（覆盖 grid 及 teams 专用 grid）
+  .cards-grid,
+  .cards-grid--teams-1,
+  .cards-grid--teams-2,
+  .cards-grid--teams-3 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    grid-template-columns: none;   // 抵消原 grid 列定义
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px;
+    padding-bottom: 8px;
+    scroll-padding: 0 16px;
+    justify-content: flex-start;   // 覆盖 teams 的 center
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  // 每张卡：占屏宽 ~85%，露出下一张边缘
+  .hospital-card,
+  .equip-card,
+  .dc-card,
+  .sf-card,
+  .case-card,
+  .product-card,
+  .team-card {
+    flex: 0 0 85%;
+    scroll-snap-align: center;
+  }
+
+  // 兜底：即便渲染也不显示侧边箭头
+  .carousel-side-btn { display: none; }
+}
+
 // ── 4. 卡片内部收缩 ─────────────────────────────────────────
 
 // ── 5. Footer ───────────────────────────────────────────────
