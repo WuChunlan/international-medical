@@ -168,3 +168,24 @@
   // section header 下间距 64 -> 40
   .section-header { margin-bottom: 40px; }
 }
+
+// ── Header (mobile height fix) ──────────────────────────────
+@media (max-width: @bp-tablet) {
+  .site-a-header__inner {
+    height: 64px;
+    padding: 0 16px;
+  }
+  .site-a-header__logo-img { height: 44px; }
+  .site-a-header__logo-text { font-size: 18px; }
+
+  .site-a-header__mobile-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  .site-a-header__mobile-menu {
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+}
