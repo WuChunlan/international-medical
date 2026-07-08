@@ -68,11 +68,8 @@ html {
 // ── 3. 内容区轮播 → 每屏 1 张大卡横滑 ────────────────────────
 
 @media (max-width: @bp-tablet) {
-  // 横向 scroll-snap 容器（覆盖 grid 及 teams 专用 grid）
-  .cards-grid,
-  .cards-grid--teams-1,
-  .cards-grid--teams-2,
-  .cards-grid--teams-3 {
+  // 横向 scroll-snap 容器
+  .cards-grid {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -83,7 +80,7 @@ html {
     gap: 14px;
     padding-bottom: 8px;
     scroll-padding: 0 16px;
-    justify-content: flex-start;   // 覆盖 teams 的 center
+    justify-content: flex-start;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
   }
@@ -94,8 +91,7 @@ html {
   .dc-card,
   .sf-card,
   .case-card,
-  .product-card,
-  .team-card {
+  .product-card {
     flex: 0 0 85%;
     scroll-snap-align: center;
   }
@@ -111,10 +107,7 @@ html {
   .equip-card__cover,
   .sf-card__cover,
   .case-card__cover,
-  .product-card__cover,
-  .team-card__cover,
-  .cards-grid--teams-1 .team-card__cover,
-  .cards-grid--teams-2 .team-card__cover {
+  .product-card__cover {
     height: 180px;
   }
 
@@ -126,10 +119,7 @@ html {
   .dc-card,
   .sf-card__content,
   .case-card__content,
-  .product-card__content,
-  .team-card__content,
-  .cards-grid--teams-1 .team-card__content,
-  .cards-grid--teams-2 .team-card__content {
+  .product-card__content {
     padding: 16px 18px 18px;
   }
 
@@ -140,8 +130,7 @@ html {
   .equip-card__cover,
   .sf-card__cover,
   .case-card__cover,
-  .product-card__cover,
-  .team-card__cover {
+  .product-card__cover {
     height: 160px;
   }
   .hospital-card { height: 280px; }
@@ -177,8 +166,7 @@ html {
   .doctors-section,
   .service-features-section,
   .cases-section,
-  .products-section,
-  .service-teams-section {
+  .products-section {
     padding-top: 48px;
     padding-bottom: 48px;
   }
