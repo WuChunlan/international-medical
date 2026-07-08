@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../../api';
-import type { ApiResult } from '../../../api';
 import type { MedicalCase } from '../../../types';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
@@ -23,7 +22,7 @@ export default function CasesSection() {
   }, []);
 
   useEffect(() => {
-    api.get<ApiResult<MedicalCase[]>>('/api/cases')
+    api.get<MedicalCase[]>('/api/cases')
       .then(res => setCases(res.data ?? []))
       .catch(() => setCases([]))
       .finally(() => setLoading(false));

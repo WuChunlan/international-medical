@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
-import type { ApiResult } from '../../../api';
 import type { Equipment } from '../../../types';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
@@ -24,7 +23,7 @@ export default function EquipmentSection() {
   }, []);
 
   useEffect(() => {
-    api.get<ApiResult<Equipment[]>>('/api/equipments')
+    api.get<Equipment[]>('/api/equipments')
       .then(res => setItems(res.data ?? []))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));

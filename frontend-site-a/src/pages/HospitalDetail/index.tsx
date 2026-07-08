@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Spin, message, Avatar, Tag, Button, Typography } from 'antd';
+import { Spin, message, Avatar, Tag, Typography } from 'antd';
 import { UserOutlined, MedicineBoxOutlined, HomeOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import api from '../../api';
@@ -14,7 +14,7 @@ import type { HospitalDetail, Doctor, Equipment, HospitalEnvironment } from '../
 import './index.less';
 import React from 'react';
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 const PER_PAGE = 4;
 
 // ── Arrow SVGs ────────────────────────────────────────────────────────────────

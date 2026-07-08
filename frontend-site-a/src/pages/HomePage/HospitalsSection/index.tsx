@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
-import type { ApiResult } from '../../../api';
 import type { Hospital } from '../../../types';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
@@ -24,7 +23,7 @@ export default function HospitalsSection() {
   }, []);
 
   useEffect(() => {
-    api.get<ApiResult<Hospital[]>>('/api/hospitals')
+    api.get<Hospital[]>('/api/hospitals')
       .then(res => setHospitals(res.data ?? []))
       .catch(() => setHospitals([]))
       .finally(() => setLoading(false));
