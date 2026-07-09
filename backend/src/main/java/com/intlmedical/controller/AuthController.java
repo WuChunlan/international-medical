@@ -32,4 +32,9 @@ public class AuthController {
         authService.sendVerifyCode(email);
         return Result.ok();
     }
+
+    @GetMapping("/invite-info")
+    public Result<java.util.Map<String, Object>> inviteInfo(@RequestParam String code) {
+        return Result.ok(authService.inviteInfo(code));
+    }
 }

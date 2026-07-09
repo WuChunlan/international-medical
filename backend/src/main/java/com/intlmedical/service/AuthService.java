@@ -72,6 +72,18 @@ public class AuthService {
         user.setPassportNumber(req.getPassportNumber());
         user.setIdCardCountry(req.getIdCardCountry());
         user.setIsActive(1);
+        if (req.getInviteCode() != null && !req.getInviteCode().isBlank()) {
+            User rep = userMapper.selectOne(
+                new LambdaQueryWrapper<User>()
+                    .eq(User::getRoleId, 5)
+                    .eq(User::getIsActive, 1)
+                    .eq(User::getCanInvite, 1)
+                    .eq(User::getInviteCode, req.getInviteCode().trim())
+            );
+            if (rep != null) {
+                user.setReferredBy(rep.getId());
+            }
+        }
         userMapper.insert(user);
 
         redisTemplate.delete(CODE_PREFIX + req.getEmail());
@@ -92,6 +104,7 @@ public class AuthService {
             case 2 -> "admin";
             case 3 -> "hospital_admin";
             case 4 -> "reviewer";
+            case 5 -> "customer_rep";
             default -> "user";
         };
         String displayName = (user.getLastName() != null ? user.getLastName() : "") +
@@ -100,4 +113,29 @@ public class AuthService {
         String token = jwtUtil.generateToken(user.getId(), displayName, role, user.getHospitalId());
         return new LoginResponse(token, displayName, role, user.getHospitalId());
     }
-}
+
+    public java.util.Map<String, Object> inviteInfo(String code) {
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        if (code == null || code.isBlank()) {
+            result.put("valid", false);
+            result.put("repName", null);
+            return result;
+        }
+        User rep = userMapper.selectOne(
+            new LambdaQueryWrapper<User>()
+                .eq(User::getRoleId, 5)
+                .eq(User::getIsActive, 1)
+                .eq(User::getCanInvite, 1)
+                .eq(User::getInviteCode, code.trim())
+        );
+        boolean valid = rep != null;
+        String name = null;
+        if (valid) {
+            name = (rep.getLastName() != null ? rep.getLastName() : "")
+                 + (rep.getFirstName() != null ? rep.getFirstName() : "");
+            if (name.isBlank()) name = rep.getEmail();
+        }
+        result.put("valid", valid);
+        result.put("repName", name);
+        return result;
+    }

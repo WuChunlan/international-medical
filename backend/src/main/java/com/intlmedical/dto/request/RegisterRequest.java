@@ -25,6 +25,8 @@ public class RegisterRequest {
     private String passportNumber;
     private String idCardCountry;
 
+    private String inviteCode;
+
     @NotBlank
     @Size(min = 6, max = 6)
     private String verifyCode;
