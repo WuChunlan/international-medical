@@ -5,7 +5,10 @@ USE international_medical;
 -- ============================================================
 INSERT INTO roles (id, code, name_zh, name_en) VALUES
 (1, 'user',  '普通用户', 'User'),
-(2, 'admin', '管理员',   'Administrator');
+(2, 'admin', '管理员',   'Administrator'),
+(3, 'hospital_admin', '医院管理员', 'Hospital Admin'),
+(4, 'reviewer', '审核员', 'Reviewer'),
+(5, 'customer_rep', '客户代表', 'Customer Rep');
 
 -- ============================================================
 -- 默认管理员账号 (密码: 12345, bcrypt hash)

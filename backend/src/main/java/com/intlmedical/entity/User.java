@@ -22,6 +22,9 @@ public class User {
     private Integer isActive;
     @TableField("hospital_id")
     private Long hospitalId;
+    private String inviteCode;
+    private Integer canInvite;
+    private Long referredBy;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)

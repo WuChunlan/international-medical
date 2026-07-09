@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS roles (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS users (
   id              BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
-  role_id         TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1=user 2=admin',
+  role_id         TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1=user 2=admin 3=hospital_admin 4=reviewer 5=customer_rep',
   first_name      VARCHAR(100)     DEFAULT NULL COMMENT '名',
   last_name       VARCHAR(100)     DEFAULT NULL COMMENT '姓',
   gender          VARCHAR(10)      DEFAULT NULL COMMENT 'male | female | other',
@@ -38,10 +38,16 @@ CREATE TABLE IF NOT EXISTS users (
   passport_number VARCHAR(200)     DEFAULT NULL COMMENT '护照号',
   id_card_country VARCHAR(100)     DEFAULT NULL COMMENT '证件签发国',
   is_active       TINYINT(1)       NOT NULL DEFAULT 1,
+  hospital_id     BIGINT UNSIGNED  DEFAULT NULL COMMENT '关联医院',
+  invite_code     VARCHAR(16)      DEFAULT NULL COMMENT '邀请码，仅客户代表(role_id=5)有值',
+  can_invite      TINYINT(1)       NOT NULL DEFAULT 1 COMMENT '客户代表邀请开关：1=生效 0=失效',
+  referred_by     BIGINT UNSIGNED  DEFAULT NULL COMMENT '归属客户代表 user_id，仅普通客户有值',
   created_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY uk_email (email)
+  UNIQUE KEY uk_email (email),
+  UNIQUE KEY uk_invite_code (invite_code),
+  KEY idx_referred_by (referred_by)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
 
 -- ============================================================
