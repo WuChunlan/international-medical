@@ -3,6 +3,7 @@ import {
   Table, Button, Space, Popconfirm, message, Tag,
   Drawer, Form, Input, Select,
 } from 'antd'
+import FormRow from '../../components/FormRow'
 import { PlusOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
@@ -139,7 +140,7 @@ const HospitalAdminManage: React.FC = () => {
 
       <Drawer
         title={editRecord ? '编辑医院管理员' : '新增医院管理员'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         destroyOnClose
@@ -151,18 +152,22 @@ const HospitalAdminManage: React.FC = () => {
         }
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
-            <Input placeholder="登录邮箱" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label={editRecord ? '新密码（留空不修改）' : '初始密码'}
-            rules={editRecord ? [] : [{ required: true, min: 6, message: '至少6位' }]}
-          >
-            <Input.Password placeholder={editRecord ? '留空则不修改密码' : '至少6位'} />
-          </Form.Item>
-          <Form.Item name="lastName" label="姓"><Input /></Form.Item>
-          <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
+              <Input placeholder="登录邮箱" />
+            </Form.Item>
+            <Form.Item
+              name="password"
+              label={editRecord ? '新密码（留空不修改）' : '初始密码'}
+              rules={editRecord ? [] : [{ required: true, min: 6, message: '至少6位' }]}
+            >
+              <Input.Password placeholder={editRecord ? '留空则不修改密码' : '至少6位'} />
+            </Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="lastName" label="姓"><Input /></Form.Item>
+            <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="hospitalId" label="绑定医院（可留空，让管理员自行创建）">
             <Select
               placeholder="选择已有医院，或留空由管理员创建"

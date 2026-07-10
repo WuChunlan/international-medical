@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Select, Button, Card, Typography, message } from 'antd';
+import FormRow from '../../components/FormRow';
 import api from '../../api';
 import type { Hospital } from '../../types';
 
@@ -41,14 +42,18 @@ const CreateStaffPage: React.FC = () => {
       <Title level={4} className="page-title" style={{ marginBottom: 16 }}>创建员工账号</Title>
       <Card className="page-card" style={{ maxWidth: 560 }}>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
-            <Input placeholder="登录邮箱" />
-          </Form.Item>
-          <Form.Item name="password" label="初始密码" rules={[{ required: true, min: 6 }]}>
-            <Input.Password placeholder="至少6位" />
-          </Form.Item>
-          <Form.Item name="lastName" label="姓"><Input /></Form.Item>
-          <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
+              <Input placeholder="登录邮箱" />
+            </Form.Item>
+            <Form.Item name="password" label="初始密码" rules={[{ required: true, min: 6 }]}>
+              <Input.Password placeholder="至少6位" />
+            </Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="lastName" label="姓"><Input /></Form.Item>
+            <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="roleId" label="角色" rules={[{ required: true }]}>
             <Select placeholder="选择角色" onChange={(v: number) => setRoleId(v)}>
               <Select.Option value={3}>医院管理员</Select.Option>

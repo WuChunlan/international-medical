@@ -3,6 +3,7 @@ import {
   Table, Button, Space, Popconfirm, message, Tag, Switch,
   Drawer, Form, Input, Typography,
 } from 'antd'
+import FormRow from '../../components/FormRow'
 import { PlusOutlined, EditOutlined, DeleteOutlined, QrcodeOutlined, CopyOutlined, TeamOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
@@ -139,20 +140,24 @@ const CustomerRepManage: React.FC = () => {
       <Table rowKey="id" size="middle" columns={columns} dataSource={data} loading={loading}
         pagination={{ current, pageSize: 10, total, showTotal: t => `共 ${t} 条`, position: ['bottomRight'], size: 'small', onChange: setCurrent }} />
 
-      <Drawer title={editRecord ? '编辑客户代表' : '新增客户代表'} width={520} open={drawerOpen}
+      <Drawer title={editRecord ? '编辑客户代表' : '新增客户代表'} width={720} open={drawerOpen}
         onClose={() => setDrawerOpen(false)} destroyOnClose
         footer={<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button onClick={() => setDrawerOpen(false)}>取消</Button>
           <Button type="primary" onClick={handleSubmit} loading={saving}>保存</Button>
         </div>}>
         <Form form={form} layout="vertical">
-          <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}><Input placeholder="登录邮箱" /></Form.Item>
-          <Form.Item name="password" label={editRecord ? '新密码（留空不修改）' : '初始密码'}
-            rules={editRecord ? [] : [{ required: true, min: 8, message: '至少8位' }]}>
-            <Input.Password placeholder={editRecord ? '留空则不修改密码' : '至少8位'} />
-          </Form.Item>
-          <Form.Item name="lastName" label="姓"><Input /></Form.Item>
-          <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}><Input placeholder="登录邮箱" /></Form.Item>
+            <Form.Item name="password" label={editRecord ? '新密码（留空不修改）' : '初始密码'}
+              rules={editRecord ? [] : [{ required: true, min: 8, message: '至少8位' }]}>
+              <Input.Password placeholder={editRecord ? '留空则不修改密码' : '至少8位'} />
+            </Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="lastName" label="姓"><Input /></Form.Item>
+            <Form.Item name="firstName" label="名"><Input /></Form.Item>
+          </FormRow>
           {editRecord && <Form.Item label="邀请码"><Typography.Text code>{editRecord.inviteCode}</Typography.Text></Form.Item>}
         </Form>
       </Drawer>
