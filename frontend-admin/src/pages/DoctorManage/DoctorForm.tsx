@@ -5,6 +5,7 @@ import api from '../../api'
 import type { Doctor, Hospital } from '../../types'
 import MediaUploadList from '../../components/MediaUploadList'
 import ImageUpload from '../../components/ImageUpload'
+import FormRow from '../../components/FormRow'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
 
 interface DoctorFormProps {
@@ -63,7 +64,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({ open, record, hospitals, onClos
   return (
     <Drawer
       title={isEdit ? '编辑医生' : '新增医生'}
-      width={520}
+      width={720}
       open={open}
       onClose={() => onClose()}
       footer={
@@ -84,36 +85,44 @@ const DoctorForm: React.FC<DoctorFormProps> = ({ open, record, hospitals, onClos
         <Form.Item name="hospitalId" label="所属医院" rules={[{ required: true, message: '请选择所属医院' }]}>
           <Select placeholder="请选择所属医院" options={hospitals.map(h => ({ value: h.id, label: h.nameZh }))} />
         </Form.Item>
-        <Form.Item name="nameZh" label="中文姓名" rules={[{ required: true, message: '请输入中文姓名' }]}>
-          <Input placeholder="请输入中文姓名" onBlur={() => translateField('nameZh')} />
-        </Form.Item>
-        <Form.Item name="nameEn" label="英文姓名" rules={[{ required: true, message: '请输入英文姓名' }]}>
-          <Input placeholder="输入中文姓名后可自动翻译" />
-        </Form.Item>
-        <Form.Item name="titleZh" label="中文职称">
-          <Input placeholder="请输入中文职称" onBlur={() => translateField('titleZh')} />
-        </Form.Item>
-        <Form.Item name="titleEn" label="英文职称">
-          <Input placeholder="输入中文职称后可自动翻译" />
-        </Form.Item>
-        <Form.Item name="specialtyZh" label="中文科室/专长" rules={[{ required: true, message: '请输入中文科室' }]}>
-          <Input placeholder="请输入中文科室/专长" onBlur={() => translateField('specialtyZh')} />
-        </Form.Item>
-        <Form.Item name="specialtyEn" label="英文科室/专长" rules={[{ required: true, message: '请输入英文科室' }]}>
-          <Input placeholder="输入中文科室后可自动翻译" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="nameZh" label="中文姓名" rules={[{ required: true, message: '请输入中文姓名' }]}>
+            <Input placeholder="请输入中文姓名" onBlur={() => translateField('nameZh')} />
+          </Form.Item>
+          <Form.Item name="nameEn" label="英文姓名" rules={[{ required: true, message: '请输入英文姓名' }]}>
+            <Input placeholder="输入中文姓名后可自动翻译" />
+          </Form.Item>
+        </FormRow>
+        <FormRow>
+          <Form.Item name="titleZh" label="中文职称">
+            <Input placeholder="请输入中文职称" onBlur={() => translateField('titleZh')} />
+          </Form.Item>
+          <Form.Item name="titleEn" label="英文职称">
+            <Input placeholder="输入中文职称后可自动翻译" />
+          </Form.Item>
+        </FormRow>
+        <FormRow>
+          <Form.Item name="specialtyZh" label="中文科室/专长" rules={[{ required: true, message: '请输入中文科室' }]}>
+            <Input placeholder="请输入中文科室/专长" onBlur={() => translateField('specialtyZh')} />
+          </Form.Item>
+          <Form.Item name="specialtyEn" label="英文科室/专长" rules={[{ required: true, message: '请输入英文科室' }]}>
+            <Input placeholder="输入中文科室后可自动翻译" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="bioZh" label="中文简介">
           <Input.TextArea rows={3} placeholder="请输入中文简介" onBlur={() => translateField('bioZh')} />
         </Form.Item>
         <Form.Item name="bioEn" label="英文简介">
           <Input.TextArea rows={3} placeholder="输入中文简介后可自动翻译" />
         </Form.Item>
-        <Form.Item name="pricePerVisit" label="每次诊费">
-          <InputNumber min={0} className="input-number-full" placeholder="请输入诊费金额" />
-        </Form.Item>
-        <Form.Item name="sortOrder" label="排序">
-          <InputNumber min={0} className="input-number-full" placeholder="排序值（数字越小越靠前）" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="pricePerVisit" label="每次诊费">
+            <InputNumber min={0} className="input-number-full" placeholder="请输入诊费金额" />
+          </Form.Item>
+          <Form.Item name="sortOrder" label="排序">
+            <InputNumber min={0} className="input-number-full" placeholder="排序值（数字越小越靠前）" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="photoUrl" label="医生照片">
           <ImageUpload category="doctors/images" label="上传照片" />
         </Form.Item>

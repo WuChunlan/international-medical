@@ -5,6 +5,7 @@ import api from '../../api'
 import type { Equipment, Hospital } from '../../types'
 import MediaUploadList from '../../components/MediaUploadList'
 import ImageUpload from '../../components/ImageUpload'
+import FormRow from '../../components/FormRow'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
 
 interface EquipmentFormProps {
@@ -63,7 +64,7 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ open, record, hospitals, 
   return (
     <Drawer
       title={isEdit ? '编辑设备' : '新增设备'}
-      width={520}
+      width={720}
       open={open}
       onClose={() => onClose()}
       footer={
@@ -84,12 +85,14 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ open, record, hospitals, 
         <Form.Item name="hospitalId" label="所属医院" rules={[{ required: true, message: '请选择所属医院' }]}>
           <Select placeholder="请选择所属医院" options={hospitals.map(h => ({ value: h.id, label: h.nameZh }))} />
         </Form.Item>
-        <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
-          <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
-        </Form.Item>
-        <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
-          <Input placeholder="输入中文名称后可自动翻译" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
+            <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
+          </Form.Item>
+          <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
+            <Input placeholder="输入中文名称后可自动翻译" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="descZh" label="中文描述">
           <Input.TextArea rows={3} placeholder="请输入中文描述" onBlur={() => translateField('descZh')} />
         </Form.Item>

@@ -4,6 +4,7 @@ import { TranslationOutlined } from '@ant-design/icons'
 import api from '../../api'
 import type { MedicalCase, Hospital } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
+import FormRow from '../../components/FormRow'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
 
 interface CaseFormProps {
@@ -71,7 +72,7 @@ const CaseForm: React.FC<CaseFormProps> = ({ open, record, onClose }) => {
   return (
     <Drawer
       title={isEdit ? '编辑案例' : '新增案例'}
-      width={520}
+      width={720}
       open={open}
       onClose={() => onClose()}
       footer={
@@ -98,12 +99,14 @@ const CaseForm: React.FC<CaseFormProps> = ({ open, record, onClose }) => {
             filterOption={(input, option) => String(option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
           />
         </Form.Item>
-        <Form.Item name="titleZh" label="中文标题" rules={[{ required: true, message: '请输入中文标题' }]}>
-          <Input placeholder="请输入中文标题" onBlur={() => translateField('titleZh')} />
-        </Form.Item>
-        <Form.Item name="titleEn" label="英文标题" rules={[{ required: true, message: '请输入英文标题' }]}>
-          <Input placeholder="输入中文标题后可自动翻译" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="titleZh" label="中文标题" rules={[{ required: true, message: '请输入中文标题' }]}>
+            <Input placeholder="请输入中文标题" onBlur={() => translateField('titleZh')} />
+          </Form.Item>
+          <Form.Item name="titleEn" label="英文标题" rules={[{ required: true, message: '请输入英文标题' }]}>
+            <Input placeholder="输入中文标题后可自动翻译" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="summaryZh" label="中文摘要">
           <Input.TextArea rows={3} placeholder="请输入中文摘要" onBlur={() => translateField('summaryZh')} />
         </Form.Item>
