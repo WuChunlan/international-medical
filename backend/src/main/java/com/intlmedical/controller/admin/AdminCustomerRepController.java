@@ -170,6 +170,8 @@ public class AdminCustomerRepController {
             @PathVariable Long id,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
+        User rep = userMapper.selectById(id);
+        if (rep == null || rep.getRoleId() != 5) return Result.fail(404, "代表不存在");
         IPage<User> result = userMapper.selectPage(
             new Page<>(page, size),
             new LambdaQueryWrapper<User>().eq(User::getReferredBy, id).orderByDesc(User::getId)
