@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Form, Input, Button, message, Typography, Select, Radio } from 'antd';
 import {
   UserOutlined, MailOutlined, LockOutlined, IdcardOutlined,
@@ -29,10 +29,27 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [searchParams] = useSearchParams();
+  const inviteCode = searchParams.get('code') || '';
+  const [inviteName, setInviteName] = useState<string | null>(null);
+  const [inviteChecked, setInviteChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sendingCode, setSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!inviteCode) return;
+    form.setFieldsValue({ inviteCode });
+    api.get(`/api/auth/invite-info?code=${encodeURIComponent(inviteCode)}`)
+      .then((res) => {
+        const d = res.data?.data ?? res.data;
+        setInviteName(d?.valid ? d.repName : null);
+        setInviteChecked(true);
+        if (!d?.valid) message.warning(t('auth.invite_invalid'));
+      })
+      .catch(() => setInviteChecked(true));
+  }, [inviteCode, form, t]);
 
   const startCountdown = () => {
     setCountdown(60);
@@ -151,6 +168,15 @@ export default function RegisterPage() {
               suffixIcon={<GlobalOutlined />}
             />
           </Form.Item>
+
+          <Form.Item name="inviteCode" hidden><Input /></Form.Item>
+          {inviteCode && (
+            <div style={{ marginBottom: 16, padding: '8px 12px', background: '#f6ffed', border: '1px solid #b7eb8f', borderRadius: 6 }}>
+              {inviteName
+                ? t('auth.invited_by', { name: inviteName })
+                : (inviteChecked ? t('auth.invite_invalid') : '...')}
+            </div>
+          )}
 
           <Form.Item
             name="verifyCode"

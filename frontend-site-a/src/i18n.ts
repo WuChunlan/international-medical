@@ -94,6 +94,9 @@ const resources = {
       auth: {
         login_title: '登录',
         register_title: '注册账号',
+        invited_by: '邀请人：{{name}}',
+        invite_invalid: '邀请码无效，将以普通用户注册',
+        invite_code_label: '邀请码',
         email: '邮箱',
         password: '密码',
         last_name: '姓',
@@ -215,6 +218,9 @@ const resources = {
       auth: {
         login_title: 'Login',
         register_title: 'Create Account',
+        invited_by: 'Invited by: {{name}}',
+        invite_invalid: 'Invite code invalid; you will register as a regular user',
+        invite_code_label: 'Invite Code',
         email: 'Email',
         password: 'Password',
         last_name: 'Last Name',
