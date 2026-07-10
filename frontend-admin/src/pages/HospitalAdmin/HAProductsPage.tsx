@@ -5,6 +5,7 @@ import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
 import type { SpecialProduct } from '../../types'
 import { StatusTag } from '../../components/StatusTag'
+import FormRow from '../../components/FormRow'
 
 const HAProductsPage: React.FC = () => {
   const [data, setData] = useState<SpecialProduct[]>([])
@@ -106,7 +107,7 @@ const HAProductsPage: React.FC = () => {
 
       <Drawer
         title={editRecord ? '编辑产品' : '新增产品'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -117,16 +118,22 @@ const HAProductsPage: React.FC = () => {
         }
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
+            <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="summaryZh" label="摘要(中文)" rules={[{ required: true }]}><Input.TextArea rows={2} /></Form.Item>
           <Form.Item name="summaryEn" label="摘要(英文)" rules={[{ required: true }]}><Input.TextArea rows={2} /></Form.Item>
           <Form.Item name="detailZh" label="详情(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="detailEn" label="详情(英文)"><Input.TextArea rows={3} /></Form.Item>
-          <Form.Item name="priceMin" label="最低价格"><Input type="number" /></Form.Item>
-          <Form.Item name="priceMax" label="最高价格"><Input type="number" /></Form.Item>
-          <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
-          <Form.Item name="contactInfo" label="联系方式"><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="priceMin" label="最低价格"><Input type="number" /></Form.Item>
+            <Form.Item name="priceMax" label="最高价格"><Input type="number" /></Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
+            <Form.Item name="contactInfo" label="联系方式"><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
         </Form>
       </Drawer>

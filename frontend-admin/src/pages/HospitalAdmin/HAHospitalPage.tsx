@@ -7,16 +7,23 @@ import type { Hospital } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import MediaUploadList from '../../components/MediaUploadList'
 import { StatusTag } from '../../components/StatusTag'
+import FormRow from '../../components/FormRow'
 
 const HospitalForm: React.FC<{ form: ReturnType<typeof Form.useForm>[0] }> = ({ form }) => (
   <Form form={form} layout="vertical">
-    <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
-    <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
-    <Form.Item name="phone" label="联系电话"><Input /></Form.Item>
-    <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
+    <FormRow>
+      <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
+      <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+    </FormRow>
+    <FormRow>
+      <Form.Item name="phone" label="联系电话"><Input /></Form.Item>
+      <Form.Item name="contactPerson" label="联系人"><Input /></Form.Item>
+    </FormRow>
     <Form.Item name="contactInfo" label="联系方式"><Input /></Form.Item>
-    <Form.Item name="addressZh" label="中文地址"><Input /></Form.Item>
-    <Form.Item name="addressEn" label="英文地址"><Input /></Form.Item>
+    <FormRow>
+      <Form.Item name="addressZh" label="中文地址"><Input /></Form.Item>
+      <Form.Item name="addressEn" label="英文地址"><Input /></Form.Item>
+    </FormRow>
     <Form.Item name="introZh" label="中文简介"><Input.TextArea rows={4} /></Form.Item>
     <Form.Item name="introEn" label="英文简介"><Input.TextArea rows={4} /></Form.Item>
     <Form.Item name="coverImageUrl" label="封面图片（首页列表展示，仅图片）">

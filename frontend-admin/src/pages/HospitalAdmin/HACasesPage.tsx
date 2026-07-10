@@ -6,6 +6,7 @@ import api from '../../api'
 import type { MedicalCase } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { StatusTag } from '../../components/StatusTag'
+import FormRow from '../../components/FormRow'
 
 const HACasesPage: React.FC = () => {
   const [data, setData] = useState<MedicalCase[]>([])
@@ -107,7 +108,7 @@ const HACasesPage: React.FC = () => {
 
       <Drawer
         title={editRecord ? '编辑案例' : '新增案例'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -118,8 +119,10 @@ const HACasesPage: React.FC = () => {
         }
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="titleZh" label="中文标题" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="titleEn" label="英文标题" rules={[{ required: true }]}><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="titleZh" label="中文标题" rules={[{ required: true }]}><Input /></Form.Item>
+            <Form.Item name="titleEn" label="英文标题" rules={[{ required: true }]}><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="summaryZh" label="摘要(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="summaryEn" label="摘要(英文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>

@@ -6,6 +6,7 @@ import api from '../../api'
 import type { Equipment } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { StatusTag } from '../../components/StatusTag'
+import FormRow from '../../components/FormRow'
 
 const HAEquipmentsPage: React.FC = () => {
   const [data, setData] = useState<Equipment[]>([])
@@ -107,7 +108,7 @@ const HAEquipmentsPage: React.FC = () => {
 
       <Drawer
         title={editRecord ? '编辑设备' : '新增设备'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -118,8 +119,10 @@ const HAEquipmentsPage: React.FC = () => {
         }
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="中文名称" rules={[{ required: true }]}><Input /></Form.Item>
+            <Form.Item name="nameEn" label="英文名称" rules={[{ required: true }]}><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="descZh" label="描述(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="descEn" label="描述(英文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>

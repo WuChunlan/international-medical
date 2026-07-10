@@ -6,6 +6,7 @@ import api from '../../api'
 import type { Doctor } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { StatusTag } from '../../components/StatusTag'
+import FormRow from '../../components/FormRow'
 
 const HADoctorsPage: React.FC = () => {
   const [data, setData] = useState<Doctor[]>([])
@@ -108,7 +109,7 @@ const HADoctorsPage: React.FC = () => {
 
       <Drawer
         title={editRecord ? '编辑医生' : '新增医生'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -119,16 +120,24 @@ const HADoctorsPage: React.FC = () => {
         }
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="nameZh" label="中文姓名" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="nameEn" label="英文姓名" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="specialtyZh" label="专科(中文)" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="specialtyEn" label="专科(英文)" rules={[{ required: true }]}><Input /></Form.Item>
-          <Form.Item name="titleZh" label="职称(中文)"><Input /></Form.Item>
-          <Form.Item name="titleEn" label="职称(英文)"><Input /></Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="中文姓名" rules={[{ required: true }]}><Input /></Form.Item>
+            <Form.Item name="nameEn" label="英文姓名" rules={[{ required: true }]}><Input /></Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="specialtyZh" label="专科(中文)" rules={[{ required: true }]}><Input /></Form.Item>
+            <Form.Item name="specialtyEn" label="专科(英文)" rules={[{ required: true }]}><Input /></Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="titleZh" label="职称(中文)"><Input /></Form.Item>
+            <Form.Item name="titleEn" label="职称(英文)"><Input /></Form.Item>
+          </FormRow>
           <Form.Item name="bioZh" label="简介(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="bioEn" label="简介(英文)"><Input.TextArea rows={3} /></Form.Item>
-          <Form.Item name="pricePerVisit" label="出诊费"><Input type="number" /></Form.Item>
-          <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
+          <FormRow>
+            <Form.Item name="pricePerVisit" label="出诊费"><Input type="number" /></Form.Item>
+            <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
+          </FormRow>
           <Form.Item name="photoUrl" label="医生照片">
             <ImageUpload category="doctors/images" label="上传照片" uploadUrl="/api/hospital-admin/upload" />
           </Form.Item>
