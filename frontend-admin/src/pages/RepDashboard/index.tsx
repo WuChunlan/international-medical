@@ -34,7 +34,9 @@ const RepDashboard: React.FC = () => {
   useEffect(() => {
     api.get('/api/rep/me')
       .then((res) => setMe(res.data?.data ?? res.data))
-      .catch(() => {})
+      .catch(() => {
+        message.error('获取我的信息失败')
+      })
 
     const fetchCustomers = async () => {
       setLoading(true)
