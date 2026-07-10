@@ -129,6 +129,9 @@ export interface User {
   idCardNumber: string | null;
   passportNumber: string | null;
   idCardCountry: string | null;
+  inviteCode?: string | null;
+  canInvite?: number | null;
+  referredBy?: number | null;
   isActive: number;
   createdAt: string;
 }

@@ -26,7 +26,7 @@ const Login: React.FC = () => {
       });
       const payload = res.data;
       const role = payload.role;
-      const allowedRoles = ['admin', 'hospital_admin', 'reviewer'];
+      const allowedRoles = ['admin', 'hospital_admin', 'reviewer', 'customer_rep'];
       if (!role || !allowedRoles.includes(role)) {
         message.error('无管理员权限，请使用管理员账号登录');
         return;
