@@ -12,11 +12,12 @@ const CONFIG_LABELS: Record<string, string> = {
   site_intro: '首页简介',
   contact_default_person: '默认联系人',
   contact_default_info: '默认联系方式',
+  site_a_base_url: '客户端站点地址（邀请二维码用）',
 }
 
 const TARGET_KEYS = [
   'site_name', 'site_subtitle', 'site_logo_url', 'site_intro',
-  'contact_default_person', 'contact_default_info',
+  'contact_default_person', 'contact_default_info', 'site_a_base_url',
 ]
 
 interface ConfigFormValues { valueZh: string; valueEn: string }

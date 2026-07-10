@@ -42,7 +42,7 @@ const InviteQrModal: React.FC<Props> = ({ open, inviteCode, onClose }) => {
   return (
     <Modal title="邀请二维码" open={open} onCancel={onClose} footer={null} destroyOnClose>
       <div style={{ textAlign: 'center', padding: 16 }} ref={wrapRef}>
-        {url ? <QRCodeCanvas value={url} size={220} includeMargin /> : null}
+        {url ? <QRCodeCanvas value={url} size={220} marginSize={4} /> : null}
         <div style={{ marginTop: 12, wordBreak: 'break-all', color: '#666', fontSize: 12 }}>{url}</div>
         <Space style={{ marginTop: 16 }}>
           <Button type="primary" onClick={download}>下载 PNG</Button>

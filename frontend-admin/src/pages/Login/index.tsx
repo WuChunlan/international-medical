@@ -38,7 +38,7 @@ const Login: React.FC = () => {
       }
       setAuth(token, payload.username || values.email, role, payload.hospitalId ?? null);
       message.success('登录成功');
-      navigate('/dashboard');
+      navigate(role === 'customer_rep' ? '/rep/dashboard' : '/dashboard');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       message.error(error.response?.data?.message || '登录失败，请检查邮箱和密码');

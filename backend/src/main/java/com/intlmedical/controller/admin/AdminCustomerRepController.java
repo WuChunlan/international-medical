@@ -93,6 +93,9 @@ public class AdminCustomerRepController {
                 || req.getPassword() == null || req.getPassword().isBlank()) {
             return Result.fail(400, "邮箱和密码必填");
         }
+        if (req.getPassword().length() < 8) {
+            return Result.fail(400, "密码至少8位");
+        }
         long exists = userMapper.selectCount(
             new LambdaQueryWrapper<User>().eq(User::getEmail, req.getEmail())
         );
