@@ -22,6 +22,8 @@ import HAEnvironmentsPage from './pages/HospitalAdmin/HAEnvironmentsPage';
 import HACasesPage from './pages/HospitalAdmin/HACasesPage';
 import HAProductsPage from './pages/HospitalAdmin/HAProductsPage';
 import ReviewerPendingPage from './pages/Reviewer/ReviewerPendingPage';
+import CustomerRepManage from './pages/CustomerRepManage';
+import RepDashboard from './pages/RepDashboard';
 
 function App() {
   return (
@@ -48,6 +50,7 @@ function App() {
                 <Route path="config" element={<SiteConfig />} />
                 <Route path="create-staff" element={<CreateStaffPage />} />
                 <Route path="hospital-admins" element={<HospitalAdminManage />} />
+                <Route path="customer-reps" element={<CustomerRepManage />} />
                 {/* Hospital admin routes */}
                 <Route path="ha/hospital" element={<HAHospitalPage />} />
                 <Route path="ha/doctors" element={<HADoctorsPage />} />
@@ -57,6 +60,8 @@ function App() {
                 <Route path="ha/products" element={<HAProductsPage />} />
                 {/* Reviewer routes */}
                 <Route path="reviewer/pending" element={<ReviewerPendingPage />} />
+                {/* Customer rep routes */}
+                <Route path="rep/dashboard" element={<RepDashboard />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </AdminLayout>

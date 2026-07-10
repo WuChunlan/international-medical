@@ -15,6 +15,7 @@ import {
   AppstoreOutlined,
   AuditOutlined,
   SafetyCertificateOutlined,
+  UsergroupAddOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAdminAuthStore } from '../store/authStore'
@@ -38,6 +39,7 @@ const adminMenuItems = [
   { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
   { key: '/hospital-admins', icon: <SafetyCertificateOutlined />, label: '医院管理员' },
+  { key: '/customer-reps', icon: <UsergroupAddOutlined />, label: '客户代表' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
 ]
 
@@ -56,10 +58,15 @@ const reviewerMenuItems = [
   { key: '/reviewer/pending', icon: <AuditOutlined />, label: '待审核内容' },
 ]
 
+const customerRepMenuItems = [
+  { key: '/rep/dashboard', icon: <DashboardOutlined />, label: '我的邀请' },
+]
+
 const roleLabels: Record<string, { text: string; color: string }> = {
   admin:          { text: '超级管理员', color: '#0A2540' },
   hospital_admin: { text: '医院管理员', color: '#2563EB' },
   reviewer:       { text: '审核员',     color: '#059669' },
+  customer_rep:   { text: '客户代表',   color: 'purple' },
 }
 
 function getSelectedKey(pathname: string): string {
@@ -82,6 +89,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const menuItems =
     role === 'hospital_admin' ? hospitalAdminMenuItems :
     role === 'reviewer' ? reviewerMenuItems :
+    role === 'customer_rep' ? customerRepMenuItems :
     adminMenuItems
 
   const selectedKey = getSelectedKey(location.pathname)
