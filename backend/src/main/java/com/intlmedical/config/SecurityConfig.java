@@ -57,6 +57,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/hospital-admin/**").hasAnyRole("ADMIN", "HOSPITAL_ADMIN")
                 // Reviewer endpoints
                 .requestMatchers("/api/reviewer/**").hasAnyRole("ADMIN", "REVIEWER")
+                // Customer rep endpoints
+                .requestMatchers("/api/rep/**").hasAnyRole("ADMIN", "CUSTOMER_REP")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
