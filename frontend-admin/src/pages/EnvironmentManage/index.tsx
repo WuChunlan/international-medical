@@ -7,6 +7,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from '@ant
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
 import type { Hospital, HospitalEnvironment } from '../../types'
+import FormRow from '../../components/FormRow'
 
 const { TextArea } = Input
 
@@ -149,7 +150,7 @@ const EnvironmentManage: React.FC = () => {
 
       <Drawer
         title={editing ? '编辑诊疗环境' : '新增诊疗环境'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -161,12 +162,14 @@ const EnvironmentManage: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item name="hospitalId" hidden><Input /></Form.Item>
-          <Form.Item name="nameZh" label="名称（中文）" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="nameEn" label="名称（英文）" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="名称（中文）" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="nameEn" label="名称（英文）" rules={[{ required: true }]}>
+              <Input />
+            </Form.Item>
+          </FormRow>
           <Form.Item name="descZh" label="简介（中文）">
             <TextArea rows={3} />
           </Form.Item>
@@ -181,12 +184,14 @@ const EnvironmentManage: React.FC = () => {
               <Button icon={<UploadOutlined />} loading={uploading}>选择图片</Button>
             </Upload>
           </Form.Item>
-          <Form.Item name="sortOrder" label="排序">
-            <InputNumber min={0} />
-          </Form.Item>
-          <Form.Item name="isActive" label="启用" valuePropName="checked">
-            <Switch />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="sortOrder" label="排序">
+              <InputNumber min={0} />
+            </Form.Item>
+            <Form.Item name="isActive" label="启用" valuePropName="checked">
+              <Switch />
+            </Form.Item>
+          </FormRow>
         </Form>
       </Drawer>
     </div>

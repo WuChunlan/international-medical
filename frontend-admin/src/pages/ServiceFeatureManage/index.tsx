@@ -9,6 +9,7 @@ import api from '../../api'
 import type { ServiceFeature, ServiceTeam, PageResult } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
+import FormRow from '../../components/FormRow'
 
 const { TextArea } = Input
 
@@ -145,7 +146,7 @@ const ServiceFeatureManage: React.FC = () => {
 
       <Drawer
         title={editing ? '编辑服务功能' : '新增服务功能'}
-        width={520}
+        width={720}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         footer={
@@ -163,12 +164,14 @@ const ServiceFeatureManage: React.FC = () => {
           </Tooltip>
         </div>
         <Form form={form} layout="vertical">
-          <Form.Item name="nameZh" label="服务名称（中文）" rules={[{ required: true }]}>
-            <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
-          </Form.Item>
-          <Form.Item name="nameEn" label="服务名称（英文）" rules={[{ required: true }]}>
-            <Input placeholder="输入中文名称后可自动翻译" />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="服务名称（中文）" rules={[{ required: true }]}>
+              <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
+            </Form.Item>
+            <Form.Item name="nameEn" label="服务名称（英文）" rules={[{ required: true }]}>
+              <Input placeholder="输入中文名称后可自动翻译" />
+            </Form.Item>
+          </FormRow>
           <Form.Item name="introZh" label="服务简介（中文）">
             <TextArea rows={3} placeholder="请输入中文简介" onBlur={() => translateField('introZh')} />
           </Form.Item>
@@ -181,12 +184,14 @@ const ServiceFeatureManage: React.FC = () => {
           <Form.Item name="teamIds" label="提供服务的团队">
             <Select mode="multiple" placeholder="选择关联的服务团队" options={teamOptions} allowClear />
           </Form.Item>
-          <Form.Item name="sortOrder" label="排序">
-            <InputNumber min={0} />
-          </Form.Item>
-          <Form.Item name="isActive" label="启用" valuePropName="checked">
-            <Switch />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="sortOrder" label="排序">
+              <InputNumber min={0} />
+            </Form.Item>
+            <Form.Item name="isActive" label="启用" valuePropName="checked">
+              <Switch />
+            </Form.Item>
+          </FormRow>
         </Form>
       </Drawer>
     </div>
