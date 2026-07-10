@@ -10,6 +10,7 @@ import type { SpecialProduct, ProductVariant } from '../../types'
 import MediaUploadList from '../../components/MediaUploadList'
 import ImageUpload from '../../components/ImageUpload'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
+import FormRow from '../../components/FormRow'
 
 interface ProductFormProps {
   open: boolean
@@ -134,7 +135,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, record, onClose }) => {
     <>
       <Drawer
         title={isEdit ? '编辑产品' : '新增产品'}
-        width={520}
+        width={720}
         open={open}
         onClose={() => onClose()}
         footer={
@@ -152,12 +153,14 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, record, onClose }) => {
           </Tooltip>
         </div>
         <Form form={form} layout="vertical">
-          <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
-            <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
-          </Form.Item>
-          <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
-            <Input placeholder="输入中文名称后可自动翻译" />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
+              <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
+            </Form.Item>
+            <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
+              <Input placeholder="输入中文名称后可自动翻译" />
+            </Form.Item>
+          </FormRow>
           <Form.Item name="summaryZh" label="中文摘要" rules={[{ required: true, message: '请输入中文摘要' }]}>
             <Input.TextArea rows={3} placeholder="请输入中文摘要" onBlur={() => translateField('summaryZh')} />
           </Form.Item>
@@ -170,18 +173,22 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, record, onClose }) => {
           <Form.Item name="detailEn" label="英文详情">
             <Input.TextArea rows={4} placeholder="输入中文详情后可自动翻译" />
           </Form.Item>
-          <Form.Item name="priceMin" label="最低价格">
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入最低价格" />
-          </Form.Item>
-          <Form.Item name="priceMax" label="最高价格">
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入最高价格" />
-          </Form.Item>
-          <Form.Item name="contactPerson" label="联系人">
-            <Input placeholder="请输入联系人" />
-          </Form.Item>
-          <Form.Item name="contactInfo" label="联系方式">
-            <Input placeholder="请输入联系方式" />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="priceMin" label="最低价格">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入最低价格" />
+            </Form.Item>
+            <Form.Item name="priceMax" label="最高价格">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入最高价格" />
+            </Form.Item>
+          </FormRow>
+          <FormRow>
+            <Form.Item name="contactPerson" label="联系人">
+              <Input placeholder="请输入联系人" />
+            </Form.Item>
+            <Form.Item name="contactInfo" label="联系方式">
+              <Input placeholder="请输入联系方式" />
+            </Form.Item>
+          </FormRow>
           <Form.Item name="sortOrder" label="排序">
             <InputNumber min={0} style={{ width: '100%' }} placeholder="排序值（数字越小越靠前）" />
           </Form.Item>
@@ -215,24 +222,28 @@ const ProductForm: React.FC<ProductFormProps> = ({ open, record, onClose }) => {
         destroyOnClose
       >
         <Form form={variantForm} layout="vertical">
-          <Form.Item name="nameZh" label="套餐中文名称" rules={[{ required: true, message: '请输入套餐名称' }]}>
-            <Input placeholder="例：基础套餐" />
-          </Form.Item>
-          <Form.Item name="nameEn" label="套餐英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
-            <Input placeholder="e.g. Basic Package" />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="nameZh" label="套餐中文名称" rules={[{ required: true, message: '请输入套餐名称' }]}>
+              <Input placeholder="例：基础套餐" />
+            </Form.Item>
+            <Form.Item name="nameEn" label="套餐英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
+              <Input placeholder="e.g. Basic Package" />
+            </Form.Item>
+          </FormRow>
           <Form.Item name="descZh" label="中文描述">
             <Input.TextArea rows={2} placeholder="套餐包含内容（中文）" />
           </Form.Item>
           <Form.Item name="descEn" label="英文描述">
             <Input.TextArea rows={2} placeholder="Package description (English)" />
           </Form.Item>
-          <Form.Item name="price" label="价格">
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="套餐价格（留空表示面议）" />
-          </Form.Item>
-          <Form.Item name="sortOrder" label="排序">
-            <InputNumber min={0} style={{ width: '100%' }} placeholder="数字越小越靠前" />
-          </Form.Item>
+          <FormRow>
+            <Form.Item name="price" label="价格">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="套餐价格（留空表示面议）" />
+            </Form.Item>
+            <Form.Item name="sortOrder" label="排序">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="数字越小越靠前" />
+            </Form.Item>
+          </FormRow>
         </Form>
       </Modal>
     </>

@@ -6,6 +6,7 @@ import type { Hospital } from '../../types'
 import MediaUploadList from '../../components/MediaUploadList'
 import ImageUpload from '../../components/ImageUpload'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
+import FormRow from '../../components/FormRow'
 
 interface HospitalFormProps {
   open: boolean
@@ -62,7 +63,7 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ open, record, onClose }) =>
   return (
     <Drawer
       title={isEdit ? '编辑医院' : '新增医院'}
-      width={520}
+      width={720}
       open={open}
       onClose={() => onClose()}
       footer={
@@ -80,36 +81,44 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ open, record, onClose }) =>
         </Tooltip>
       </div>
       <Form form={form} layout="vertical">
-        <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
-          <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
-        </Form.Item>
-        <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
-          <Input placeholder="输入中文名称后可自动翻译" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
+            <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />
+          </Form.Item>
+          <Form.Item name="nameEn" label="英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
+            <Input placeholder="输入中文名称后可自动翻译" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="introZh" label="中文简介" rules={[{ required: true, message: '请输入中文简介' }]}>
           <Input.TextArea rows={3} placeholder="请输入中文简介" onBlur={() => translateField('introZh')} />
         </Form.Item>
         <Form.Item name="introEn" label="英文简介" rules={[{ required: true, message: '请输入英文简介' }]}>
           <Input.TextArea rows={3} placeholder="输入中文简介后可自动翻译" />
         </Form.Item>
-        <Form.Item name="addressZh" label="中文地址">
-          <Input placeholder="请输入中文地址" onBlur={() => translateField('addressZh')} />
-        </Form.Item>
-        <Form.Item name="addressEn" label="英文地址">
-          <Input placeholder="输入中文地址后可自动翻译" />
-        </Form.Item>
-        <Form.Item name="phone" label="电话">
-          <Input placeholder="请输入电话" />
-        </Form.Item>
-        <Form.Item name="contactPerson" label="联系人">
-          <Input placeholder="请输入联系人" />
-        </Form.Item>
-        <Form.Item name="contactInfo" label="联系方式">
-          <Input placeholder="请输入联系方式" />
-        </Form.Item>
-        <Form.Item name="sortOrder" label="排序">
-          <InputNumber min={0} className="input-number-full" placeholder="排序值（数字越小越靠前）" />
-        </Form.Item>
+        <FormRow>
+          <Form.Item name="addressZh" label="中文地址">
+            <Input placeholder="请输入中文地址" onBlur={() => translateField('addressZh')} />
+          </Form.Item>
+          <Form.Item name="addressEn" label="英文地址">
+            <Input placeholder="输入中文地址后可自动翻译" />
+          </Form.Item>
+        </FormRow>
+        <FormRow>
+          <Form.Item name="phone" label="电话">
+            <Input placeholder="请输入电话" />
+          </Form.Item>
+          <Form.Item name="contactPerson" label="联系人">
+            <Input placeholder="请输入联系人" />
+          </Form.Item>
+        </FormRow>
+        <FormRow>
+          <Form.Item name="contactInfo" label="联系方式">
+            <Input placeholder="请输入联系方式" />
+          </Form.Item>
+          <Form.Item name="sortOrder" label="排序">
+            <InputNumber min={0} className="input-number-full" placeholder="排序值（数字越小越靠前）" />
+          </Form.Item>
+        </FormRow>
         <Form.Item name="coverImageUrl" label="封面图片">
           <ImageUpload category="hospitals/images" label="上传封面图" />
         </Form.Item>
