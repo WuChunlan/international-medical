@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, message, Spin, Tag, Tooltip } from 'antd';
+import { Button, message, Spin, Tag, Tooltip, Modal, Image } from 'antd';
 import {
   PictureOutlined,
   VideoCameraOutlined,
@@ -7,6 +7,7 @@ import {
   StarFilled,
   DeleteOutlined,
   UploadOutlined,
+  PlayCircleOutlined,
 } from '@ant-design/icons';
 import api from '../api';
 import type { MediaItem } from '../types';
@@ -28,6 +29,7 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState<'image' | 'video' | null>(null);
+  const [previewVideo, setPreviewVideo] = useState<string | null>(null);
 
   const fetchMedia = async () => {
     if (!entityId) return;
@@ -146,9 +148,18 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
             >
               <div className="media-item__thumb">
                 {item.mediaType === 'image' ? (
-                  <img src={item.url} alt="preview" />
+                  <Image src={item.url} alt="preview" width={80} height={56}
+                         style={{ objectFit: 'cover' }} />
                 ) : (
-                  <VideoCameraOutlined className="media-item__video-icon" />
+                  <button
+                    type="button"
+                    className="media-item__video-btn"
+                    aria-label="播放视频"
+                    onClick={() => setPreviewVideo(item.url)}
+                  >
+                    <VideoCameraOutlined className="media-item__video-icon" />
+                    <PlayCircleOutlined className="media-item__play-icon" />
+                  </button>
                 )}
               </div>
 
@@ -201,6 +212,18 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
           ))
         )}
       </Spin>
+      <Modal
+        title="视频预览"
+        open={previewVideo !== null}
+        onCancel={() => setPreviewVideo(null)}
+        footer={null}
+        destroyOnClose
+        width={720}
+      >
+        {previewVideo && (
+          <video src={previewVideo} controls autoPlay style={{ width: '100%' }} />
+        )}
+      </Modal>
     </div>
   );
 };
