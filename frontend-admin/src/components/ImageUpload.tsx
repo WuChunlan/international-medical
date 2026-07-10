@@ -50,6 +50,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   };
 
+  const beforeUpload = (file: File) => {
+    const isAcceptedType = accept === 'image/*'
+      ? file.type.startsWith('image/')
+      : true;
+    if (!isAcceptedType) {
+      message.error('文件格式不支持');
+      return Upload.LIST_IGNORE;
+    }
+    const maxMb = 50; // 与后端 upload_max_size_mb 默认值一致
+    if (file.size > maxMb * 1024 * 1024) {
+      message.error(`文件大小超过 ${maxMb}MB 限制`);
+      return Upload.LIST_IGNORE;
+    }
+    return true;
+  };
+
   const handleChange = (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === 'removed') {
       onChange?.('');
@@ -61,6 +77,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       <Upload
         accept={accept}
         showUploadList={false}
+        beforeUpload={beforeUpload}
         customRequest={customRequest as never}
         onChange={handleChange}
       >
