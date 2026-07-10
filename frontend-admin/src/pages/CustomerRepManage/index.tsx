@@ -76,12 +76,13 @@ const CustomerRepManage: React.FC = () => {
   }
 
   const openCustomers = async (r: RepRow) => {
+    setCustList([])
     setCustDrawer(r)
     try {
       const res = await api.get(`/api/admin/customer-reps/${r.id}/customers`, { params: { page: 1, size: 100 } })
       const d = res.data?.data ?? res.data
       setCustList(d?.records ?? [])
-    } catch { setCustList([]) }
+    } catch { setCustList([]); message.error('获取客户列表失败') }
   }
 
   const copyCode = async (code: string | null) => {
