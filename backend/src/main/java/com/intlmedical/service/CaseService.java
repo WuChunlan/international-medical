@@ -16,4 +16,8 @@ public class CaseService {
     public List<CaseVO> listActive() {
         return caseMapper.selectActiveWithHospital();
     }
+
+    public CaseVO getActiveById(Long id) {
+        return caseMapper.selectActiveById(id);
+    }
 }

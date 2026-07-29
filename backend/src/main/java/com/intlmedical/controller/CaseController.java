@@ -19,4 +19,13 @@ public class CaseController {
     public Result<List<CaseVO>> list() {
         return Result.ok(caseService.listActive());
     }
+
+    @GetMapping("/{id}")
+    public Result<CaseVO> detail(@PathVariable Long id) {
+        CaseVO vo = caseService.getActiveById(id);
+        if (vo == null) {
+            return Result.fail(404, "案例不存在");
+        }
+        return Result.ok(vo);
+    }
 }

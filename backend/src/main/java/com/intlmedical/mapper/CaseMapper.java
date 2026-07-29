@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.dto.response.CaseVO;
 import com.intlmedical.entity.Case;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -23,4 +24,9 @@ public interface CaseMapper extends BaseMapper<Case> {
             "WHERE c.is_active = 1 AND c.audit_status = 'approved' " +
             "ORDER BY c.sort_order ASC, c.id DESC")
     List<CaseVO> selectActiveWithHospital();
+
+    @Select("SELECT c.*, h.name_zh AS hospital_name_zh, h.name_en AS hospital_name_en " +
+            "FROM cases c LEFT JOIN hospitals h ON c.hospital_id = h.id " +
+            "WHERE c.id = #{id} AND c.is_active = 1 AND c.audit_status = 'approved'")
+    CaseVO selectActiveById(@Param("id") Long id);
 }
