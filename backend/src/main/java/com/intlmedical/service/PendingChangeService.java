@@ -62,10 +62,14 @@ public class PendingChangeService {
             case "environments" -> applyEnvironment(entityId, data);
             case "cases"        -> applyCase(entityId, data);
             case "products"     -> applyProduct(entityId, data);
+            default             -> throw new IllegalArgumentException("Unknown entity type: " + entityType);
         }
         setLiveAuditStatus(entityType, entityId, "approved", null);
         applyMedia(entityType, entityId, data);
-        pendingChangeMapper.deleteById(pc.getId());
+        pc.setAuditStatus("approved");
+        pc.setReviewedAt(LocalDateTime.now());
+        pc.setReviewedBy(reviewerId);
+        pendingChangeMapper.updateById(pc);
     }
 
     public void applyRejection(PendingChange pc, String reason, Long reviewerId) {
@@ -78,6 +82,7 @@ public class PendingChangeService {
 
     private void applyHospital(Long id, JsonNode d) {
         Hospital h = hospitalMapper.selectById(id);
+        if (h == null) throw new IllegalStateException("Entity not found: hospitals/" + id);
         h.setNameZh(d.path("nameZh").asText(h.getNameZh()));
         h.setNameEn(d.path("nameEn").asText(h.getNameEn()));
         h.setIntroZh(textOrNull(d, "introZh"));
@@ -94,6 +99,7 @@ public class PendingChangeService {
 
     private void applyDoctor(Long id, JsonNode d) {
         Doctor dr = doctorMapper.selectById(id);
+        if (dr == null) throw new IllegalStateException("Entity not found: doctors/" + id);
         dr.setNameZh(d.path("nameZh").asText(dr.getNameZh()));
         dr.setNameEn(d.path("nameEn").asText(dr.getNameEn()));
         dr.setSpecialtyZh(textOrNull(d, "specialtyZh"));
@@ -110,6 +116,7 @@ public class PendingChangeService {
 
     private void applyEquipment(Long id, JsonNode d) {
         Equipment eq = equipmentMapper.selectById(id);
+        if (eq == null) throw new IllegalStateException("Entity not found: equipments/" + id);
         eq.setNameZh(d.path("nameZh").asText(eq.getNameZh()));
         eq.setNameEn(d.path("nameEn").asText(eq.getNameEn()));
         eq.setDescZh(textOrNull(d, "descZh"));
@@ -121,6 +128,7 @@ public class PendingChangeService {
 
     private void applyEnvironment(Long id, JsonNode d) {
         HospitalEnvironment env = environmentMapper.selectById(id);
+        if (env == null) throw new IllegalStateException("Entity not found: environments/" + id);
         env.setNameZh(d.path("nameZh").asText(env.getNameZh()));
         env.setNameEn(d.path("nameEn").asText(env.getNameEn()));
         env.setDescZh(textOrNull(d, "descZh"));
@@ -132,6 +140,7 @@ public class PendingChangeService {
 
     private void applyCase(Long id, JsonNode d) {
         Case c = caseMapper.selectById(id);
+        if (c == null) throw new IllegalStateException("Entity not found: cases/" + id);
         c.setTitleZh(d.path("titleZh").asText(c.getTitleZh()));
         c.setTitleEn(d.path("titleEn").asText(c.getTitleEn()));
         c.setSummaryZh(textOrNull(d, "summaryZh"));
@@ -145,6 +154,7 @@ public class PendingChangeService {
 
     private void applyProduct(Long id, JsonNode d) {
         SpecialProduct p = productMapper.selectById(id);
+        if (p == null) throw new IllegalStateException("Entity not found: products/" + id);
         p.setNameZh(d.path("nameZh").asText(p.getNameZh()));
         p.setNameEn(d.path("nameEn").asText(p.getNameEn()));
         p.setSummaryZh(textOrNull(d, "summaryZh"));
@@ -228,6 +238,7 @@ public class PendingChangeService {
                     .eq(SpecialProduct::getId, entityId)
                     .set(SpecialProduct::getAuditStatus, status)
                     .set(SpecialProduct::getRejectionReason, reason));
+            default -> throw new IllegalArgumentException("Unknown entity type: " + entityType);
         }
     }
 
