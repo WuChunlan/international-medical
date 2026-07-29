@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.3",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-react": "^1.0.6",
     "antd": "^6.4.2",
     "axios": "^1.16.1",
     "i18next": "^26.2.0",
