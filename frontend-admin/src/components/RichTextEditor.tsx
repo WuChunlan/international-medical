@@ -2,6 +2,7 @@ import '@wangeditor/editor/dist/css/style.css'
 import React, { useState, useEffect, useRef } from 'react'
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import type { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+import { useAdminAuthStore } from '../store/authStore'
 
 interface RichTextEditorProps {
   value?: string
@@ -37,6 +38,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     return () => { editor?.destroy() }
   }, [editor])
 
+  const token = useAdminAuthStore.getState().token
+
   const toolbarConfig: Partial<IToolbarConfig> = {}
 
   const editorConfig: Partial<IEditorConfig> = {
@@ -47,6 +50,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         fieldName: 'file',
         maxFileSize: 50 * 1024 * 1024,
         allowedFileTypes: ['image/*'],
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         customInsert(res: { data: string }, insertFn: (url: string) => void) {
           insertFn(res.data)
         },
