@@ -2,6 +2,7 @@ package com.intlmedical.controller.hospitaladmin;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.intlmedical.entity.Hospital;
+import com.intlmedical.entity.PendingChange;
 import com.intlmedical.entity.User;
 import com.intlmedical.mapper.HospitalMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
@@ -30,7 +31,8 @@ public class HAHospitalController {
         if (hospitalId == null) return Result.ok(null);
         Hospital hospital = hospitalMapper.selectById(hospitalId);
         if (hospital != null) {
-            hospital.setHasPendingEdit(pendingChangeMapper.selectByEntity("hospitals", hospitalId) != null);
+            PendingChange hpc = pendingChangeMapper.selectByEntity("hospitals", hospitalId);
+            hospital.setHasPendingEdit(hpc != null && "pending".equals(hpc.getAuditStatus()));
         }
         return Result.ok(hospital);
     }
