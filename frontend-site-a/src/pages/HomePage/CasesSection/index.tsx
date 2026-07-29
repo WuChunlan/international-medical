@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { MedicalCase } from '../../../types';
 import { useCarousel } from '../../../hooks/useCarousel';
@@ -93,6 +94,7 @@ function CaseCard({ medCase, lang, index }: {
   medCase: MedicalCase; lang: string; index: number;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const title = lang === 'zh' ? medCase.titleZh : medCase.titleEn;
   const summary = lang === 'zh' ? medCase.summaryZh : medCase.summaryEn;
 
@@ -119,7 +121,7 @@ function CaseCard({ medCase, lang, index }: {
       <div className="case-card__content">
         <h3 className="case-card__title">{title}</h3>
         <p className="case-card__summary">{summary}</p>
-        <button className="case-card__link-btn">
+        <button className="case-card__link-btn" onClick={() => navigate(`/case/${medCase.id}`)}>
           {t('cases.view_detail')}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
