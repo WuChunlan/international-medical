@@ -24,10 +24,16 @@ export default function CaseDetailPage() {
     setLoading(true);
     api
       .get<MedicalCase>(`/api/cases/${id}`)
-      .then(res => setData(res.data))
+      .then(res => {
+        if (res.data) {
+          setData(res.data);
+        } else {
+          setData(null);
+          setTimeout(() => navigate('/', { replace: true }), 2000);
+        }
+      })
       .catch(() => {
         setData(null);
-        setTimeout(() => navigate('/', { replace: true }), 2000);
       })
       .finally(() => setLoading(false));
   }, [id, navigate]);
@@ -49,7 +55,8 @@ export default function CaseDetailPage() {
         <Header />
         <main className="page-main">
           <div className="page-loading">
-            <Paragraph>{t('common.not_found') || '案例不存在，即将返回首页...'}</Paragraph>
+            <Paragraph>{t('common.not_found')}</Paragraph>
+            <Paragraph style={{ color: '#888', fontSize: '0.85rem' }}>{isZh ? '即将返回首页...' : 'Redirecting to home...'}</Paragraph>
           </div>
         </main>
       </div>
