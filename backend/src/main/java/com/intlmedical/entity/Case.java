@@ -25,4 +25,7 @@ public class Case {
     private String rejectionReason;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+
+    @TableField(exist = false)
+    private Boolean hasPendingEdit;
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.intlmedical.entity.Hospital;
 import com.intlmedical.entity.User;
 import com.intlmedical.mapper.HospitalMapper;
+import com.intlmedical.mapper.PendingChangeMapper;
 import com.intlmedical.mapper.UserMapper;
 import com.intlmedical.util.JwtUtil;
 import com.intlmedical.util.Result;
@@ -19,12 +20,16 @@ public class HAHospitalController {
     private final HospitalMapper hospitalMapper;
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
+    private final PendingChangeMapper pendingChangeMapper;
 
     @GetMapping
     public Result<Hospital> get() {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.ok(null);
         Hospital hospital = hospitalMapper.selectById(hospitalId);
+        if (hospital != null) {
+            hospital.setHasPendingEdit(pendingChangeMapper.selectByEntity("hospitals", hospitalId) != null);
+        }
         return Result.ok(hospital);
     }
 

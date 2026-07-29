@@ -20,4 +20,7 @@ public class Equipment {
     private String auditStatus;
     @TableField("rejection_reason")
     private String rejectionReason;
+
+    @TableField(exist = false)
+    private Boolean hasPendingEdit;
 }

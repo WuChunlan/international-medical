@@ -4,11 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.Case;
+import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.CaseMapper;
+import com.intlmedical.mapper.PendingChangeMapper;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hospital-admin/cases")
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class HACaseController {
 
     private final CaseMapper caseMapper;
+    private final PendingChangeMapper pendingChangeMapper;
 
     @GetMapping
     public Result<IPage<Case>> list(
@@ -27,6 +34,11 @@ public class HACaseController {
             new LambdaQueryWrapper<Case>()
                 .eq(Case::getHospitalId, hospitalId)
                 .orderByAsc(Case::getSortOrder));
+        List<PendingChange> pending = pendingChangeMapper.selectPendingByType("cases");
+        Set<Long> pendingIds = pending.stream()
+            .map(PendingChange::getEntityId)
+            .collect(Collectors.toSet());
+        result.getRecords().forEach(c -> c.setHasPendingEdit(pendingIds.contains(c.getId())));
         return Result.ok(result);
     }
 

@@ -29,4 +29,7 @@ public class Hospital {
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    @TableField(exist = false)
+    private Boolean hasPendingEdit;
 }

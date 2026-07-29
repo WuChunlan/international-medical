@@ -3,12 +3,18 @@ package com.intlmedical.controller.hospitaladmin;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.intlmedical.entity.PendingChange;
 import com.intlmedical.entity.SpecialProduct;
+import com.intlmedical.mapper.PendingChangeMapper;
 import com.intlmedical.mapper.SpecialProductMapper;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hospital-admin/products")
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class HAProductController {
 
     private final SpecialProductMapper specialProductMapper;
+    private final PendingChangeMapper pendingChangeMapper;
 
     @GetMapping
     public Result<IPage<SpecialProduct>> list(
@@ -27,6 +34,11 @@ public class HAProductController {
             new LambdaQueryWrapper<SpecialProduct>()
                 .eq(SpecialProduct::getHospitalId, hospitalId)
                 .orderByAsc(SpecialProduct::getSortOrder));
+        List<PendingChange> pending = pendingChangeMapper.selectPendingByType("products");
+        Set<Long> pendingIds = pending.stream()
+            .map(PendingChange::getEntityId)
+            .collect(Collectors.toSet());
+        result.getRecords().forEach(p -> p.setHasPendingEdit(pendingIds.contains(p.getId())));
         return Result.ok(result);
     }
 

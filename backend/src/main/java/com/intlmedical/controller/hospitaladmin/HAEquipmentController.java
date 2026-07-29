@@ -4,11 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.Equipment;
+import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.EquipmentMapper;
+import com.intlmedical.mapper.PendingChangeMapper;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/hospital-admin/equipments")
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class HAEquipmentController {
 
     private final EquipmentMapper equipmentMapper;
+    private final PendingChangeMapper pendingChangeMapper;
 
     @GetMapping
     public Result<IPage<Equipment>> list(
@@ -27,6 +34,11 @@ public class HAEquipmentController {
             new LambdaQueryWrapper<Equipment>()
                 .eq(Equipment::getHospitalId, hospitalId)
                 .orderByAsc(Equipment::getSortOrder));
+        List<PendingChange> pending = pendingChangeMapper.selectPendingByType("equipments");
+        Set<Long> pendingIds = pending.stream()
+            .map(PendingChange::getEntityId)
+            .collect(Collectors.toSet());
+        result.getRecords().forEach(e -> e.setHasPendingEdit(pendingIds.contains(e.getId())));
         return Result.ok(result);
     }
 
