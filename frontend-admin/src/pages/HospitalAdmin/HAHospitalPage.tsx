@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Card, Descriptions, Button, message, Form, Input, Spin, Alert } from 'antd'
+import { Card, Descriptions, Button, message, Form, Input, Spin, Alert, Tag } from 'antd'
 import { EditOutlined, SaveOutlined, PlusOutlined } from '@ant-design/icons'
 import api from '../../api'
 import { useAdminAuthStore } from '../../store/authStore'
@@ -148,7 +148,14 @@ const HAHospitalPage: React.FC = () => {
             <Descriptions.Item label="审核状态">
               <StatusTag status={hospital.auditStatus as 'approved' | 'pending' | 'rejected'} />
             </Descriptions.Item>
-            <Descriptions.Item label="中文名称">{hospital.nameZh}</Descriptions.Item>
+            <Descriptions.Item label="中文名称">
+                <span>
+                  {hospital.nameZh}
+                  {hospital.hasPendingEdit && (
+                    <Tag color="orange" style={{ marginLeft: 8 }}>编辑待审核</Tag>
+                  )}
+                </span>
+              </Descriptions.Item>
             <Descriptions.Item label="英文名称">{hospital.nameEn}</Descriptions.Item>
             <Descriptions.Item label="联系电话">{hospital.phone}</Descriptions.Item>
             <Descriptions.Item label="联系人">{hospital.contactPerson}</Descriptions.Item>

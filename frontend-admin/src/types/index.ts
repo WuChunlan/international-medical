@@ -14,6 +14,7 @@ export interface Hospital {
   isActive: number;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface Doctor {
@@ -33,6 +34,7 @@ export interface Doctor {
   isActive: number;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface Equipment {
@@ -47,6 +49,7 @@ export interface Equipment {
   isActive: number;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface HospitalEnvironment {
@@ -61,6 +64,7 @@ export interface HospitalEnvironment {
   isActive: number;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface ServiceTeam {
@@ -92,6 +96,7 @@ export interface SpecialProduct {
   isActive: number;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface ProductVariant {
@@ -153,6 +158,7 @@ export interface MedicalCase {
   createdAt?: string;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
+  hasPendingEdit?: boolean;
 }
 
 export interface SiteConfig {
@@ -181,4 +187,10 @@ export interface PageResult<T> {
   size: number;
   current: number;
   pages: number;
+}
+
+export interface PendingItem<T = Record<string, unknown>> {
+  data: T
+  isEdit: boolean
+  currentData: T | null
 }

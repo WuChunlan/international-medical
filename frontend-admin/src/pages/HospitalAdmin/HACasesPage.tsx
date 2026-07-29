@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Table, Button, Space, Popconfirm, message, Drawer, Form, Input } from 'antd'
+import { Table, Button, Space, Popconfirm, message, Drawer, Form, Input, Tag } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
@@ -74,7 +74,17 @@ const HACasesPage: React.FC = () => {
 
   const columns: ColumnsType<MedicalCase> = [
     { title: 'ID', dataIndex: 'id', width: 60 },
-    { title: '中文标题', dataIndex: 'titleZh', ellipsis: true },
+    {
+      title: '中文标题', dataIndex: 'titleZh', ellipsis: true,
+      render: (text: string, record: MedicalCase) => (
+        <span>
+          {text}
+          {record.hasPendingEdit && (
+            <Tag color="orange" style={{ marginLeft: 8 }}>编辑待审核</Tag>
+          )}
+        </span>
+      ),
+    },
     { title: '英文标题', dataIndex: 'titleEn', ellipsis: true },
     {
       title: '审核状态', dataIndex: 'auditStatus', width: 100,
