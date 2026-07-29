@@ -5,6 +5,7 @@ import com.intlmedical.entity.HospitalEnvironment;
 import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.HospitalEnvironmentMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
+import com.intlmedical.service.PendingChangeService;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class HAEnvironmentController {
 
     private final HospitalEnvironmentMapper hospitalEnvironmentMapper;
     private final PendingChangeMapper pendingChangeMapper;
+    private final PendingChangeService pendingChangeService;
 
     @GetMapping
     public Result<List<HospitalEnvironment>> list() {
@@ -57,11 +59,20 @@ public class HAEnvironmentController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        env.setId(id);
-        env.setHospitalId(hospitalId);
-        env.setAuditStatus("pending");
-        env.setRejectionReason(null);
-        hospitalEnvironmentMapper.updateById(env);
+        if ("approved".equals(existing.getAuditStatus())) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            try {
+                pendingChangeService.submitEdit("environments", id, env, userId);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                return Result.fail("提交失败，请重试");
+            }
+        } else {
+            env.setId(id);
+            env.setHospitalId(hospitalId);
+            env.setAuditStatus("pending");
+            env.setRejectionReason(null);
+            hospitalEnvironmentMapper.updateById(env);
+        }
         return Result.ok();
     }
 

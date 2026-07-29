@@ -6,6 +6,7 @@ import com.intlmedical.entity.User;
 import com.intlmedical.mapper.HospitalMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
 import com.intlmedical.mapper.UserMapper;
+import com.intlmedical.service.PendingChangeService;
 import com.intlmedical.util.JwtUtil;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
@@ -21,6 +22,7 @@ public class HAHospitalController {
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
     private final PendingChangeMapper pendingChangeMapper;
+    private final PendingChangeService pendingChangeService;
 
     @GetMapping
     public Result<Hospital> get() {
@@ -58,10 +60,20 @@ public class HAHospitalController {
     public Result<Void> update(@RequestBody Hospital hospital) {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.fail(400, "未绑定医院，请先创建医院");
-        hospital.setId(hospitalId);
-        hospital.setAuditStatus("pending");
-        hospital.setRejectionReason(null);
-        hospitalMapper.updateById(hospital);
+        Hospital existing = hospitalMapper.selectById(hospitalId);
+        if ("approved".equals(existing != null ? existing.getAuditStatus() : null)) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            try {
+                pendingChangeService.submitEdit("hospitals", hospitalId, hospital, userId);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                return Result.fail("提交失败，请重试");
+            }
+        } else {
+            hospital.setId(hospitalId);
+            hospital.setAuditStatus("pending");
+            hospital.setRejectionReason(null);
+            hospitalMapper.updateById(hospital);
+        }
         return Result.ok();
     }
 }

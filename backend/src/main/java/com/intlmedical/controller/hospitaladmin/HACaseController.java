@@ -7,6 +7,7 @@ import com.intlmedical.entity.Case;
 import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.CaseMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
+import com.intlmedical.service.PendingChangeService;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class HACaseController {
 
     private final CaseMapper caseMapper;
     private final PendingChangeMapper pendingChangeMapper;
+    private final PendingChangeService pendingChangeService;
 
     @GetMapping
     public Result<IPage<Case>> list(
@@ -61,11 +63,20 @@ public class HACaseController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        medCase.setId(id);
-        medCase.setHospitalId(hospitalId);
-        medCase.setAuditStatus("pending");
-        medCase.setRejectionReason(null);
-        caseMapper.updateById(medCase);
+        if ("approved".equals(existing.getAuditStatus())) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            try {
+                pendingChangeService.submitEdit("cases", id, medCase, userId);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                return Result.fail("提交失败，请重试");
+            }
+        } else {
+            medCase.setId(id);
+            medCase.setHospitalId(hospitalId);
+            medCase.setAuditStatus("pending");
+            medCase.setRejectionReason(null);
+            caseMapper.updateById(medCase);
+        }
         return Result.ok();
     }
 

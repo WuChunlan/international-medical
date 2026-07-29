@@ -7,6 +7,7 @@ import com.intlmedical.entity.Doctor;
 import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.DoctorMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
+import com.intlmedical.service.PendingChangeService;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class HADoctorController {
 
     private final DoctorMapper doctorMapper;
     private final PendingChangeMapper pendingChangeMapper;
+    private final PendingChangeService pendingChangeService;
 
     @GetMapping
     public Result<IPage<Doctor>> list(
@@ -61,11 +63,20 @@ public class HADoctorController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        doctor.setId(id);
-        doctor.setHospitalId(hospitalId);
-        doctor.setAuditStatus("pending");
-        doctor.setRejectionReason(null);
-        doctorMapper.updateById(doctor);
+        if ("approved".equals(existing.getAuditStatus())) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            try {
+                pendingChangeService.submitEdit("doctors", id, doctor, userId);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                return Result.fail("提交失败，请重试");
+            }
+        } else {
+            doctor.setId(id);
+            doctor.setHospitalId(hospitalId);
+            doctor.setAuditStatus("pending");
+            doctor.setRejectionReason(null);
+            doctorMapper.updateById(doctor);
+        }
         return Result.ok();
     }
 

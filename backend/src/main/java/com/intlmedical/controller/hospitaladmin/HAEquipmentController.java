@@ -7,6 +7,7 @@ import com.intlmedical.entity.Equipment;
 import com.intlmedical.entity.PendingChange;
 import com.intlmedical.mapper.EquipmentMapper;
 import com.intlmedical.mapper.PendingChangeMapper;
+import com.intlmedical.service.PendingChangeService;
 import com.intlmedical.util.Result;
 import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class HAEquipmentController {
 
     private final EquipmentMapper equipmentMapper;
     private final PendingChangeMapper pendingChangeMapper;
+    private final PendingChangeService pendingChangeService;
 
     @GetMapping
     public Result<IPage<Equipment>> list(
@@ -61,11 +63,20 @@ public class HAEquipmentController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        equipment.setId(id);
-        equipment.setHospitalId(hospitalId);
-        equipment.setAuditStatus("pending");
-        equipment.setRejectionReason(null);
-        equipmentMapper.updateById(equipment);
+        if ("approved".equals(existing.getAuditStatus())) {
+            Long userId = SecurityUtil.getCurrentUserId();
+            try {
+                pendingChangeService.submitEdit("equipments", id, equipment, userId);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                return Result.fail("提交失败，请重试");
+            }
+        } else {
+            equipment.setId(id);
+            equipment.setHospitalId(hospitalId);
+            equipment.setAuditStatus("pending");
+            equipment.setRejectionReason(null);
+            equipmentMapper.updateById(equipment);
+        }
         return Result.ok();
     }
 
