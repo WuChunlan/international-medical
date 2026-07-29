@@ -320,6 +320,26 @@ CREATE TABLE IF NOT EXISTS email_verify_codes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='邮箱验证码';
 
 -- ============================================================
+-- 待审核变更（HA编辑已审核记录时的影子副本）
+-- ============================================================
+CREATE TABLE IF NOT EXISTS pending_changes (
+  id               BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  entity_type      ENUM('hospitals','doctors','equipments',
+                        'environments','cases','products') NOT NULL,
+  entity_id        BIGINT UNSIGNED NOT NULL,
+  pending_data     JSON NOT NULL,
+  submitted_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  submitted_by     BIGINT UNSIGNED NOT NULL,
+  audit_status     ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  rejection_reason TEXT DEFAULT NULL,
+  reviewed_at      DATETIME DEFAULT NULL,
+  reviewed_by      BIGINT UNSIGNED DEFAULT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_entity (entity_type, entity_id),
+  KEY idx_status (audit_status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='HA编辑待审核变更';
+
+-- ============================================================
 -- 角色初始数据
 -- ============================================================
 INSERT IGNORE INTO roles (id, code, name_zh, name_en) VALUES
