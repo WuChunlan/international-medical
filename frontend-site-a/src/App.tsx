@@ -5,6 +5,7 @@ import Header from './components/Header';
 import HomePage from './pages/HomePage';
 import HospitalDetailPage from './pages/HospitalDetail';
 import ProductDetailPage from './pages/ProductDetail';
+import CaseDetailPage from './pages/CaseDetail';
 import ProfilePage from './pages/Profile';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
@@ -28,6 +29,7 @@ function App() {
       <Route path="/" element={<><Header /><HomePage /></>} />
       <Route path="/hospital/:id" element={<HospitalDetailPage />} />
       <Route path="/product/:id" element={<ProductDetailPage />} />
+      <Route path="/case/:id" element={<CaseDetailPage />} />
       <Route
         path="/profile"
         element={

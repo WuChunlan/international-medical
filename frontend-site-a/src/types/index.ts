@@ -81,6 +81,9 @@ export interface MedicalCase {
   detailZh: string | null;
   detailEn: string | null;
   coverImageUrl: string | null;
+  hospitalNameZh?: string | null;
+  hospitalNameEn?: string | null;
+  createdAt?: string | null;
 }
 
 export interface SpecialProduct {
