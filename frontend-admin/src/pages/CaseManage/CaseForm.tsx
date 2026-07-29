@@ -5,6 +5,7 @@ import api from '../../api'
 import type { MedicalCase, Hospital } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import FormRow from '../../components/FormRow'
+import RichTextEditor from '../../components/RichTextEditor'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
 
 interface CaseFormProps {
@@ -112,6 +113,12 @@ const CaseForm: React.FC<CaseFormProps> = ({ open, record, onClose }) => {
         </Form.Item>
         <Form.Item name="summaryEn" label="英文摘要">
           <Input.TextArea rows={3} placeholder="输入中文摘要后可自动翻译" />
+        </Form.Item>
+        <Form.Item name="detailZh" label="中文详情">
+          <RichTextEditor uploadUrl="/api/admin/upload" placeholder="请输入中文详情内容..." />
+        </Form.Item>
+        <Form.Item name="detailEn" label="英文详情">
+          <RichTextEditor uploadUrl="/api/admin/upload" placeholder="Enter English detail content..." />
         </Form.Item>
         <Form.Item name="coverImageUrl" label="封面图片">
           <ImageUpload category="cases/images" label="上传封面图" />
