@@ -7,6 +7,7 @@ import type { MedicalCase } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { StatusTag } from '../../components/StatusTag'
 import FormRow from '../../components/FormRow'
+import RichTextEditor from '../../components/RichTextEditor'
 
 const HACasesPage: React.FC = () => {
   const [data, setData] = useState<MedicalCase[]>([])
@@ -125,6 +126,12 @@ const HACasesPage: React.FC = () => {
           </FormRow>
           <Form.Item name="summaryZh" label="摘要(中文)"><Input.TextArea rows={3} /></Form.Item>
           <Form.Item name="summaryEn" label="摘要(英文)"><Input.TextArea rows={3} /></Form.Item>
+          <Form.Item name="detailZh" label="中文详情">
+            <RichTextEditor uploadUrl="/api/hospital-admin/upload" placeholder="请输入中文详情内容..." />
+          </Form.Item>
+          <Form.Item name="detailEn" label="英文详情">
+            <RichTextEditor uploadUrl="/api/hospital-admin/upload" placeholder="Enter English detail content..." />
+          </Form.Item>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
           <Form.Item name="coverImageUrl" label="封面图片">
             <ImageUpload category="cases/images" label="上传封面图" uploadUrl="/api/hospital-admin/upload" />
