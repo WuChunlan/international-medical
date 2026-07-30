@@ -104,6 +104,18 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
     }
   };
 
+  const handleDeletePending = async (url: string) => {
+    try {
+      await api.delete(`${mediaApiUrl}/pending`, {
+        params: { entityType, entityId, url },
+      });
+      message.success('已取消');
+      fetchMedia();
+    } catch {
+      message.error('操作失败');
+    }
+  };
+
   if (!entityId) {
     return (
       <div className="media-upload-list">
@@ -143,8 +155,8 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
         ) : (
           items.map((item) => (
             <div
-              key={item.id}
-              className={`media-item${item.isCover ? ' media-item--cover' : ''}`}
+              key={item.id != null ? item.id : `pending-${item.url}`}
+              className={`media-item${item.isCover ? ' media-item--cover' : ''}${item.status === 'pending_add' ? ' media-item--pending' : ''}`}
             >
               <div className="media-item__thumb">
                 {item.mediaType === 'image' ? (
@@ -173,22 +185,25 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
                   {item.isCover === 1 && (
                     <span className="media-item__cover-badge">★ 主图</span>
                   )}
+                  {item.status === 'pending_add' && (
+                    <Tag color="orange" style={{ marginLeft: 4 }}>待审核</Tag>
+                  )}
                 </div>
                 <div className="media-item__url">{item.url}</div>
               </div>
 
               <div className="media-item__btns">
-                {item.isCover !== 1 && (
+                {item.status !== 'pending_add' && item.isCover !== 1 && (
                   <Tooltip title="设为主图">
                     <Button
                       type="text"
                       size="small"
                       icon={<StarOutlined />}
-                      onClick={() => handleSetCover(item.id)}
+                      onClick={() => handleSetCover(item.id as number)}
                     />
                   </Tooltip>
                 )}
-                {item.isCover === 1 && (
+                {item.status !== 'pending_add' && item.isCover === 1 && (
                   <Tooltip title="当前主图">
                     <Button
                       type="text"
@@ -198,13 +213,17 @@ const MediaUploadList: React.FC<MediaUploadListProps> = ({
                     />
                   </Tooltip>
                 )}
-                <Tooltip title="删除">
+                <Tooltip title={item.status === 'pending_add' ? '取消上传' : '删除'}>
                   <Button
                     type="text"
                     size="small"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() =>
+                      item.status === 'pending_add'
+                        ? handleDeletePending(item.url)
+                        : handleDelete(item.id as number)
+                    }
                   />
                 </Tooltip>
               </div>

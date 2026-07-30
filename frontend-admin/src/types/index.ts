@@ -112,13 +112,14 @@ export interface ProductVariant {
 }
 
 export interface MediaItem {
-  id: number;
+  id: number | null;   // null for pending_add items
   entityType: string;
   entityId: number;
   mediaType: 'image' | 'video';
   url: string;
   isCover: number;
   sortOrder: number;
+  status?: 'approved' | 'pending_add';
 }
 
 export interface User {
@@ -193,4 +194,5 @@ export interface PendingItem<T = Record<string, unknown>> {
   data: T
   isEdit: boolean
   currentData: T | null
+  pendingChangeId?: number | null
 }
