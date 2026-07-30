@@ -1,6 +1,7 @@
 package com.intlmedical.controller.hospitaladmin;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intlmedical.entity.*;
 import com.intlmedical.mapper.*;
@@ -114,6 +115,9 @@ public class HAMediaController {
         if (media == null) return Result.ok();
         if (!isOwned(media.getEntityType(), media.getEntityId())) return Result.fail(403, "无权访问");
         entityMediaMapper.deleteById(id);
+        if (media.getIsCover() != null && media.getIsCover() == 1) {
+            clearEntityCover(media.getEntityType(), media.getEntityId());
+        }
         return Result.ok();
     }
 
@@ -152,8 +156,7 @@ public class HAMediaController {
 
             if (!hasPendingItems) {
                 // Check for set-cover changes: any id!=null item with different isCover than entity_media
-                String singularType = entityType.endsWith("s")
-                    ? entityType.substring(0, entityType.length() - 1) : entityType;
+                String singularType = toSingular(entityType);
                 List<EntityMedia> liveMedia = entityMediaMapper.selectList(
                     new LambdaQueryWrapper<EntityMedia>()
                         .eq(EntityMedia::getEntityType, singularType)
@@ -175,18 +178,7 @@ public class HAMediaController {
                     }
                 }
 
-                // Check if non-media entity fields changed vs live entity
-                root.set("media", updated);
-                Object liveEntity = pendingChangeService.readLiveEntityPublic(pluralType, entityId);
-                com.fasterxml.jackson.databind.node.ObjectNode liveNode =
-                    objectMapper.valueToTree(liveEntity);
-                liveNode.remove("media");
-                com.fasterxml.jackson.databind.node.ObjectNode pendingWithoutMedia =
-                    root.deepCopy();
-                pendingWithoutMedia.remove("media");
-                boolean hasEntityChange = !pendingWithoutMedia.equals(liveNode);
-
-                if (!hasCoverChange && !hasEntityChange) {
+                if (!hasCoverChange) {
                     pendingChangeMapper.deleteById(pc.getId());
                     return Result.ok();
                 }
@@ -236,6 +228,32 @@ public class HAMediaController {
             case "case"        -> "cases";
             default            -> singular;
         };
+    }
+
+    private String toSingular(String plural) {
+        return switch (plural) {
+            case "hospitals"    -> "hospital";
+            case "doctors"      -> "doctor";
+            case "equipments"   -> "equipment";
+            case "environments" -> "environment";
+            case "cases"        -> "case";
+            default             -> plural;
+        };
+    }
+
+    private void clearEntityCover(String type, Long entityId) {
+        switch (type) {
+            case "hospital" -> hospitalMapper.update(null,
+                new LambdaUpdateWrapper<Hospital>().eq(Hospital::getId, entityId).set(Hospital::getCoverImageUrl, null));
+            case "doctor" -> doctorMapper.update(null,
+                new LambdaUpdateWrapper<Doctor>().eq(Doctor::getId, entityId).set(Doctor::getPhotoUrl, null));
+            case "equipment" -> equipmentMapper.update(null,
+                new LambdaUpdateWrapper<Equipment>().eq(Equipment::getId, entityId).set(Equipment::getImageUrl, null));
+            case "environment" -> environmentMapper.update(null,
+                new LambdaUpdateWrapper<HospitalEnvironment>().eq(HospitalEnvironment::getId, entityId).set(HospitalEnvironment::getImageUrl, null));
+            case "case" -> caseMapper.update(null,
+                new LambdaUpdateWrapper<Case>().eq(Case::getId, entityId).set(Case::getCoverImageUrl, null));
+        }
     }
 
 }
