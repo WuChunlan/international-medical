@@ -18,7 +18,7 @@ type DetailRecord = Hospital | Doctor | Equipment | HospitalEnvironment | Medica
 // ── EntityFields for generic diff display ────────────────────────
 
 const SKIP_KEYS = ['id', 'hospitalId', 'auditStatus', 'rejectionReason',
-                   'createdAt', 'updatedAt', 'hasPendingEdit']
+                   'createdAt', 'updatedAt', 'hasPendingEdit', 'media']
 
 const EntityFields: React.FC<{
   data: Record<string, unknown> | null | undefined
@@ -46,6 +46,49 @@ const EntityFields: React.FC<{
           )
         })}
     </Descriptions>
+  )
+}
+
+const PendingMediaSection: React.FC<{ data: Record<string, unknown> | null | undefined }> = ({ data }) => {
+  if (!data) return null
+  const media = data.media as Array<{
+    id?: number | null
+    url: string
+    mediaType: string
+    isCover?: number
+  }> | undefined
+  if (!Array.isArray(media) || media.length === 0) return null
+  return (
+    <div style={{ marginTop: 16 }}>
+      <Typography.Title level={5} style={{ marginBottom: 8 }}>媒体文件</Typography.Title>
+      <Image.PreviewGroup>
+        <Space wrap size={8}>
+          {media.map((m, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              {m.mediaType === 'image' ? (
+                <Image
+                  src={m.url}
+                  width={100}
+                  height={70}
+                  style={{ objectFit: 'cover', borderRadius: 4 }}
+                />
+              ) : (
+                <video
+                  src={m.url}
+                  width={100}
+                  height={70}
+                  style={{ objectFit: 'cover', borderRadius: 4, display: 'block' }}
+                />
+              )}
+              <div style={{ marginTop: 4 }}>
+                {m.isCover === 1 && <Tag color="gold">主图</Tag>}
+                {(m.id === null || m.id === undefined) && <Tag color="orange">新上传</Tag>}
+              </div>
+            </div>
+          ))}
+        </Space>
+      </Image.PreviewGroup>
+    </div>
   )
 }
 
@@ -222,7 +265,7 @@ const ReviewerPendingPage: React.FC = () => {
   const [cases, setCases] = useState<PendingItem<MedicalCase>[]>([])
   const [products, setProducts] = useState<PendingItem<SpecialProduct>[]>([])
   const [loading, setLoading] = useState(true)
-  const [rejectModal, setRejectModal] = useState<{ type: string; id: number } | null>(null)
+  const [rejectModal, setRejectModal] = useState<{ type: string; id: number; pendingChangeId?: number | null } | null>(null)
   const [rejectReason, setRejectReason] = useState('')
   const [detailModal, setDetailModal] = useState<{ type: string; item: PendingAuditItem } | null>(null)
   const [refetchKey, setRefetchKey] = useState(0)
@@ -274,9 +317,13 @@ const ReviewerPendingPage: React.FC = () => {
     return () => { cancelled = true }
   }, [refetchKey])
 
-  const handleApprove = async (type: string, id: number) => {
+  const handleApprove = async (type: string, id: number, pendingChangeId?: number | null) => {
     try {
-      await api.put(`/api/reviewer/approve/${type}/${id}`)
+      if (pendingChangeId) {
+        await api.put(`/api/reviewer/approve-draft/${type}/${pendingChangeId}`)
+      } else {
+        await api.put(`/api/reviewer/approve/${type}/${id}`)
+      }
       message.success('审核通过')
       setDetailModal(null)
       triggerRefetch()
@@ -287,7 +334,11 @@ const ReviewerPendingPage: React.FC = () => {
     if (!rejectModal) return
     if (!rejectReason.trim()) { message.warning('请填写驳回原因'); return }
     try {
-      await api.put(`/api/reviewer/reject/${rejectModal.type}/${rejectModal.id}`, { reason: rejectReason })
+      if (rejectModal.pendingChangeId) {
+        await api.put(`/api/reviewer/reject-draft/${rejectModal.type}/${rejectModal.pendingChangeId}`, { reason: rejectReason })
+      } else {
+        await api.put(`/api/reviewer/reject/${rejectModal.type}/${rejectModal.id}`, { reason: rejectReason })
+      }
       message.success('已驳回')
       setRejectModal(null)
       setRejectReason('')
@@ -296,9 +347,9 @@ const ReviewerPendingPage: React.FC = () => {
     } catch { message.error('操作失败') }
   }
 
-  const openReject = (type: string, id: number) => {
+  const openReject = (type: string, id: number, pendingChangeId?: number | null) => {
     setDetailModal(null)
-    setRejectModal({ type, id })
+    setRejectModal({ type, id, pendingChangeId })
     setRejectReason('')
   }
 
@@ -319,9 +370,9 @@ const ReviewerPendingPage: React.FC = () => {
     render: (_: unknown, record: PendingAuditItem) => (
       <Space>
         <Button type="link" size="small" icon={<CheckOutlined />} style={{ color: '#059669' }}
-          onClick={e => { e.stopPropagation(); handleApprove(type, record.data.id) }}>通过</Button>
+          onClick={e => { e.stopPropagation(); handleApprove(type, record.data.id, record.pendingChangeId) }}>通过</Button>
         <Button type="link" size="small" danger icon={<CloseOutlined />}
-          onClick={e => { e.stopPropagation(); openReject(type, record.data.id) }}>驳回</Button>
+          onClick={e => { e.stopPropagation(); openReject(type, record.data.id, record.pendingChangeId) }}>驳回</Button>
       </Space>
     ),
   })
@@ -339,7 +390,7 @@ const ReviewerPendingPage: React.FC = () => {
     nameKey: string,
   ) => (
     <Table
-      rowKey={record => String(record.data.id)}
+      rowKey={record => record.pendingChangeId != null ? `draft-${record.pendingChangeId}` : String(record.data.id)}
       size="middle"
       dataSource={data as PendingAuditItem[]}
       loading={loading}
@@ -420,7 +471,7 @@ const ReviewerPendingPage: React.FC = () => {
               <Button
                 danger
                 icon={<CloseOutlined />}
-                onClick={() => openReject(detailModal!.type, selectedItem.data.id)}
+                onClick={() => openReject(detailModal!.type, selectedItem.data.id, selectedItem.pendingChangeId)}
               >
                 驳回
               </Button>
@@ -428,7 +479,7 @@ const ReviewerPendingPage: React.FC = () => {
                 type="primary"
                 icon={<CheckOutlined />}
                 style={{ background: '#059669', borderColor: '#059669' }}
-                onClick={() => handleApprove(detailModal!.type, selectedItem.data.id)}
+                onClick={() => handleApprove(detailModal!.type, selectedItem.data.id, selectedItem.pendingChangeId)}
               >
                 审核通过
               </Button>
@@ -463,10 +514,14 @@ const ReviewerPendingPage: React.FC = () => {
                     changedKeys={changedKeys}
                     highlight={true}
                   />
+                  <PendingMediaSection data={selectedItem.data as Record<string, unknown>} />
                 </Col>
               </Row>
             ) : (
-              renderDetail(detailModal.type, selectedItem.data as DetailRecord, hospitalMap)
+              <>
+                {renderDetail(detailModal.type, selectedItem.data as DetailRecord, hospitalMap)}
+                <PendingMediaSection data={selectedItem.data as Record<string, unknown>} />
+              </>
             )}
           </>
         )}
