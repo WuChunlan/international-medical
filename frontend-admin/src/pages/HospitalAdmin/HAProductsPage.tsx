@@ -1,11 +1,18 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Table, Button, Space, Popconfirm, message, Drawer, Form, Input, Tag } from 'antd'
+import {
+  Table, Button, Space, Popconfirm, message, Drawer, Form, Input, Tag,
+  Modal, InputNumber, Divider,
+} from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
-import type { SpecialProduct } from '../../types'
+import type { SpecialProduct, ProductVariant } from '../../types'
 import { StatusTag } from '../../components/StatusTag'
 import FormRow from '../../components/FormRow'
+
+interface LocalVariant extends Omit<ProductVariant, 'productId' | 'isActive'> {
+  _tempId: number
+}
 
 const HAProductsPage: React.FC = () => {
   const [data, setData] = useState<SpecialProduct[]>([])
@@ -16,6 +23,10 @@ const HAProductsPage: React.FC = () => {
   const [saving, setSaving] = useState(false)
   const [editRecord, setEditRecord] = useState<SpecialProduct | null>(null)
   const [form] = Form.useForm()
+
+  const [localVariants, setLocalVariants] = useState<LocalVariant[]>([])
+  const [variantModal, setVariantModal] = useState<{ open: boolean; row: LocalVariant | null }>({ open: false, row: null })
+  const [variantForm] = Form.useForm()
 
   const fetchData = useCallback(async (page = 1) => {
     setLoading(true)
@@ -43,9 +54,21 @@ const HAProductsPage: React.FC = () => {
     }
   }
 
-  const openDrawer = (record?: SpecialProduct) => {
+  const openDrawer = async (record?: SpecialProduct) => {
     setEditRecord(record ?? null)
-    if (record) form.setFieldsValue(record); else form.resetFields()
+    setLocalVariants([])
+    if (record) {
+      form.setFieldsValue(record)
+      try {
+        const res = await api.get(`/api/hospital-admin/products/${record.id}/variants`)
+        const list: ProductVariant[] = res.data?.data ?? res.data ?? []
+        setLocalVariants(list.map(v => ({ ...v, _tempId: v.id })))
+      } catch {
+        // 加载套餐失败不阻断打开抽屉
+      }
+    } else {
+      form.resetFields()
+    }
     setDrawerOpen(true)
   }
 
@@ -53,11 +76,15 @@ const HAProductsPage: React.FC = () => {
     setSaving(true)
     try {
       const values = await form.validateFields()
+      const payload = {
+        ...values,
+        variants: localVariants.map(({ _tempId: _, id: __, ...v }) => v),
+      }
       if (editRecord) {
-        await api.put(`/api/hospital-admin/products/${editRecord.id}`, values)
+        await api.put(`/api/hospital-admin/products/${editRecord.id}`, payload)
         message.success('更新成功，等待审核')
       } else {
-        await api.post('/api/hospital-admin/products', values)
+        await api.post('/api/hospital-admin/products', payload)
         message.success('创建成功，等待审核')
       }
       setDrawerOpen(false)
@@ -69,6 +96,50 @@ const HAProductsPage: React.FC = () => {
       setSaving(false)
     }
   }
+
+  const openVariantModal = (row: LocalVariant | null) => {
+    variantForm.resetFields()
+    if (row) variantForm.setFieldsValue(row)
+    setVariantModal({ open: true, row })
+  }
+
+  const handleVariantSave = async () => {
+    try {
+      const values = await variantForm.validateFields()
+      if (variantModal.row) {
+        setLocalVariants(prev =>
+          prev.map(v => v._tempId === variantModal.row!._tempId ? { ...v, ...values } : v)
+        )
+      } else {
+        setLocalVariants(prev => [...prev, { ...values, _tempId: Date.now(), id: 0 }])
+      }
+      setVariantModal({ open: false, row: null })
+    } catch {
+      // 表单校验失败，保持 modal 打开
+    }
+  }
+
+  const handleVariantDelete = (row: LocalVariant) => {
+    setLocalVariants(prev => prev.filter(v => v._tempId !== row._tempId))
+  }
+
+  const variantColumns: ColumnsType<LocalVariant> = [
+    { title: '套餐名称', dataIndex: 'nameZh', ellipsis: true },
+    { title: '描述', dataIndex: 'descZh', ellipsis: true },
+    { title: '价格', dataIndex: 'price', width: 100, render: (v: number | null) => v != null ? `¥${v}` : '-' },
+    { title: '排序', dataIndex: 'sortOrder', width: 70 },
+    {
+      title: '操作', width: 120,
+      render: (_: unknown, row: LocalVariant) => (
+        <Space size={0}>
+          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => openVariantModal(row)}>编辑</Button>
+          <Popconfirm title="确认删除此套餐？" onConfirm={() => handleVariantDelete(row)} okText="确认" cancelText="取消">
+            <Button type="text" danger size="small" icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
 
   const columns: ColumnsType<SpecialProduct> = [
     { title: 'ID', dataIndex: 'id', width: 60 },
@@ -146,7 +217,58 @@ const HAProductsPage: React.FC = () => {
           </FormRow>
           <Form.Item name="sortOrder" label="排序"><Input type="number" /></Form.Item>
         </Form>
+
+        <Divider />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <strong style={{ fontSize: 14 }}>套餐配置</strong>
+          <Button size="small" type="dashed" icon={<PlusOutlined />} onClick={() => openVariantModal(null)}>添加套餐</Button>
+        </div>
+        <Table
+          rowKey="_tempId"
+          size="small"
+          dataSource={localVariants}
+          columns={variantColumns}
+          pagination={false}
+          locale={{ emptyText: '暂无套餐，点击"添加套餐"创建' }}
+        />
       </Drawer>
+
+      <Modal
+        title={variantModal.row ? '编辑套餐' : '添加套餐'}
+        open={variantModal.open}
+        onOk={handleVariantSave}
+        onCancel={() => setVariantModal({ open: false, row: null })}
+        okText="保存"
+        cancelText="取消"
+        width={480}
+        destroyOnClose
+      >
+        <Form form={variantForm} layout="vertical">
+          <FormRow>
+            <Form.Item name="nameZh" label="套餐中文名称" rules={[{ required: true, message: '请输入套餐名称' }]}>
+              <Input placeholder="例：基础套餐" />
+            </Form.Item>
+            <Form.Item name="nameEn" label="套餐英文名称" rules={[{ required: true, message: '请输入英文名称' }]}>
+              <Input placeholder="e.g. Basic Package" />
+            </Form.Item>
+          </FormRow>
+          <Form.Item name="descZh" label="中文描述">
+            <Input.TextArea rows={2} placeholder="套餐包含内容（中文）" />
+          </Form.Item>
+          <Form.Item name="descEn" label="英文描述">
+            <Input.TextArea rows={2} placeholder="Package description (English)" />
+          </Form.Item>
+          <FormRow>
+            <Form.Item name="price" label="价格">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="留空表示面议" />
+            </Form.Item>
+            <Form.Item name="sortOrder" label="排序">
+              <InputNumber min={0} style={{ width: '100%' }} placeholder="数字越小越靠前" />
+            </Form.Item>
+          </FormRow>
+        </Form>
+      </Modal>
     </div>
   )
 }
