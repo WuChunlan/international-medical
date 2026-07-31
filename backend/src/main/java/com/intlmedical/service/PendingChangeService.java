@@ -389,6 +389,7 @@ public class PendingChangeService {
         p.setContactPerson(textOrNull(d, "contactPerson"));
         p.setContactInfo(textOrNull(d, "contactInfo"));
         p.setSortOrder(d.path("sortOrder").asInt(0));
+        p.setIsActive(1);
         productMapper.updateById(p);
         variantMapper.delete(new LambdaQueryWrapper<ProductVariant>()
             .eq(ProductVariant::getProductId, id));
