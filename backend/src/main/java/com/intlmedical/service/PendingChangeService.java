@@ -392,7 +392,8 @@ public class PendingChangeService {
         p.setIsActive(1);
         productMapper.updateById(p);
         variantMapper.delete(new LambdaQueryWrapper<ProductVariant>()
-            .eq(ProductVariant::getProductId, id));
+            .eq(ProductVariant::getProductId, id)
+            .eq(ProductVariant::getIsActive, 1));
         JsonNode variants = d.path("variants");
         if (variants.isArray()) {
             for (JsonNode v : variants) {

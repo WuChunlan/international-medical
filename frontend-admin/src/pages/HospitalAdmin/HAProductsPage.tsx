@@ -64,7 +64,8 @@ const HAProductsPage: React.FC = () => {
         const list: ProductVariant[] = res.data?.data ?? res.data ?? []
         setLocalVariants(list.map(v => ({ ...v, _tempId: v.id })))
       } catch {
-        // 加载套餐失败不阻断打开抽屉
+        message.error('加载套餐失败，请重试')
+        return
       }
     } else {
       form.resetFields()
