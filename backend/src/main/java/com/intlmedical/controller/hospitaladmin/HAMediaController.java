@@ -73,7 +73,10 @@ public class HAMediaController {
                         }
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                org.slf4j.LoggerFactory.getLogger(HAMediaController.class).warn(
+                    "Failed to parse pending_data for entity {}/{}: {}", pluralType, entityId, e.getMessage());
+            }
         }
         return Result.ok(result);
     }
@@ -178,7 +181,30 @@ public class HAMediaController {
                     }
                 }
 
-                if (!hasCoverChange) {
+                // Also check if non-media entity fields changed vs live entity
+                Object liveEntity = pendingChangeService.readLiveEntityPublic(pluralType, entityId);
+                com.fasterxml.jackson.databind.node.ObjectNode liveNode =
+                    objectMapper.valueToTree(liveEntity);
+                String[] EDIT_FIELDS = {
+                    "nameZh", "nameEn", "introZh", "introEn", "coverImageUrl",
+                    "addressZh", "addressEn", "phone", "contactPerson", "contactInfo",
+                    "specialtyZh", "specialtyEn", "bioZh", "bioEn", "photoUrl", "pricePerVisit",
+                    "titleZh", "titleEn",
+                    "descZh", "descEn", "imageUrl",
+                    "summaryZh", "summaryEn", "detailZh", "detailEn",
+                    "priceMin", "priceMax"
+                };
+                boolean hasFieldChange = false;
+                for (String field : EDIT_FIELDS) {
+                    com.fasterxml.jackson.databind.JsonNode pendingVal = root.path(field);
+                    com.fasterxml.jackson.databind.JsonNode liveVal = liveNode.path(field);
+                    if (!pendingVal.equals(liveVal)) {
+                        hasFieldChange = true;
+                        break;
+                    }
+                }
+
+                if (!hasCoverChange && !hasFieldChange) {
                     pendingChangeMapper.deleteById(pc.getId());
                     return Result.ok();
                 }

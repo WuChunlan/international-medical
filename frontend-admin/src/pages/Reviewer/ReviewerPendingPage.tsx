@@ -77,6 +77,7 @@ const PendingMediaSection: React.FC<{ data: Record<string, unknown> | null | und
                   src={m.url}
                   width={100}
                   height={70}
+                  controls
                   style={{ objectFit: 'cover', borderRadius: 4, display: 'block' }}
                 />
               )}
