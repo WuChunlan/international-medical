@@ -97,6 +97,16 @@ export interface SpecialProduct {
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
   hasPendingEdit?: boolean;
+  variants?: ProductVariantDTO[];
+}
+
+export interface ProductVariantDTO {
+  nameZh: string;
+  nameEn: string;
+  descZh: string | null;
+  descEn: string | null;
+  price: number | null;
+  sortOrder: number;
 }
 
 export interface ProductVariant {

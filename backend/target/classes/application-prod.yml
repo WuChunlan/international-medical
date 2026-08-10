@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5000MB
+      max-request-size: 5000MB
+  datasource:
+    url: jdbc:mysql://localhost:3306/international_medical?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Hong_Kong&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USERNAME:intlmed}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      timeout: 3000ms
+      password: ${REDIS_PASSWORD}
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.intlmedical.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+  admin-expiration: 28800000
+
+app:
+  cors:
+    allowed-origins:
+      - https://www.scohospital.com
+      - https://scohospital.com
+      - https://admin.scohospital.com

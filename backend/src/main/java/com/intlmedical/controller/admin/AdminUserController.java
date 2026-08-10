@@ -46,16 +46,17 @@ public class AdminUserController {
 
     @PostMapping("/staff")
     public Result<Void> createStaff(@RequestBody CreateStaffRequest req) {
-        // roleId must be 3 (hospital_admin) or 4 (reviewer)
         if (req.getRoleId() != 3 && req.getRoleId() != 4) {
             return Result.fail(400, "roleId 必须为 3(医院管理员) 或 4(审核员)");
         }
-        // hospitalId is optional for hospital_admin — they can create their hospital later
+        if (req.getEmail() == null || req.getEmail().isBlank()) {
+            return Result.fail(400, "账号不能为空");
+        }
         long exists = userMapper.selectCount(
             new LambdaQueryWrapper<User>().eq(User::getEmail, req.getEmail())
         );
         if (exists > 0) {
-            return Result.fail(400, "该邮箱已被使用");
+            return Result.fail(400, "该账号已被使用");
         }
         User user = new User();
         user.setEmail(req.getEmail());
@@ -65,6 +66,8 @@ public class AdminUserController {
         user.setRoleId(req.getRoleId());
         user.setHospitalId(req.getHospitalId());
         user.setIsActive(1);
+        // hospital_admin must change password on first login
+        user.setMustChangePassword(req.getRoleId() == 3 ? 1 : 0);
         userMapper.insert(user);
         return Result.ok();
     }
@@ -97,7 +100,7 @@ public class AdminUserController {
                     .eq(User::getEmail, req.getEmail())
                     .ne(User::getId, id)
             );
-            if (exists > 0) return Result.fail(400, "该邮箱已被使用");
+            if (exists > 0) return Result.fail(400, "该账号已被使用");
         }
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
             .eq(User::getId, id)
@@ -107,6 +110,8 @@ public class AdminUserController {
             .set(User::getHospitalId, req.getHospitalId());
         if (req.getPassword() != null && !req.getPassword().isBlank()) {
             wrapper.set(User::getPasswordHash, passwordEncoder.encode(req.getPassword()));
+            // admin resetting password requires HA to change it again on next login
+            wrapper.set(User::getMustChangePassword, 1);
         }
         userMapper.update(null, wrapper);
         return Result.ok();

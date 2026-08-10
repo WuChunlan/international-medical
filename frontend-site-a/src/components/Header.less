@@ -33,7 +33,7 @@
   &__topbar-inner {
     width: 100%;
     margin: 0 auto;
-    padding: 0 200px;
+    padding: 0 40px;
     display: flex;
     align-items: center;
     justify-content: flex-start;  // LEFT — matches scotemp jz_col_5 position
@@ -53,18 +53,20 @@
 
   &__inner {
     margin: 0 auto;
-    padding: 0 80px;
+    padding: 0 40px;
     height: 130px;  // 188.953 - 80 = 108.953 ≈ 109px
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
   }
 
   &__logo {
     display: flex;
     align-items: center;
     cursor: pointer;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
   }
 
   &__logo-img {
@@ -72,13 +74,16 @@
     width: auto;
     object-fit: contain;
     display: block;
+    border-radius: 50%;
   }
 
   &__nav {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 0;
     height: 100%;
+    flex-shrink: 0;
   }
 
   &__mobile-btn {
@@ -106,21 +111,48 @@
     margin-top: 8px;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     &__nav { display: none; }
     &__mobile-btn { display: block; }
-    &__topbar { display: none; }
+
+    &__topbar {
+      display: flex;
+      height: 38px;
+      align-items: center;
+    }
+
+    &__topbar-inner {
+      padding: 0 16px;
+    }
+
+    &__lang-switcher { padding-left: 0; }
+  }
+
+  @media (max-width: 480px) {
+    &__topbar { height: 36px; }
+
+    &__topbar-inner {
+      padding: 0 12px;
+      gap: 8px;
+    }
+
+    &__auth-links { gap: 6px; }
+  }
+
+  @media (max-width: 360px) {
+    &__topbar-inner { padding: 0 8px; }
+    &__auth-links { gap: 4px; }
   }
 }
 
 // ── Nav links — #1e50ae on white, matches scotemp nav_item_text ───────────────
 .header-nav-link {
   font-family: '微软雅黑', 'Source Sans 3', sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: rgba(255, 255, 255, 1);  // rgb(30,80,174) = #1e50ae
   text-decoration: none;
-  padding: 0 20px;
+  padding: 0 10px;
   height: 109px;
   line-height: 109px;
   border: none;
@@ -188,6 +220,16 @@
   &--active {
     color: #25F1FF;  // isActived: rgb(37,241,255)
   }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 0 6px;
+  }
+
+  @media (max-width: 360px) {
+    font-size: 13px;
+    padding: 0 4px;
+  }
 }
 
 // ── Auth links in topbar ──────────────────────────────────────────────────────
@@ -236,6 +278,24 @@
       background: rgba(37, 241, 255, 0.25);
     }
   }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 0 6px;
+
+    &--register {
+      padding: 2px 8px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    font-size: 13px;
+    padding: 0 4px;
+
+    &--register {
+      padding: 2px 6px;
+    }
+  }
 }
 
 // ── Logo text fallback ────────────────────────────────────────────────────────
@@ -247,13 +307,68 @@
 }
 
 .site-a-header__logo-text {
-  padding-left: 24px;
+  padding-left: 16px;
   font-family: '微软雅黑', 'Source Sans 3', sans-serif;
   font-size: 24px;
   font-weight: 700;
   color: #fff;
   letter-spacing: 1px;
   line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 1025px) {
+  .site-a-header--en {
+    .site-a-header__inner {
+      padding: 0 clamp(28px, 3.8vw, 64px);
+      gap: 16px;
+    }
+
+    .site-a-header__logo {
+      // max-width: 300px;
+    }
+
+    .site-a-header__logo-img {
+      height: 64px;
+      flex-shrink: 0;
+    }
+
+    .site-a-header__logo-text {
+      padding-left: 12px;
+      font-size: clamp(14px, 1.15vw, 18px);
+      letter-spacing: 0.2px;
+      line-height: 1.18;
+    }
+
+    .site-a-header__nav {
+      flex: 1 0 auto;
+    }
+
+    .header-nav-link {
+      padding: 0 clamp(7px, 0.7vw, 12px);
+      font-size: clamp(12px, 0.92vw, 15px);
+      letter-spacing: 0;
+
+      &::after {
+        left: clamp(7px, 0.7vw, 12px);
+        right: clamp(7px, 0.7vw, 12px);
+      }
+    }
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-a-header--en {
+    .site-a-header__logo {
+      // max-width: 360px;
+    }
+
+    .header-nav-link {
+      padding: 0 clamp(10px, 0.9vw, 16px);
+      font-size: clamp(13px, 0.95vw, 16px);
+    }
+  }
 }
 
 .site-a-header__logo-subtitle {

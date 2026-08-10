@@ -3,16 +3,18 @@
 // Sider
 .admin-sider {
   border-right: 1px solid @color-border !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
 
   .sider-logo {
-    height: 64px;
+    height: 52px;
     display: flex;
     align-items: center;
     padding: 0 20px;
     border-bottom: 1px solid @color-border;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: @color-primary;
+    letter-spacing: -0.3px;
     white-space: nowrap;
     overflow: hidden;
     user-select: none;
@@ -27,8 +29,8 @@
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
-    bottom: 0;
+    top: 6px;
+    bottom: 6px;
     width: 3px;
     background: @color-primary;
     border-radius: 0 2px 2px 0;
@@ -37,13 +39,14 @@
 
 // Header
 .admin-header {
-  height: 48px;
-  line-height: 48px;
+  height: 52px;
+  line-height: 52px;
   padding: 0 16px 0 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid @color-border;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -75,5 +78,5 @@
 // Content area
 .admin-content {
   padding: 24px;
-  min-height: calc(100vh - 48px);
+  min-height: calc(100vh - 52px);
 }

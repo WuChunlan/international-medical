@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ScoSection from './ScoSection/index';
 import TabSection from './TabSection/index';
 import HospitalsSection from './HospitalsSection/index';
@@ -11,8 +12,25 @@ import Footer from '../../components/Footer';
 import './index.less';
 
 export default function HomePage() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'professional' | 'special'>('professional');
   const [pendingScroll, setPendingScroll] = useState<string | null>(null);
+
+  // Listen for nav requests that require a tab switch before scrolling
+  useEffect(() => {
+    const state = location.state as { anchor?: string } | null;
+    if (!state?.anchor) return;
+    const anchor = state.anchor;
+    navigate(location.pathname, { replace: true, state: null });
+    if (anchor === '#hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const id = anchor.replace('#', '');
+    setActiveTab(anchor === '#products' ? 'special' : 'professional');
+    setPendingScroll(anchor === '#products' ? 'products' : id);
+  }, [location.pathname, location.state, navigate]);
 
   // Listen for nav requests that require a tab switch before scrolling
   useEffect(() => {

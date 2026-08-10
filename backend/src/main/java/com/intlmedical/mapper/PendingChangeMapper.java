@@ -16,4 +16,7 @@ public interface PendingChangeMapper extends BaseMapper<PendingChange> {
 
     @Select("SELECT * FROM pending_changes WHERE entity_type = #{entityType} AND audit_status = 'pending'")
     List<PendingChange> selectPendingByType(@Param("entityType") String entityType);
+
+    @Select("SELECT * FROM pending_changes WHERE entity_type = #{entityType} AND entity_id IS NULL AND audit_status = 'pending'")
+    List<PendingChange> selectNewDraftsByType(@Param("entityType") String entityType);
 }

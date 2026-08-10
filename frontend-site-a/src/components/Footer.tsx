@@ -1,32 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import api from '../api';
+import { useContacts } from '../hooks/useContacts';
 import './Footer.less';
-
-interface ContactConfig {
-  personZh: string;
-  personEn: string;
-  info: string;
-}
 
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const isZh = i18n.language.startsWith('zh');
   const [modalOpen, setModalOpen] = useState(false);
-  const [contact, setContact] = useState<ContactConfig | null>(null);
-
-  useEffect(() => {
-    Promise.all([
-      api.get('/api/config/footer_contact_person').then(r => r.data).catch(() => null),
-      api.get('/api/config/footer_contact_info').then(r => r.data).catch(() => null),
-    ]).then(([person, info]) => {
-      setContact({
-        personZh: person?.valueZh || '国际医疗中心',
-        personEn: person?.valueEn || 'International Medical Center',
-        info: info?.valueZh || info?.valueEn || '',
-      });
-    });
-  }, []);
+  const contacts = useContacts();
 
   return (
     <>
@@ -78,19 +59,19 @@ export default function Footer() {
               {isZh ? '联系我们' : 'Contact Us'}
             </h3>
             <div className="footer-contact-modal__divider" />
-            {contact ? (
-              <div className="footer-contact-modal__body">
-                <div className="footer-contact-modal__row">
-                  <span className="footer-contact-modal__label">{isZh ? '联系人' : 'Contact'}</span>
-                  <span className="footer-contact-modal__value">{isZh ? contact.personZh : contact.personEn}</span>
-                </div>
-                <div className="footer-contact-modal__row">
-                  <span className="footer-contact-modal__label">{isZh ? '联系方式' : 'Phone / Info'}</span>
-                  <span className="footer-contact-modal__value">{contact.info}</span>
-                </div>
-              </div>
-            ) : (
+            {contacts.length === 0 ? (
               <p className="footer-contact-modal__loading">{t('common.loading')}</p>
+            ) : (
+              <div className="footer-contact-modal__body">
+                {contacts.map((c, i) => (
+                  <div key={i} className="footer-contact-modal__row" style={{ marginBottom: i < contacts.length - 1 ? 12 : 0 }}>
+                    <span className="footer-contact-modal__label">{isZh ? '联系人' : 'Contact'}</span>
+                    <span className="footer-contact-modal__value">{c.name || '—'}</span>
+                    <span className="footer-contact-modal__label" style={{ marginLeft: 16 }}>{isZh ? '电话' : 'Phone'}</span>
+                    <span className="footer-contact-modal__value">{c.phone || '—'}</span>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

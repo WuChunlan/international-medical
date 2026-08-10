@@ -27,12 +27,6 @@ public class AuthController {
         return Result.ok(authService.login(req));
     }
 
-    @PostMapping("/send-code")
-    public Result<Void> sendVerifyCode(@RequestParam String email) {
-        authService.sendVerifyCode(email);
-        return Result.ok();
-    }
-
     @GetMapping("/invite-info")
     public Result<java.util.Map<String, Object>> inviteInfo(@RequestParam String code) {
         return Result.ok(authService.inviteInfo(code));

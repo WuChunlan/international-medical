@@ -21,6 +21,7 @@ public class EquipmentController {
         List<Equipment> list = equipmentMapper.selectList(
             new LambdaQueryWrapper<Equipment>()
                 .eq(Equipment::getIsActive, 1)
+                .eq(Equipment::getAuditStatus, "approved")
                 .orderByAsc(Equipment::getSortOrder)
         );
         return Result.ok(list);

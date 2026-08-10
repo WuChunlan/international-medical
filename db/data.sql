@@ -1,76 +1,323 @@
-USE international_medical;
+-- international_medical.browse_history definition
 
--- ============================================================
--- 角色初始数据
--- ============================================================
-INSERT INTO roles (id, code, name_zh, name_en) VALUES
-(1, 'user',  '普通用户', 'User'),
-(2, 'admin', '管理员',   'Administrator'),
-(3, 'hospital_admin', '医院管理员', 'Hospital Admin'),
-(4, 'reviewer', '审核员', 'Reviewer'),
-(5, 'customer_rep', '客户代表', 'Customer Rep');
+CREATE TABLE `browse_history` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `target_type` enum('hospital','product') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `target_id` bigint unsigned NOT NULL,
+  `target_name_zh` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '快照：中文名',
+  `target_name_en` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '快照：英文名',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_user` (`user_id`),
+  KEY `idx_created` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='浏览预约记录';
 
--- ============================================================
--- 默认管理员账号 (密码: 12345, bcrypt hash)
--- ============================================================
-INSERT INTO users (role_id, email, password_hash, is_active) VALUES
-(2, 'admin@international-medical.com',
- '$2b$12$xgnu7nWrPpzCBUjI.6Tlk.Ee5KRApTjXm3ALfdnsoD7aTg5BHamEu', 1);
 
--- ============================================================
--- 网站全局配置
--- ============================================================
-INSERT INTO site_configs (config_key, value_zh, value_en, description) VALUES
-('site_name',
- '国际医疗',
- 'International Medical',
- '网站名称'),
-('site_subtitle',
- '为全球患者提供高品质中国医疗服务',
- 'Providing World-Class Chinese Medical Services to Global Patients',
- '网站副标题'),
-('site_logo_url',
- '',
- '',
- '网站Logo图片URL（留空则使用文字Logo）'),
-('site_intro',
- '国际医疗项目致力于为全球患者提供高品质的中国医疗服务，汇聚国内顶尖医院与专家资源，为您的健康保驾护航。',
- 'The International Medical Program is dedicated to providing high-quality Chinese medical services to patients worldwide, bringing together top hospitals and expert resources in China.',
- '首页项目简介'),
-('contact_default_person', '国际医疗中心', 'International Medical Center', '默认预约联系人'),
-('contact_default_info',   '025-83169988', '025-83169988', '默认联系方式'),
-('translate_provider', 'mymemory', 'mymemory', '翻译服务商：mymemory 或 deepl'),
-('translate_api_key', '', '', '翻译API Key（MyMemory可留空；DeepL填写Auth Key）'),
+-- international_medical.cases definition
 
--- 文件上传配置
-('upload_base_path',
- '/Users/wuchunlan/Desktop/医疗平台媒体资源',
- '/Users/wuchunlan/Desktop/医疗平台媒体资源',
- '文件上传根目录'),
-('upload_base_url',
- 'http://localhost:8080/media',
- 'http://localhost:8080/media',
- '文件访问URL前缀'),
-('upload_max_size_mb', '50', '50', '单文件最大上传大小（MB）'),
-('upload_allowed_image_types', 'jpg,jpeg,png,webp,gif', 'jpg,jpeg,png,webp,gif', '允许上传的图片格式'),
-('upload_allowed_video_types', 'mp4,mov,avi,webm', 'mp4,mov,avi,webm', '允许上传的视频格式'),
+CREATE TABLE `cases` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '关联医院（可为空）',
+  `title_zh` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title_en` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `summary_zh` text COLLATE utf8mb4_unicode_ci,
+  `summary_en` text COLLATE utf8mb4_unicode_ci,
+  `detail_zh` longtext COLLATE utf8mb4_unicode_ci,
+  `detail_en` longtext COLLATE utf8mb4_unicode_ci,
+  `cover_image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='成功案例表';
 
--- 数据库配置
-('db_host', 'localhost', 'localhost', '数据库主机'),
-('db_port', '3306', '3306', '数据库端口'),
-('db_name', 'international_medical', 'international_medical', '数据库名称'),
-('db_username', 'root', 'root', '数据库用户名'),
 
--- Redis 配置
-('redis_host', 'localhost', 'localhost', 'Redis 主机'),
-('redis_port', '6379', '6379', 'Redis 端口'),
-('redis_database', '0', '0', 'Redis 数据库编号'),
+-- international_medical.doctors definition
 
--- 邮件配置
-('mail_host', 'smtp.example.com', 'smtp.example.com', 'SMTP 服务器地址'),
-('mail_port', '587', '587', 'SMTP 端口'),
-('mail_username', 'noreply@example.com', 'noreply@example.com', '发件人邮箱'),
+CREATE TABLE `doctors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hospital_id` bigint unsigned NOT NULL,
+  `name_zh` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `specialty_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '专业/科室',
+  `specialty_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bio_zh` text COLLATE utf8mb4_unicode_ci,
+  `bio_en` text COLLATE utf8mb4_unicode_ci,
+  `photo_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price_per_visit` decimal(10,2) DEFAULT NULL COMMENT '元/次',
+  `title_zh` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '职称',
+  `title_en` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医生表';
 
--- JWT 配置
-('jwt_expiration_hours', '24', '24', 'C端 JWT 有效期（小时）'),
-('jwt_admin_expiration_hours', '8', '8', '管理端 JWT 有效期（小时）');
+
+-- international_medical.email_verify_codes definition
+
+CREATE TABLE `email_verify_codes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `code` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_used` tinyint(1) NOT NULL DEFAULT '0',
+  `expired_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='邮箱验证码';
+
+
+-- international_medical.entity_media definition
+
+CREATE TABLE `entity_media` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'hospital | doctor | product',
+  `entity_id` bigint unsigned NOT NULL,
+  `media_type` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'image | video',
+  `url` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_cover` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1=主图，用于列表展示',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_entity` (`entity_type`,`entity_id`),
+  KEY `idx_cover` (`entity_type`,`entity_id`,`is_cover`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='实体媒体资源表';
+
+
+-- international_medical.equipments definition
+
+CREATE TABLE `equipments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hospital_id` bigint unsigned NOT NULL,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_zh` text COLLATE utf8mb4_unicode_ci,
+  `desc_en` text COLLATE utf8mb4_unicode_ci,
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医疗设备表';
+
+
+-- international_medical.hospital_environments definition
+
+CREATE TABLE `hospital_environments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hospital_id` bigint unsigned NOT NULL,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_zh` text COLLATE utf8mb4_unicode_ci,
+  `desc_en` text COLLATE utf8mb4_unicode_ci,
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医院诊疗环境表';
+
+
+-- international_medical.hospitals definition
+
+CREATE TABLE `hospitals` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `intro_zh` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '中文简介',
+  `intro_en` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '英文简介',
+  `cover_image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '封面图',
+  `address_zh` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_en` varchar(300) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_person` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '预约联系人',
+  `contact_info` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '联系方式',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci COMMENT '审核拒绝原因',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='医院表';
+
+
+-- international_medical.pending_changes definition
+
+CREATE TABLE `pending_changes` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_type` enum('hospitals','doctors','equipments','environments','cases','products') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entity_id` bigint unsigned NOT NULL,
+  `pending_data` json NOT NULL,
+  `submitted_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `submitted_by` bigint unsigned NOT NULL,
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `reviewed_at` datetime DEFAULT NULL,
+  `reviewed_by` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_entity` (`entity_type`,`entity_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- international_medical.product_variants definition
+
+CREATE TABLE `product_variants` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint unsigned NOT NULL,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `desc_zh` text COLLATE utf8mb4_unicode_ci,
+  `desc_en` text COLLATE utf8mb4_unicode_ci,
+  `price` decimal(10,2) DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `idx_product` (`product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品细分套餐';
+
+
+-- international_medical.roles definition
+
+CREATE TABLE `roles` (
+  `id` tinyint unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'user | admin',
+  `name_zh` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='角色表';
+
+
+-- international_medical.service_features definition
+
+CREATE TABLE `service_features` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '服务名称（中文）',
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '服务名称（英文）',
+  `intro_zh` text COLLATE utf8mb4_unicode_ci COMMENT '服务简介（中文）',
+  `intro_en` text COLLATE utf8mb4_unicode_ci COMMENT '服务简介（英文）',
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '简介图片',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='服务功能表';
+
+
+-- international_medical.service_team_features definition
+
+CREATE TABLE `service_team_features` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `service_team_id` bigint unsigned NOT NULL COMMENT '关联 service_teams.id',
+  `service_feature_id` bigint unsigned NOT NULL COMMENT '关联 service_features.id',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_team_feature` (`service_team_id`,`service_feature_id`),
+  KEY `idx_team` (`service_team_id`),
+  KEY `idx_feature` (`service_feature_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='服务团队与服务功能关联表';
+
+
+-- international_medical.service_teams definition
+
+CREATE TABLE `service_teams` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `intro_zh` text COLLATE utf8mb4_unicode_ci,
+  `intro_en` text COLLATE utf8mb4_unicode_ci,
+  `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='服务团队表';
+
+
+-- international_medical.site_configs definition
+
+CREATE TABLE `site_configs` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `config_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '配置键',
+  `value_zh` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value_en` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_key` (`config_key`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='网站配置表';
+
+
+-- international_medical.special_products definition
+
+CREATE TABLE `special_products` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '归属医院',
+  `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `summary_zh` text COLLATE utf8mb4_unicode_ci COMMENT '列表页摘要',
+  `summary_en` text COLLATE utf8mb4_unicode_ci,
+  `detail_zh` longtext COLLATE utf8mb4_unicode_ci COMMENT '详情富文本',
+  `detail_en` longtext COLLATE utf8mb4_unicode_ci,
+  `cover_image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price_min` decimal(10,2) DEFAULT NULL,
+  `price_max` decimal(10,2) DEFAULT NULL,
+  `contact_person` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_info` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sort_order` int NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_hospital` (`hospital_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='特需产品表';
+
+
+-- international_medical.users definition
+
+CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1=user 2=admin',
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '绑定医院ID（hospital_admin专用）',
+  `first_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '名',
+  `last_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '姓',
+  `gender` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'male | female | other',
+  `email` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '联系方式',
+  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'bcrypt',
+  `id_card_number` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '身份证号',
+  `passport_number` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '护照号',
+  `id_card_country` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '证件签发国',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `invite_code` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邀请码，仅客户代表(role_id=5)有值',
+  `can_invite` tinyint(1) NOT NULL DEFAULT '1' COMMENT '客户代表邀请开关：1=邀请码生效 0=失效',
+  `referred_by` bigint unsigned DEFAULT NULL COMMENT '归属的客户代表 user_id，仅普通客户有值',
+  `must_change_password` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_email` (`email`),
+  UNIQUE KEY `uk_invite_code` (`invite_code`),
+  KEY `idx_referred_by` (`referred_by`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';

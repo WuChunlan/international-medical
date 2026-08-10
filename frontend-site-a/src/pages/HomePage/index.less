@@ -12,10 +12,10 @@
   scroll-margin-top: 189px;
 }
 
-// ── Mobile: topbar hidden + nav row 64px ──────────────────────
-@media (max-width: 768px) {
+// ── Mobile: compact topbar 38px + nav row 64px ─────────────────
+@media (max-width: 1024px) {
   .home-page {
-    padding-top: 64px;
+    padding-top: 102px;
   }
   .hospitals-section,
   .equipment-section,
@@ -23,6 +23,20 @@
   .service-features-section,
   .cases-section,
   .products-section {
-    scroll-margin-top: 64px;
+    scroll-margin-top: 102px;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page {
+    padding-top: 100px;
+  }
+  .hospitals-section,
+  .equipment-section,
+  .doctors-section,
+  .service-features-section,
+  .cases-section,
+  .products-section {
+    scroll-margin-top: 100px;
   }
 }

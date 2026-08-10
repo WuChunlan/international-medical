@@ -27,11 +27,20 @@ public class SiteConfigService {
     }
 
     public void update(String key, String valueZh, String valueEn) {
-        siteConfigMapper.update(null,
-            new LambdaUpdateWrapper<SiteConfig>()
-                .eq(SiteConfig::getConfigKey, key)
-                .set(SiteConfig::getValueZh, valueZh)
-                .set(SiteConfig::getValueEn, valueEn)
-        );
+        SiteConfig existing = getByKey(key);
+        if (existing == null) {
+            SiteConfig record = new SiteConfig();
+            record.setConfigKey(key);
+            record.setValueZh(valueZh);
+            record.setValueEn(valueEn);
+            siteConfigMapper.insert(record);
+        } else {
+            siteConfigMapper.update(null,
+                new LambdaUpdateWrapper<SiteConfig>()
+                    .eq(SiteConfig::getConfigKey, key)
+                    .set(SiteConfig::getValueZh, valueZh)
+                    .set(SiteConfig::getValueEn, valueEn)
+            );
+        }
     }
 }

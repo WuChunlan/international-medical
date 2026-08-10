@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Table, Button, Space, Switch, Popconfirm, message, Divider } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { Table, Button, Space, Switch, Popconfirm, message, Divider, Modal, Input } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
 import type { Hospital } from '../../types'
 import HospitalForm from './HospitalForm'
+import { StatusTag } from '../../components/StatusTag'
 
 const HospitalManage: React.FC = () => {
   const [data, setData] = useState<Hospital[]>([])
@@ -13,14 +14,25 @@ const HospitalManage: React.FC = () => {
   const [current, setCurrent] = useState(1)
   const [modalOpen, setModalOpen] = useState(false)
   const [editRecord, setEditRecord] = useState<Hospital | null>(null)
+  const [rejectModal, setRejectModal] = useState<{ hospitalId: number; pcId?: number } | null>(null)
+  const [rejectReason, setRejectReason] = useState('')
+  const [pendingMap, setPendingMap] = useState<Record<number, number>>({})
 
   const fetchData = useCallback(async (page = 1) => {
     setLoading(true)
     try {
-      const res = await api.get('/api/admin/hospitals', { params: { page, size: 10 } })
-      const d = res.data?.data || res.data
+      const [hospitalsRes, pendingRes] = await Promise.all([
+        api.get('/api/admin/hospitals', { params: { page, size: 10 } }),
+        api.get('/api/reviewer/pending/hospitals'),
+      ])
+      const d = hospitalsRes.data?.data || hospitalsRes.data
       setData(d?.records || d?.list || [])
       setTotal(d?.total || 0)
+      // Build a map: hospitalId → pendingChangeId for hospitals with a pending record
+      const pending = (pendingRes.data?.data ?? []) as { data: { id: number }; pendingChangeId: number }[]
+      const map: Record<number, number> = {}
+      pending.forEach(item => { if (item.data?.id && item.pendingChangeId) map[item.data.id] = item.pendingChangeId })
+      setPendingMap(map)
     } catch {
       message.error('获取医院列表失败')
     } finally {
@@ -50,6 +62,34 @@ const HospitalManage: React.FC = () => {
     }
   }
 
+  const handleApprove = async (hospitalId: number) => {
+    const pcId = pendingMap[hospitalId]
+    if (!pcId) { message.warning('未找到待审核记录'); return }
+    try {
+      await api.put(`/api/reviewer/approve-draft/hospitals/${pcId}`)
+      message.success('已审核通过')
+      fetchData(current)
+    } catch {
+      message.error('操作失败')
+    }
+  }
+
+  const handleRejectSubmit = async () => {
+    if (!rejectModal) return
+    if (!rejectReason.trim()) { message.warning('请填写驳回原因'); return }
+    const pcId = rejectModal.pcId ?? pendingMap[rejectModal.hospitalId]
+    if (!pcId) { message.warning('未找到待审核记录'); return }
+    try {
+      await api.put(`/api/reviewer/reject-draft/hospitals/${pcId}`, { reason: rejectReason })
+      message.success('已驳回')
+      setRejectModal(null)
+      setRejectReason('')
+      fetchData(current)
+    } catch {
+      message.error('操作失败')
+    }
+  }
+
   const handleModalClose = (refresh?: boolean) => {
     setModalOpen(false)
     setEditRecord(null)
@@ -63,24 +103,40 @@ const HospitalManage: React.FC = () => {
     { title: '联系人', dataIndex: 'contactPerson', width: 100 },
     { title: '排序', dataIndex: 'sortOrder', width: 80 },
     {
-      title: '状态', dataIndex: 'isActive', width: 100,
+      title: '审核状态', dataIndex: 'auditStatus', width: 110,
+      render: (v: string) => <StatusTag status={(v ?? 'pending') as 'approved' | 'pending' | 'rejected'} />,
+    },
+    {
+      title: '状态', dataIndex: 'isActive', width: 90,
       render: (val: number, record: Hospital) => (
         <Switch checked={val === 1} checkedChildren="启用" unCheckedChildren="禁用"
           onChange={() => handleToggleStatus(record)} size="small" />
       ),
     },
     {
-      title: '操作', width: 150,
-      render: (_: unknown, record: Hospital) => (
-        <Space size={0}>
-          <Button type="text" size="small" icon={<EditOutlined />}
-            onClick={() => { setEditRecord(record); setModalOpen(true) }}>编辑</Button>
-          <Divider type="vertical" style={{ margin: '0 2px' }} />
-          <Popconfirm title="确认删除该医院？" onConfirm={() => handleDelete(record.id)} okText="确认" cancelText="取消">
-            <Button type="text" danger size="small" icon={<DeleteOutlined />}>删除</Button>
-          </Popconfirm>
-        </Space>
-      ),
+      title: '操作', width: 220,
+      render: (_: unknown, record: Hospital) => {
+        const hasPending = !!pendingMap[record.id]
+        return (
+          <Space size={0}>
+            {hasPending && (
+              <>
+                <Button type="text" size="small" icon={<CheckOutlined />} style={{ color: '#059669' }}
+                  onClick={() => handleApprove(record.id)}>通过</Button>
+                <Button type="text" size="small" danger icon={<CloseOutlined />}
+                  onClick={() => { setRejectModal({ hospitalId: record.id }); setRejectReason('') }}>驳回</Button>
+                <Divider type="vertical" style={{ margin: '0 2px' }} />
+              </>
+            )}
+            <Button type="text" size="small" icon={<EditOutlined />}
+              onClick={() => { setEditRecord(record); setModalOpen(true) }}>编辑</Button>
+            <Divider type="vertical" style={{ margin: '0 2px' }} />
+            <Popconfirm title="确认删除该医院？" onConfirm={() => handleDelete(record.id)} okText="确认" cancelText="取消">
+              <Button type="text" danger size="small" icon={<DeleteOutlined />}>删除</Button>
+            </Popconfirm>
+          </Space>
+        )
+      },
     },
   ]
 
@@ -105,6 +161,23 @@ const HospitalManage: React.FC = () => {
         pagination={{ current, pageSize: 10, total, showSizeChanger: false, showTotal: t => `共 ${t} 条`, position: ['bottomRight'], size: 'small', onChange: setCurrent }}
       />
       <HospitalForm open={modalOpen} record={editRecord} onClose={handleModalClose} />
+
+      <Modal
+        title="驳回原因"
+        open={!!rejectModal}
+        onOk={handleRejectSubmit}
+        onCancel={() => setRejectModal(null)}
+        okText="确认驳回"
+        cancelText="取消"
+        okButtonProps={{ danger: true }}
+      >
+        <Input.TextArea
+          rows={4}
+          placeholder="请填写驳回原因（将显示给医院管理员）"
+          value={rejectReason}
+          onChange={e => setRejectReason(e.target.value)}
+        />
+      </Modal>
     </div>
   )
 }

@@ -45,8 +45,17 @@ html {
 
 // ── 2. TabSection ───────────────────────────────────────────
 
-@media (max-width: @bp-tablet) {
-  .tab-section__inner { flex-direction: column; }
+@media (max-width: @bp-laptop) {
+  .tab-section__inner {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .tab-card {
+    width: 100%;
+    min-width: 0;
+  }
 
   // 竖分割线 -> 横分割线
   .tab-card-divider {
@@ -55,14 +64,43 @@ html {
   }
 
   .tab-card-inner {
-    padding: 16px;
+    padding: 18px 16px;
     gap: 14px;
+    align-items: center;
   }
 
   .tab-icon-wrap {
     width: 48px;
     height: 48px;
   }
+
+  .tab-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .tab-title,
+  .tab-desc,
+  .tab-tag {
+    word-break: normal;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+}
+
+@media (max-width: @bp-mobile) {
+  .tab-card-inner {
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .tab-icon-wrap {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tab-title { font-size: 1.25rem; }
+  .tab-desc { font-size: 0.92rem; }
 }
 
 // ── 3. 内容区轮播 → 每屏 1 张大卡横滑 ────────────────────────
@@ -155,6 +193,25 @@ html {
 
 // ── 6. 通用工具 ─────────────────────────────────────────────
 
+@media (max-width: @bp-laptop) {
+  html,
+  body,
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .home-page,
+  .tab-section,
+  .tab-section__inner,
+  .section-container,
+  .section-inner {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+}
+
 @media (max-width: @bp-tablet) {
   // 容器内边距 0 20px -> 0 16px
   .section-container,
@@ -176,23 +233,84 @@ html {
 }
 
 // ── Header (mobile height fix) ──────────────────────────────
-@media (max-width: @bp-tablet) {
+@media (max-width: @bp-laptop) {
+  .site-a-header,
+  .site-a-header__main { overflow-x: hidden; }
+
   .site-a-header__inner {
     height: 64px;
     padding: 0 16px;
+    gap: 12px;
   }
+  .site-a-header__logo {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+  .site-a-header__logo-info { min-width: 0; }
   .site-a-header__logo-img { height: 44px; }
-  .site-a-header__logo-text { font-size: 18px; }
+  .site-a-header__logo-text {
+    font-size: 14px;
+    padding-left: 8px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .site-a-header__mobile-btn {
+    flex: 0 0 auto;
     min-width: 44px;
     min-height: 44px;
     padding: 10px;
   }
 
   .site-a-header__mobile-menu {
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 102px);
     overflow-y: auto;
+  }
+
+  // Detail pages use .page-main (fixed 190px desktop offset). On mobile the
+  // fixed header is only 102px, so realign to avoid a large top blank.
+  .page-main { padding-top: 102px; }
+}
+
+@media (max-width: @bp-mobile) {
+  .site-a-header__inner { padding: 0 12px; }
+  .site-a-header__logo-text {
+    font-size: 14px;
+    padding-left: 8px;
+  }
+
+  .page-main { padding-top: 100px; }
+}
+
+// ── Detail pages (hospital / product) mobile polish ─────────────
+@media (max-width: @bp-tablet) {
+  // Hero blocks: tighten generous desktop padding
+  .product-hero,
+  .hospital-hero {
+    padding: 32px 20px;
+  }
+  .hd-hero { padding: 32px 20px; }
+
+  // Detail section vertical rhythm
+  .section-block { padding: 40px 0; }
+  .hd-section { padding: 40px 0; }
+  .hd-section__header { margin-bottom: 24px; }
+
+  // Variants table: prevent body overflow, allow internal horizontal scroll
+  .variants-table {
+    .ant-table-content,
+    .ant-table-body {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ant-table-cell {
+      padding: 10px 12px;
+      white-space: normal;
+      word-break: break-word;
+    }
   }
 }
 

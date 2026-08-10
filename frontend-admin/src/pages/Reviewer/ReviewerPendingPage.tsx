@@ -5,7 +5,7 @@ import {
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
-import type { Hospital, Doctor, Equipment, HospitalEnvironment, MedicalCase, SpecialProduct, PendingItem } from '../../types'
+import type { Hospital, Doctor, Equipment, HospitalEnvironment, MedicalCase, SpecialProduct, ProductVariantDTO, PendingItem } from '../../types'
 import { StatusTag } from '../../components/StatusTag'
 
 const { Text } = Typography
@@ -18,7 +18,7 @@ type DetailRecord = Hospital | Doctor | Equipment | HospitalEnvironment | Medica
 // ── EntityFields for generic diff display ────────────────────────
 
 const SKIP_KEYS = ['id', 'hospitalId', 'auditStatus', 'rejectionReason',
-                   'createdAt', 'updatedAt', 'hasPendingEdit', 'media']
+                   'createdAt', 'updatedAt', 'hasPendingEdit', 'media', 'variants']
 
 const EntityFields: React.FC<{
   data: Record<string, unknown> | null | undefined
@@ -94,6 +94,29 @@ const PendingMediaSection: React.FC<{ data: Record<string, unknown> | null | und
 }
 
 // ── Detail modal renderer ─────────────────────────────────────────
+
+const VariantsSection: React.FC<{ variants: ProductVariantDTO[] | undefined; title?: string }> = ({ variants, title = '套餐列表' }) => {
+  if (!Array.isArray(variants) || variants.length === 0) return null
+  return (
+    <div style={{ marginTop: 16 }}>
+      <Typography.Title level={5} style={{ marginBottom: 8 }}>{title}</Typography.Title>
+      <Table
+        size="small"
+        dataSource={variants}
+        rowKey={(_, i) => String(i)}
+        pagination={false}
+        columns={[
+          { title: '中文名称', dataIndex: 'nameZh', key: 'nameZh' },
+          { title: '英文名称', dataIndex: 'nameEn', key: 'nameEn' },
+          { title: '价格', dataIndex: 'price', key: 'price', render: (v) => v != null ? `¥${v}` : '-' },
+          { title: '中文描述', dataIndex: 'descZh', key: 'descZh', ellipsis: true },
+          { title: '英文描述', dataIndex: 'descEn', key: 'descEn', ellipsis: true },
+          { title: '排序', dataIndex: 'sortOrder', key: 'sortOrder' },
+        ]}
+      />
+    </div>
+  )
+}
 
 const imgCell = (url: string | null | undefined) =>
   url ? <Image src={url} height={120} style={{ objectFit: 'cover', borderRadius: 4 }} /> : <Text type="secondary">-</Text>
@@ -207,34 +230,37 @@ const CaseDetail: React.FC<{ r: MedicalCase }> = ({ r }) => (
 )
 
 const ProductDetail: React.FC<{ r: SpecialProduct; hospitalMap: Record<number, string> }> = ({ r, hospitalMap }) => (
-  <Descriptions column={2} bordered>
-    <Descriptions.Item label="审核状态">
-      <StatusTag status={(r.auditStatus ?? 'pending') as 'approved' | 'pending' | 'rejected'} />
-    </Descriptions.Item>
-    <Descriptions.Item label="所属医院">
-      {r.hospitalId ? (hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}`) : '-'}
-    </Descriptions.Item>
-    <Descriptions.Item label="中文名称">{r.nameZh}</Descriptions.Item>
-    <Descriptions.Item label="英文名称">{r.nameEn}</Descriptions.Item>
-    <Descriptions.Item label="价格区间">
-      {r.priceMin != null ? `¥${r.priceMin} ~ ¥${r.priceMax}` : '-'}
-    </Descriptions.Item>
-    <Descriptions.Item label="联系人">{r.contactPerson || '-'}</Descriptions.Item>
-    <Descriptions.Item label="联系方式">{r.contactInfo || '-'}</Descriptions.Item>
-    <Descriptions.Item label="封面图" span={2}>{imgCell(r.coverImageUrl)}</Descriptions.Item>
-    <Descriptions.Item label="中文摘要" span={2}>
-      <span style={{ whiteSpace: 'pre-wrap' }}>{r.summaryZh || '-'}</span>
-    </Descriptions.Item>
-    <Descriptions.Item label="英文摘要" span={2}>
-      <span style={{ whiteSpace: 'pre-wrap' }}>{r.summaryEn || '-'}</span>
-    </Descriptions.Item>
-    <Descriptions.Item label="中文详情" span={2}>
-      <span style={{ whiteSpace: 'pre-wrap' }}>{r.detailZh || '-'}</span>
-    </Descriptions.Item>
-    <Descriptions.Item label="英文详情" span={2}>
-      <span style={{ whiteSpace: 'pre-wrap' }}>{r.detailEn || '-'}</span>
-    </Descriptions.Item>
-  </Descriptions>
+  <>
+    <Descriptions column={2} bordered>
+      <Descriptions.Item label="审核状态">
+        <StatusTag status={(r.auditStatus ?? 'pending') as 'approved' | 'pending' | 'rejected'} />
+      </Descriptions.Item>
+      <Descriptions.Item label="所属医院">
+        {r.hospitalId ? (hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}`) : '-'}
+      </Descriptions.Item>
+      <Descriptions.Item label="中文名称">{r.nameZh}</Descriptions.Item>
+      <Descriptions.Item label="英文名称">{r.nameEn}</Descriptions.Item>
+      <Descriptions.Item label="价格区间">
+        {r.priceMin != null ? `¥${r.priceMin} ~ ¥${r.priceMax}` : '-'}
+      </Descriptions.Item>
+      <Descriptions.Item label="联系人">{r.contactPerson || '-'}</Descriptions.Item>
+      <Descriptions.Item label="联系方式">{r.contactInfo || '-'}</Descriptions.Item>
+      <Descriptions.Item label="封面图" span={2}>{imgCell(r.coverImageUrl)}</Descriptions.Item>
+      <Descriptions.Item label="中文摘要" span={2}>
+        <span style={{ whiteSpace: 'pre-wrap' }}>{r.summaryZh || '-'}</span>
+      </Descriptions.Item>
+      <Descriptions.Item label="英文摘要" span={2}>
+        <span style={{ whiteSpace: 'pre-wrap' }}>{r.summaryEn || '-'}</span>
+      </Descriptions.Item>
+      <Descriptions.Item label="中文详情" span={2}>
+        <span style={{ whiteSpace: 'pre-wrap' }}>{r.detailZh || '-'}</span>
+      </Descriptions.Item>
+      <Descriptions.Item label="英文详情" span={2}>
+        <span style={{ whiteSpace: 'pre-wrap' }}>{r.detailEn || '-'}</span>
+      </Descriptions.Item>
+    </Descriptions>
+    <VariantsSection variants={r.variants} />
+  </>
 )
 
 const typeLabels: Record<string, string> = {
@@ -499,25 +525,43 @@ const ReviewerPendingPage: React.FC = () => {
               />
             )}
             {selectedItem.isEdit && selectedItem.currentData ? (
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Typography.Title level={5} style={{ color: '#888' }}>当前数据</Typography.Title>
-                  <EntityFields
-                    data={selectedItem.currentData as Record<string, unknown>}
-                    changedKeys={changedKeys}
-                    highlight={false}
-                  />
-                </Col>
-                <Col span={12}>
-                  <Typography.Title level={5} style={{ color: '#1677ff' }}>待审核变更</Typography.Title>
-                  <EntityFields
-                    data={selectedItem.data as Record<string, unknown>}
-                    changedKeys={changedKeys}
-                    highlight={true}
-                  />
-                  <PendingMediaSection data={selectedItem.data as Record<string, unknown>} />
-                </Col>
-              </Row>
+              <>
+                <Row gutter={24}>
+                  <Col span={12}>
+                    <Typography.Title level={5} style={{ color: '#888' }}>当前数据</Typography.Title>
+                    <EntityFields
+                      data={selectedItem.currentData as Record<string, unknown>}
+                      changedKeys={changedKeys}
+                      highlight={false}
+                    />
+                  </Col>
+                  <Col span={12}>
+                    <Typography.Title level={5} style={{ color: '#1677ff' }}>待审核变更</Typography.Title>
+                    <EntityFields
+                      data={selectedItem.data as Record<string, unknown>}
+                      changedKeys={changedKeys}
+                      highlight={true}
+                    />
+                    <PendingMediaSection data={selectedItem.data as Record<string, unknown>} />
+                  </Col>
+                </Row>
+                {detailModal.type === 'products' && (
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <VariantsSection
+                        variants={(selectedItem.currentData as SpecialProduct)?.variants}
+                        title="当前套餐"
+                      />
+                    </Col>
+                    <Col span={12}>
+                      <VariantsSection
+                        variants={(selectedItem.data as Record<string, unknown>)?.variants as ProductVariantDTO[] | undefined}
+                        title="待审核套餐"
+                      />
+                    </Col>
+                  </Row>
+                )}
+              </>
             ) : (
               <>
                 {renderDetail(detailModal.type, selectedItem.data as DetailRecord, hospitalMap)}

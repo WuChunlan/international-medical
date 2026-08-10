@@ -1,9 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Form, Input, Button, message, Typography, Select, Radio } from 'antd';
 import {
   UserOutlined, MailOutlined, LockOutlined, IdcardOutlined,
-  GlobalOutlined, SafetyOutlined, PhoneOutlined, FileOutlined,
+  GlobalOutlined, PhoneOutlined, FileOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import api from '../../api';
@@ -34,9 +34,6 @@ export default function RegisterPage() {
   const [inviteName, setInviteName] = useState<string | null>(null);
   const [inviteChecked, setInviteChecked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sendingCode, setSendingCode] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!inviteCode) return;
@@ -50,35 +47,6 @@ export default function RegisterPage() {
       })
       .catch(() => setInviteChecked(true));
   }, [inviteCode, form, t]);
-
-  const startCountdown = () => {
-    setCountdown(60);
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleSendCode = async () => {
-    const email = form.getFieldValue('email');
-    if (!email) { message.warning('Please enter your email first'); return; }
-    setSendingCode(true);
-    try {
-      await api.post(`/api/auth/send-code?email=${encodeURIComponent(email)}`);
-      message.success('Verification code sent!');
-      startCountdown();
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      message.error(axiosErr.response?.data?.message || 'Failed to send code');
-    } finally {
-      setSendingCode(false);
-    }
-  };
 
   const onFinish = async (values: Record<string, string>) => {
     setLoading(true);
@@ -177,29 +145,6 @@ export default function RegisterPage() {
                 : (inviteChecked ? t('auth.invite_invalid') : '...')}
             </div>
           )}
-
-          <Form.Item
-            name="verifyCode"
-            label={t('auth.verify_code')}
-            rules={[{ required: true, message: `${t('auth.verify_code')} required` }]}
-          >
-            <Input
-              prefix={<SafetyOutlined />}
-              placeholder={t('auth.verify_code')}
-              addonAfter={
-                <Button
-                  type="link"
-                  size="small"
-                  disabled={countdown > 0 || sendingCode}
-                  loading={sendingCode}
-                  onClick={handleSendCode}
-                  className="send-code-btn"
-                >
-                  {countdown > 0 ? `${countdown}s` : t('auth.send_code')}
-                </Button>
-              }
-            />
-          </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading} className="auth-submit-btn">

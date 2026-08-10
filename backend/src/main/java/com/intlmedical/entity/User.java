@@ -25,6 +25,7 @@ public class User {
     private String inviteCode;
     private Integer canInvite;
     private Long referredBy;
+    private Integer mustChangePassword;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)

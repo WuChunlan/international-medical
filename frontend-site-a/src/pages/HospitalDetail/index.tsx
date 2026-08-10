@@ -10,6 +10,7 @@ import Header from '../../components/Header';
 import BookingModal from '../../components/BookingModal';
 import MediaCarousel from '../../components/MediaCarousel';
 import { useCarousel } from '../../hooks/useCarousel';
+import { useContacts } from '../../hooks/useContacts';
 import type { HospitalDetail, Doctor, Equipment, HospitalEnvironment } from '../../types';
 import './index.less';
 import React from 'react';
@@ -174,9 +175,8 @@ export default function HospitalDetailPage() {
 
   const [loading, setLoading]       = useState(true);
   const [data, setData]             = useState<HospitalDetail | null>(null);
-  const [bookingModal, setBookingModal] = useState<{
-    visible: boolean; contactPerson: string | null; contactInfo: string | null;
-  }>({ visible: false, contactPerson: null, contactInfo: null });
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const contacts = useContacts();
 
   const isZh = i18n.language.startsWith('zh');
 
@@ -189,7 +189,7 @@ export default function HospitalDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleBook = async (doctor: Doctor) => {
+  const handleBook = async (_doctor: Doctor) => {
     if (!user) {
       navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
       return;
@@ -197,11 +197,7 @@ export default function HospitalDetailPage() {
     try {
       await api.post('/api/user/history', { targetType: 'hospital', targetId: Number(id) });
     } catch { /* ignore */ }
-    setBookingModal({
-      visible: true,
-      contactPerson: data?.hospital.contactPerson ?? doctor.nameZh,
-      contactInfo:   data?.hospital.contactInfo   ?? data?.hospital.phone ?? null,
-    });
+    setBookingOpen(true);
   };
 
   if (loading) return <div className="page-loading"><Spin size="large" /></div>;
@@ -271,10 +267,9 @@ export default function HospitalDetailPage() {
       </main>
 
       <BookingModal
-        visible={bookingModal.visible}
-        onClose={() => setBookingModal(s => ({ ...s, visible: false }))}
-        contactPerson={bookingModal.contactPerson}
-        contactInfo={bookingModal.contactInfo}
+        visible={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        contacts={contacts}
       />
     </div>
   );

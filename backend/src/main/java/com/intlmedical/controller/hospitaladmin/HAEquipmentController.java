@@ -48,10 +48,13 @@ public class HAEquipmentController {
     public Result<Void> create(@RequestBody Equipment equipment) {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.fail(403, "未绑定医院");
+        Long userId = SecurityUtil.getCurrentUserId();
         equipment.setHospitalId(hospitalId);
-        equipment.setAuditStatus("pending");
-        equipment.setRejectionReason(null);
-        equipmentMapper.insert(equipment);
+        try {
+            pendingChangeService.submitNewDraft("equipments", equipment, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
+        }
         return Result.ok();
     }
 
@@ -63,19 +66,11 @@ public class HAEquipmentController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        if ("approved".equals(existing.getAuditStatus())) {
-            Long userId = SecurityUtil.getCurrentUserId();
-            try {
-                pendingChangeService.submitEdit("equipments", id, equipment, userId);
-            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-                return Result.fail("提交失败，请重试");
-            }
-        } else {
-            equipment.setId(id);
-            equipment.setHospitalId(hospitalId);
-            equipment.setAuditStatus("pending");
-            equipment.setRejectionReason(null);
-            equipmentMapper.updateById(equipment);
+        Long userId = SecurityUtil.getCurrentUserId();
+        try {
+            pendingChangeService.submitEdit("equipments", id, equipment, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
         }
         return Result.ok();
     }

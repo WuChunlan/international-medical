@@ -44,10 +44,13 @@ public class HAEnvironmentController {
     public Result<Void> create(@RequestBody HospitalEnvironment env) {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.fail(403, "未绑定医院");
+        Long userId = SecurityUtil.getCurrentUserId();
         env.setHospitalId(hospitalId);
-        env.setAuditStatus("pending");
-        env.setRejectionReason(null);
-        hospitalEnvironmentMapper.insert(env);
+        try {
+            pendingChangeService.submitNewDraft("environments", env, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
+        }
         return Result.ok();
     }
 
@@ -59,19 +62,11 @@ public class HAEnvironmentController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        if ("approved".equals(existing.getAuditStatus())) {
-            Long userId = SecurityUtil.getCurrentUserId();
-            try {
-                pendingChangeService.submitEdit("environments", id, env, userId);
-            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-                return Result.fail("提交失败，请重试");
-            }
-        } else {
-            env.setId(id);
-            env.setHospitalId(hospitalId);
-            env.setAuditStatus("pending");
-            env.setRejectionReason(null);
-            hospitalEnvironmentMapper.updateById(env);
+        Long userId = SecurityUtil.getCurrentUserId();
+        try {
+            pendingChangeService.submitEdit("environments", id, env, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
         }
         return Result.ok();
     }

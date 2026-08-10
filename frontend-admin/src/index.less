@@ -15,23 +15,23 @@
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #D1D5DB;
   border-radius: 3px;
-  &:hover { background: #a8a8a8; }
+  &:hover { background: #9CA3AF; }
 }
 
 // Image upload
 .image-upload-preview { margin-top: 8px; }
 .image-upload-preview__img {
   object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
 }
 .image-upload-preview__url {
   font-size: 12px;
-  color: #888;
+  color: #9CA3AF;
   margin-top: 4px;
   word-break: break-all;
 }
@@ -50,32 +50,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #001529 0%, #0A2540 100%);
+  background: linear-gradient(135deg, #001529 0%, #0A2540 60%, #0e3d6e 100%);
 }
 .login-card {
-  width: 400px;
-  border-radius: 6px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  width: 420px;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255,255,255,0.06) !important;
 }
 .login-logo-wrap {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 .login-logo-circle {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: #0A2540;
+  background: linear-gradient(135deg, #0A2540 0%, #1e4d8c 100%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(10, 37, 64, 0.3);
 }
-.login-logo-icon { font-size: 24px; color: #fff; }
-.login-title { margin: 0 !important; color: #001529 !important; }
-.login-subtitle { font-size: 13px; }
-.login-input-icon { color: #bbb; }
-.login-submit-btn { height: 44px !important; font-size: 16px !important; }
+.login-logo-icon { font-size: 26px; color: #fff; }
+.login-title { margin: 0 !important; color: #111827 !important; font-size: 20px !important; }
+.login-subtitle { font-size: 13px; color: #6B7280; }
+.login-input-icon { color: #9CA3AF; }
+.login-submit-btn { height: 44px !important; font-size: 15px !important; font-weight: 500 !important; letter-spacing: 0.3px; }
 .login-form-footer { margin-bottom: 0 !important; }
 
 // Filter select

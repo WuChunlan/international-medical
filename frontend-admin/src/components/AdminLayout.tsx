@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Layout, Menu, Button, Tag, Breadcrumb } from 'antd'
+import { Layout, Menu, Button, Tag, Breadcrumb, Modal, Form, Input, message, Alert } from 'antd'
 import {
   DashboardOutlined,
   BankOutlined,
@@ -16,9 +16,11 @@ import {
   AuditOutlined,
   SafetyCertificateOutlined,
   UsergroupAddOutlined,
+  LockOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAdminAuthStore } from '../store/authStore'
+import api from '../api'
 import './AdminLayout.less'
 
 const { Sider, Header, Content } = Layout
@@ -29,6 +31,7 @@ interface AdminLayoutProps {
 
 const adminMenuItems = [
   { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
+  { key: '/reviewer/pending', icon: <AuditOutlined />, label: '待审核内容' },
   { key: '/hospitals', icon: <BankOutlined />, label: '医院管理' },
   { key: '/doctors', icon: <UserOutlined />, label: '医生管理' },
   { key: '/equipments', icon: <MedicineBoxOutlined />, label: '设备管理' },
@@ -82,9 +85,38 @@ function getBreadcrumbLabel(pathname: string, allItems: { key: string; label: st
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false)
+  const [changePwOpen, setChangePwOpen] = useState(false)
+  const [changePwLoading, setChangePwLoading] = useState(false)
+  const [changePwForm] = Form.useForm()
   const navigate = useNavigate()
   const location = useLocation()
-  const { username, role, logout } = useAdminAuthStore()
+  const { username, role, hospitalId, logout } = useAdminAuthStore()
+
+  const handleChangePw = async () => {
+    try {
+      const values = await changePwForm.validateFields()
+      if (values.newPassword !== values.confirmPassword) {
+        message.error('两次密码不一致')
+        return
+      }
+      setChangePwLoading(true)
+      await api.put('/api/profile/change-password', {
+        oldPassword: values.oldPassword,
+        newPassword: values.newPassword,
+      })
+      message.success('密码修改成功，请重新登录')
+      changePwForm.resetFields()
+      setChangePwOpen(false)
+      logout()
+      navigate('/login')
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } }; errorFields?: unknown[] }
+      if (e.response?.data?.message) message.error(e.response.data.message)
+      else if (!e.errorFields) message.error('修改失败')
+    } finally {
+      setChangePwLoading(false)
+    }
+  }
 
   const menuItems =
     role === 'hospital_admin' ? hospitalAdminMenuItems :
@@ -166,6 +198,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <span className="header-divider">|</span>
             <span className="header-username">{username || 'admin'}</span>
             <Button
+                type="text"
+                icon={<LockOutlined />}
+                size="small"
+                style={{ color: '#6B7280' }}
+                onClick={() => setChangePwOpen(true)}
+              >
+                修改密码
+              </Button>
+            <Button
               type="text"
               icon={<LogoutOutlined />}
               onClick={handleLogout}
@@ -178,9 +219,49 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         </Header>
 
         <Content className="admin-content">
+          {role === 'hospital_admin' && !hospitalId && location.pathname !== '/ha/hospital' && (
+            <Alert
+              type="warning"
+              showIcon
+              message="请先创建医院"
+              description={
+                <span>
+                  您尚未创建医院。请先前往
+                  <Button type="link" size="small" style={{ padding: '0 4px' }} onClick={() => navigate('/ha/hospital')}>
+                    我的医院
+                  </Button>
+                  完成医院创建，再使用其他功能。
+                </span>
+              }
+              style={{ marginBottom: 16 }}
+            />
+          )}
           {children}
         </Content>
       </Layout>
+
+      <Modal
+        title="修改密码"
+        open={changePwOpen}
+        onOk={handleChangePw}
+        onCancel={() => { setChangePwOpen(false); changePwForm.resetFields() }}
+        okText="确认修改"
+        cancelText="取消"
+        confirmLoading={changePwLoading}
+        destroyOnClose
+      >
+        <Form form={changePwForm} layout="vertical" style={{ marginTop: 8 }}>
+          <Form.Item name="oldPassword" label="原密码" rules={[{ required: true, message: '请输入原密码' }]}>
+            <Input.Password placeholder="请输入原密码" />
+          </Form.Item>
+          <Form.Item name="newPassword" label="新密码" rules={[{ required: true, min: 6, message: '至少6位' }]}>
+            <Input.Password placeholder="请输入新密码（至少6位）" />
+          </Form.Item>
+          <Form.Item name="confirmPassword" label="确认新密码" rules={[{ required: true, message: '请再次输入新密码' }]}>
+            <Input.Password placeholder="再次输入新密码" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Layout>
   )
 }

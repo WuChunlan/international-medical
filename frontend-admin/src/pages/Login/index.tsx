@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, message } from 'antd';
+import { Form, Input, Button, Card, Typography, message, Modal } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
@@ -12,10 +12,22 @@ interface LoginForm {
   password: string;
 }
 
+interface ChangePasswordForm {
+  newPassword: string;
+  confirmPassword: string;
+}
+
 const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [changePwModal, setChangePwModal] = useState(false);
+  const [changePwLoading, setChangePwLoading] = useState(false);
+  const [changePwForm] = Form.useForm<ChangePasswordForm>();
   const navigate = useNavigate();
   const { setAuth } = useAdminAuthStore();
+
+  const doNavigate = (role: string) => {
+    navigate(role === 'customer_rep' ? '/rep/dashboard' : '/dashboard');
+  };
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true);
@@ -36,14 +48,40 @@ const Login: React.FC = () => {
         message.error('登录失败：未获取到令牌');
         return;
       }
-      setAuth(token, payload.username || values.email, role, payload.hospitalId ?? null);
-      message.success('登录成功');
-      navigate(role === 'customer_rep' ? '/rep/dashboard' : '/dashboard');
+      setAuth(token, payload.username || values.email, role, payload.hospitalId ?? null, payload.mustChangePassword ?? false);
+      if (payload.mustChangePassword) {
+        setChangePwModal(true);
+      } else {
+        message.success('登录成功');
+        doNavigate(role);
+      }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      message.error(error.response?.data?.message || '登录失败，请检查邮箱和密码');
+      message.error(error.response?.data?.message || '登录失败，请检查账号和密码');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onChangePassword = async (values: ChangePasswordForm) => {
+    if (values.newPassword !== values.confirmPassword) {
+      message.error('两次输入的密码不一致');
+      return;
+    }
+    setChangePwLoading(true);
+    try {
+      await api.put('/api/profile/change-password', {
+        newPassword: values.newPassword,
+      });
+      const { logout } = useAdminAuthStore.getState();
+      logout();
+      setChangePwModal(false);
+      message.success('密码修改成功，请用新密码重新登录');
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { message?: string } } };
+      message.error(e.response?.data?.message || '修改失败，请重试');
+    } finally {
+      setChangePwLoading(false);
     }
   };
 
@@ -73,15 +111,12 @@ const Login: React.FC = () => {
         >
           <Form.Item
             name="email"
-            rules={[
-              { required: true, message: '请输入邮箱' },
-              { type: 'email', message: '邮箱格式不正确' },
-            ]}
+            rules={[{ required: true, message: '请输入账号' }]}
           >
             <Input
               prefix={<UserOutlined className="login-input-icon" />}
-              placeholder="管理员邮箱"
-              autoComplete="email"
+              placeholder="管理员账号"
+              autoComplete="username"
             />
           </Form.Item>
 
@@ -108,6 +143,39 @@ const Login: React.FC = () => {
           </Form.Item>
         </Form>
       </Card>
+
+      <Modal
+        title="首次登录 — 请修改密码"
+        open={changePwModal}
+        closable={false}
+        maskClosable={false}
+        footer={null}
+      >
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 20 }}>
+          您的账号是初次登录，请先设置新密码后再使用系统。
+        </Typography.Paragraph>
+        <Form form={changePwForm} layout="vertical" onFinish={onChangePassword}>
+          <Form.Item
+            name="newPassword"
+            label="新密码"
+            rules={[{ required: true, min: 6, message: '至少6位' }]}
+          >
+            <Input.Password placeholder="请设置新密码（至少6位）" />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            label="确认密码"
+            rules={[{ required: true, message: '请再次输入新密码' }]}
+          >
+            <Input.Password placeholder="再次输入新密码" />
+          </Form.Item>
+          <Form.Item style={{ marginBottom: 0 }}>
+            <Button type="primary" htmlType="submit" loading={changePwLoading} block>
+              确认修改并进入系统
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };

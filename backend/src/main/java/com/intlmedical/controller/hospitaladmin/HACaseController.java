@@ -48,10 +48,13 @@ public class HACaseController {
     public Result<Void> create(@RequestBody Case medCase) {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.fail(403, "未绑定医院");
+        Long userId = SecurityUtil.getCurrentUserId();
         medCase.setHospitalId(hospitalId);
-        medCase.setAuditStatus("pending");
-        medCase.setRejectionReason(null);
-        caseMapper.insert(medCase);
+        try {
+            pendingChangeService.submitNewDraft("cases", medCase, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
+        }
         return Result.ok();
     }
 
@@ -63,19 +66,11 @@ public class HACaseController {
         if (existing == null || !hospitalId.equals(existing.getHospitalId())) {
             return Result.fail(403, "无权操作");
         }
-        if ("approved".equals(existing.getAuditStatus())) {
-            Long userId = SecurityUtil.getCurrentUserId();
-            try {
-                pendingChangeService.submitEdit("cases", id, medCase, userId);
-            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-                return Result.fail("提交失败，请重试");
-            }
-        } else {
-            medCase.setId(id);
-            medCase.setHospitalId(hospitalId);
-            medCase.setAuditStatus("pending");
-            medCase.setRejectionReason(null);
-            caseMapper.updateById(medCase);
+        Long userId = SecurityUtil.getCurrentUserId();
+        try {
+            pendingChangeService.submitEdit("cases", id, medCase, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
         }
         return Result.ok();
     }

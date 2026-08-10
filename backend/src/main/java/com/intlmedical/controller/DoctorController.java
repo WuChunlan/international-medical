@@ -24,6 +24,7 @@ public class DoctorController {
             new Page<>(page, size),
             new LambdaQueryWrapper<Doctor>()
                 .eq(Doctor::getIsActive, 1)
+                .eq(Doctor::getAuditStatus, "approved")
                 .orderByAsc(Doctor::getSortOrder)
         );
         return Result.ok(result);

@@ -111,11 +111,9 @@
   &--prev { left: -50px; }
   &--next { right: -50px; }
 
+  // Mobile uses horizontal swipe instead of arrow paging.
   @media (max-width: 768px) {
-    opacity: 1;
-    pointer-events: auto;
-    &--prev { left: 4px; }
-    &--next { right: 4px; }
+    display: none;
   }
 }
 
@@ -130,11 +128,36 @@
   gap: 20px;
 
   @media (max-width: 1024px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 600px)  { grid-template-columns: 1fr; }
+
+  // Mobile: match the home page pattern — one card per screen, horizontal swipe.
+  // useCarousel already renders all items on mobile, so we just switch layout.
+  @media (max-width: 768px) {
+    display: flex;
+    grid-template-columns: none;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 14px;
+    padding-bottom: 8px;
+    scroll-padding: 0 4px;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
 }
 
 .hd-card-slot {
   animation: hd-fade-in 0.38s ease both;
+
+  @media (max-width: 768px) {
+    flex: 0 0 82%;
+    scroll-snap-align: center;
+  }
+
+  @media (max-width: 480px) {
+    flex: 0 0 86%;
+  }
 }
 
 @keyframes hd-fade-in {

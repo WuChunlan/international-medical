@@ -11,6 +11,7 @@ import type { AuthState } from '../../store/authStore';
 import Header from '../../components/Header';
 import BookingModal from '../../components/BookingModal';
 import MediaCarousel from '../../components/MediaCarousel';
+import { useContacts } from '../../hooks/useContacts';
 import type { ProductDetail, ProductVariant } from '../../types';
 
 const { Title, Paragraph } = Typography;
@@ -24,11 +25,8 @@ export default function ProductDetailPage() {
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ProductDetail | null>(null);
-  const [bookingModal, setBookingModal] = useState<{
-    visible: boolean;
-    contactPerson: string | null;
-    contactInfo: string | null;
-  }>({ visible: false, contactPerson: null, contactInfo: null });
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const contacts = useContacts();
 
   const isZh = i18n.language.startsWith('zh');
 
@@ -51,11 +49,7 @@ export default function ProductDetailPage() {
     try {
       await api.post('/api/user/history', { targetType: 'product', targetId: Number(id) });
     } catch { /* ignore */ }
-    setBookingModal({
-      visible: true,
-      contactPerson: data?.product.contactPerson ?? null,
-      contactInfo: data?.product.contactInfo ?? null,
-    });
+    setBookingOpen(true);
   };
 
   if (loading) {
@@ -147,10 +141,9 @@ export default function ProductDetailPage() {
       </main>
 
       <BookingModal
-        visible={bookingModal.visible}
-        onClose={() => setBookingModal((s) => ({ ...s, visible: false }))}
-        contactPerson={bookingModal.contactPerson}
-        contactInfo={bookingModal.contactInfo}
+        visible={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        contacts={contacts}
       />
     </div>
   );

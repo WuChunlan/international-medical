@@ -50,3 +50,12 @@ app:
     from: noreply@example.com
     verify-code-ttl: 600   # seconds
     verify-code-resend-interval: 60
+
+  sftp:
+    sign_board:
+      host: 127.0.0.1
+      port: 22
+      path: /Users/wuchunlan/Desktop/cw-upload
+      username: wuchunlan
+      password: FuWu202099
+      local-path: /Users/wuchunlan/Desktop/cw-upload

@@ -95,19 +95,37 @@ public class PendingChangeService {
         com.fasterxml.jackson.databind.node.ObjectNode pendingNode =
             objectMapper.valueToTree(liveEntity);
 
-        // 2. Build updated media list in memory
+        // 2. Look up any existing pending change early — needed to recover pending-add items
+        PendingChange pc = pendingChangeMapper.selectByEntity(entityType, entityId);
+
+        // 3. Build updated media list: start from approved items in entity_media
         String singularType = toSingular(entityType);
-        List<EntityMedia> currentMedia = entityMediaMapper.selectList(
+        List<EntityMedia> approvedMedia = entityMediaMapper.selectList(
             new LambdaQueryWrapper<EntityMedia>()
                 .eq(EntityMedia::getEntityType, singularType)
                 .eq(EntityMedia::getEntityId, entityId)
                 .orderByAsc(EntityMedia::getSortOrder));
 
-        java.util.ArrayList<EntityMedia> updatedMedia = new java.util.ArrayList<>(currentMedia);
+        java.util.ArrayList<EntityMedia> updatedMedia = new java.util.ArrayList<>(approvedMedia);
+
+        // Carry forward any previously pending-add items (id=null) so uploads accumulate
+        if (pc != null && "pending".equals(pc.getAuditStatus())) {
+            try {
+                JsonNode existingMediaNode = objectMapper.readTree(pc.getPendingData()).path("media");
+                if (existingMediaNode.isArray()) {
+                    for (JsonNode m : existingMediaNode) {
+                        if (m.path("id").isNull() || m.path("id").isMissingNode()) {
+                            updatedMedia.add(objectMapper.treeToValue(m, EntityMedia.class));
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
 
         switch (action) {
             case "add" -> {
-                boolean isFirst = updatedMedia.isEmpty();
+                boolean isFirst = updatedMedia.stream().noneMatch(m ->
+                    "image".equals(m.getMediaType()) && m.getIsCover() != null && m.getIsCover() == 1);
                 if (newMedia != null) {
                     newMedia.setIsCover(isFirst && !"video".equals(newMedia.getMediaType()) ? 1 : 0);
                     updatedMedia.add(newMedia);
@@ -120,12 +138,11 @@ public class PendingChangeService {
             case "delete" -> updatedMedia.removeIf(m -> m.getId() != null && m.getId().equals(targetId));
         }
 
-        // 3. Embed updated media array into the pending node
+        // 4. Embed updated media array into the pending node
         pendingNode.set("media", objectMapper.valueToTree(updatedMedia));
 
-        // 4. If there is an existing pending change, preserve its entity-field edits
-        //    but replace the media array with our updated one.
-        PendingChange pc = pendingChangeMapper.selectByEntity(entityType, entityId);
+        // 5. If there is an existing pending change, preserve its entity-field edits
+        //    and replace only the media array with our updated one.
         if (pc != null && "pending".equals(pc.getAuditStatus())) {
             com.fasterxml.jackson.databind.node.ObjectNode existingNode =
                 (com.fasterxml.jackson.databind.node.ObjectNode) objectMapper.readTree(pc.getPendingData());

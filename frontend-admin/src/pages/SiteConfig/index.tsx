@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { Form, Input, Button, Spin, message, Divider, Row, Col } from 'antd'
-import { SaveOutlined } from '@ant-design/icons'
+import { SaveOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import api from '../../api'
 import type { SiteConfig } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
@@ -10,17 +10,85 @@ const CONFIG_LABELS: Record<string, string> = {
   site_subtitle: '网站副标题',
   site_logo_url: '网站Logo',
   site_intro: '首页简介',
-  contact_default_person: '默认联系人',
-  contact_default_info: '默认联系方式',
+  contact_contacts: '默认联系人列表',
   site_a_base_url: '客户端站点地址（邀请二维码用）',
 }
 
 const TARGET_KEYS = [
   'site_name', 'site_subtitle', 'site_logo_url', 'site_intro',
-  'contact_default_person', 'contact_default_info', 'site_a_base_url',
+  'contact_contacts', 'site_a_base_url',
 ]
 
+interface ContactEntry { name: string; phone: string }
 interface ConfigFormValues { valueZh: string; valueEn: string }
+
+const ContactsConfigForm: React.FC<{
+  initialValues: ConfigFormValues
+  saving: boolean
+  onSave: (values: ConfigFormValues) => void
+}> = ({ initialValues, saving, onSave }) => {
+  const parseContacts = (v: string): ContactEntry[] => {
+    try {
+      const parsed = JSON.parse(v)
+      if (Array.isArray(parsed)) return parsed
+    } catch { /* ignore */ }
+    return [{ name: '', phone: '' }]
+  }
+
+  const [contacts, setContacts] = useState<ContactEntry[]>(() => parseContacts(initialValues.valueZh))
+
+  useEffect(() => {
+    setContacts(parseContacts(initialValues.valueZh))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues.valueZh])
+
+  const update = (idx: number, field: keyof ContactEntry, val: string) => {
+    setContacts(prev => prev.map((c, i) => i === idx ? { ...c, [field]: val } : c))
+  }
+
+  const add = () => setContacts(prev => [...prev, { name: '', phone: '' }])
+  const remove = (idx: number) => setContacts(prev => prev.filter((_, i) => i !== idx))
+
+  const handleSave = () => {
+    const clean = contacts.filter(c => c.name || c.phone)
+    const json = JSON.stringify(clean)
+    onSave({ valueZh: json, valueEn: json })
+  }
+
+  return (
+    <div>
+      {contacts.map((c, idx) => (
+        <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+          <Input
+            placeholder="联系人姓名"
+            value={c.name}
+            onChange={e => update(idx, 'name', e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <Input
+            placeholder="联系电话"
+            value={c.phone}
+            onChange={e => update(idx, 'phone', e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => remove(idx)}
+            disabled={contacts.length === 1}
+          />
+        </div>
+      ))}
+      <Button icon={<PlusOutlined />} onClick={add} style={{ marginBottom: 16 }}>
+        添加联系人
+      </Button>
+      <Divider style={{ margin: '12px 0' }} />
+      <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>
+        保存
+      </Button>
+    </div>
+  )
+}
 
 const LogoConfigForm: React.FC<{
   initialValues: ConfigFormValues
@@ -158,6 +226,8 @@ const SiteConfigPage: React.FC = () => {
               </div>
               {key === 'site_logo_url' ? (
                 <LogoConfigForm initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
+              ) : key === 'contact_contacts' ? (
+                <ContactsConfigForm initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
               ) : (
                 <ConfigItemForm configKey={key} initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
               )}

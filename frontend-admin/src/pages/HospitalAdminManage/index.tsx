@@ -153,8 +153,8 @@ const HospitalAdminManage: React.FC = () => {
       >
         <Form form={form} layout="vertical">
           <FormRow>
-            <Form.Item name="email" label="邮箱" rules={[{ required: true, type: 'email' }]}>
-              <Input placeholder="登录邮箱" />
+            <Form.Item name="email" label="账号" rules={[{ required: true, message: '请输入账号' }]}>
+              <Input placeholder="登录账号（唯一）" />
             </Form.Item>
             <Form.Item
               name="password"

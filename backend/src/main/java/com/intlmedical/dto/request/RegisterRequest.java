@@ -26,8 +26,4 @@ public class RegisterRequest {
     private String idCardCountry;
 
     private String inviteCode;
-
-    @NotBlank
-    @Size(min = 6, max = 6)
-    private String verifyCode;
 }

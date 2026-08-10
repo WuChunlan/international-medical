@@ -66,8 +66,10 @@ export default function TabSection({ activeTab, onTabChange }: TabSectionProps) 
               <div className="tab-card-inner">
                 <div className="tab-icon-wrap">{tab.icon}</div>
                 <div className="tab-text">
-                  <div className="tab-tag">{tab.tag}</div>
-                  <div className="tab-title">{tab.label}</div>
+                  <div className="tab-heading">
+                    <div className="tab-tag">{tab.tag}</div>
+                    <div className="tab-title">{tab.label}</div>
+                  </div>
                   <p className="tab-desc">{tab.desc}</p>
                 </div>
                 <div className="tab-arrow">

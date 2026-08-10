@@ -49,6 +49,13 @@ public class HAHospitalController {
         userMapper.update(null, new LambdaUpdateWrapper<User>()
             .eq(User::getId, userId)
             .set(User::getHospitalId, hospital.getId()));
+        // Create a pending_changes record so reviewer/admin can approve or reject this new hospital
+        try {
+            pendingChangeService.submitNewDraftWithEntityId("hospitals", hospital, hospital.getId(), userId);
+        } catch (Exception e) {
+            // Non-fatal: hospital is created and token is reissued; pending_changes record failed.
+            // Reviewer will not see this hospital for approval until the record is created.
+        }
         // Reissue token with the new hospitalId so the frontend session is updated
         User user = userMapper.selectById(userId);
         String displayName = (user.getLastName() != null ? user.getLastName() : "")
@@ -62,19 +69,20 @@ public class HAHospitalController {
     public Result<Void> update(@RequestBody Hospital hospital) {
         Long hospitalId = SecurityUtil.getCurrentHospitalId();
         if (hospitalId == null) return Result.fail(400, "未绑定医院，请先创建医院");
+        Long userId = SecurityUtil.getCurrentUserId();
+        // If the hospital was previously rejected (new creation), reset to pending so the
+        // reviewer sees it as a fresh submission rather than an edit against an approved record.
         Hospital existing = hospitalMapper.selectById(hospitalId);
-        if ("approved".equals(existing != null ? existing.getAuditStatus() : null)) {
-            Long userId = SecurityUtil.getCurrentUserId();
-            try {
-                pendingChangeService.submitEdit("hospitals", hospitalId, hospital, userId);
-            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-                return Result.fail("提交失败，请重试");
-            }
-        } else {
-            hospital.setId(hospitalId);
-            hospital.setAuditStatus("pending");
-            hospital.setRejectionReason(null);
-            hospitalMapper.updateById(hospital);
+        if (existing != null && "rejected".equals(existing.getAuditStatus())) {
+            hospitalMapper.update(null, new LambdaUpdateWrapper<Hospital>()
+                .eq(Hospital::getId, hospitalId)
+                .set(Hospital::getAuditStatus, "pending")
+                .set(Hospital::getRejectionReason, null));
+        }
+        try {
+            pendingChangeService.submitEdit("hospitals", hospitalId, hospital, userId);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            return Result.fail("提交失败，请重试");
         }
         return Result.ok();
     }

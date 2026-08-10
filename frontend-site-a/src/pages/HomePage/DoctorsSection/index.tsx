@@ -9,6 +9,7 @@ import { useCarousel } from '../../../hooks/useCarousel';
 import BookingModal from '../../../components/BookingModal';
 import { useAuthStore } from '../../../store/authStore';
 import type { AuthState } from '../../../store/authStore';
+import { useContacts } from '../../../hooks/useContacts';
 import './index.less';
 
 interface IPage<T> {
@@ -21,10 +22,9 @@ export default function DoctorsSection() {
   const [items, setItems] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
-  const [bookingModal, setBookingModal] = useState<{
-    visible: boolean; contactPerson: string | null; contactInfo: string | null;
-  }>({ visible: false, contactPerson: null, contactInfo: null });
+  const [bookingOpen, setBookingOpen] = useState(false);
   const ref = useRef<HTMLElement>(null);
+  const contacts = useContacts();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -56,11 +56,7 @@ export default function DoctorsSection() {
     try {
       await api.post('/api/user/history', { targetType: 'hospital', targetId: doc.hospitalId });
     } catch { /* ignore */ }
-    setBookingModal({
-      visible: true,
-      contactPerson: isZh ? doc.nameZh : doc.nameEn,
-      contactInfo: null,
-    });
+    setBookingOpen(true);
   };
 
   return (
@@ -119,10 +115,9 @@ export default function DoctorsSection() {
       </div>
 
       <BookingModal
-        visible={bookingModal.visible}
-        onClose={() => setBookingModal(s => ({ ...s, visible: false }))}
-        contactPerson={bookingModal.contactPerson}
-        contactInfo={bookingModal.contactInfo}
+        visible={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        contacts={contacts}
       />
     </section>
   );

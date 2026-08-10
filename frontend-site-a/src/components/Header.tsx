@@ -69,6 +69,7 @@ export default function Header() {
 
   const isHospitalDetail = location.pathname.startsWith('/hospital/');
   const isProductDetail  = location.pathname.startsWith('/product/');
+  const isHomePage = location.pathname === '/';
   const lang = i18n.language === 'zh' ? 'zh' : 'en';
   const navLinks = isHospitalDetail
     ? HD_NAV_LINKS[lang]
@@ -113,11 +114,21 @@ export default function Header() {
   const scrollTo = (anchor: string) => {
     setMobileOpen(false);
     setActiveAnchor(anchor);
+
+    // Hospital / product detail pages: scroll within the detail page anchors.
     if (isHospitalDetail || isProductDetail) {
       const id = anchor.replace('#', '');
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
+
+    // Any non-home route (login, register, profile, etc.): go back to home,
+    // then let HomePage handle the scroll/tab switch via router state.
+    if (!isHomePage) {
+      navigate('/', { state: { anchor } });
+      return;
+    }
+
     if (anchor === '#hero') { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     if (anchor === '#products') {
       window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'special', anchor: 'products' } }));
@@ -133,7 +144,7 @@ export default function Header() {
   };
 
   return (
-    <header className={`site-a-header${scrolled ? ' site-a-header--scrolled' : ''}`}>
+    <header className={`site-a-header${scrolled ? ' site-a-header--scrolled' : ''}${lang === 'en' ? ' site-a-header--en' : ''}`}>
       {/* Row 1: topbar */}
       <div className="site-a-header__topbar">
         <div className="site-a-header__topbar-inner">
@@ -173,7 +184,7 @@ export default function Header() {
       {/* Row 2: logo + nav */}
       <div className="site-a-header__main">
         <div className="site-a-header__inner">
-          <div className="site-a-header__logo" onClick={() => (isHospitalDetail || isProductDetail) ? navigate('/') : scrollTo('#hero')}>
+          <div className="site-a-header__logo" onClick={() => isHomePage ? scrollTo('#hero') : navigate('/')}>
             {logoUrl && (
               <img src={logoUrl} alt={siteName} className="site-a-header__logo-img" />
             )}
