@@ -3,6 +3,7 @@ package com.intlmedical.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @TableName("service_features")
@@ -20,4 +21,7 @@ public class ServiceFeature {
     private LocalDateTime createdAt;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

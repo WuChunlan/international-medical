@@ -3,6 +3,7 @@ com/intlmedical/dto/request/ProductVariantDTO.class
 com/intlmedical/mapper/HospitalBannerMapper.class
 com/intlmedical/controller/hospitaladmin/HAEquipmentController.class
 com/intlmedical/config/MyBatisPlusConfig.class
+com/intlmedical/entity/TranslationJob.class
 com/intlmedical/service/SiteConfigService.class
 com/intlmedical/controller/admin/AdminUserController$CreateStaffRequest.class
 com/intlmedical/controller/DoctorController.class
@@ -19,6 +20,7 @@ com/intlmedical/entity/User.class
 com/intlmedical/mapper/HospitalEnvironmentMapper.class
 com/intlmedical/controller/hospitaladmin/HAMediaController$MediaItemWithStatus.class
 com/intlmedical/dto/request/HAProductRequest.class
+com/intlmedical/entity/ContentTranslation.class
 com/intlmedical/mapper/SpecialProductMapper.class
 com/intlmedical/controller/ServiceFeatureController.class
 com/intlmedical/entity/ServiceTeam.class
@@ -26,6 +28,7 @@ com/intlmedical/dto/response/CaseVO.class
 com/intlmedical/controller/rep/RepController.class
 com/intlmedical/util/Result.class
 com/intlmedical/mapper/DoctorMapper.class
+com/intlmedical/service/TranslationJobService.class
 com/intlmedical/mapper/ServiceTeamFeatureMapper.class
 com/intlmedical/controller/hospitaladmin/HACaseController.class
 com/intlmedical/service/PendingChangeService.class
@@ -39,6 +42,8 @@ com/intlmedical/dto/response/LoginResponse.class
 com/intlmedical/controller/admin/AdminEquipmentController.class
 com/intlmedical/controller/hospitaladmin/HAProfileController$ChangePasswordRequest.class
 com/intlmedical/entity/Doctor.class
+com/intlmedical/mapper/TranslationJobMapper.class
+com/intlmedical/service/TranslationJobAsyncRunner.class
 com/intlmedical/controller/admin/AdminDoctorController.class
 com/intlmedical/controller/hospitaladmin/HAUploadController.class
 com/intlmedical/service/CaseService.class
@@ -46,7 +51,9 @@ com/intlmedical/entity/BrowseHistory.class
 com/intlmedical/controller/admin/AdminCaseController.class
 com/intlmedical/entity/ProductVariant.class
 com/intlmedical/service/AuthService.class
+com/intlmedical/mapper/ContentTranslationMapper.class
 com/intlmedical/controller/admin/AdminUserController$UpdateHospitalAdminRequest.class
+com/intlmedical/entity/TranslationJobItem.class
 com/intlmedical/controller/UserController.class
 com/intlmedical/controller/reviewer/ReviewerController$RejectRequest.class
 com/intlmedical/entity/Equipment.class
@@ -70,16 +77,19 @@ com/intlmedical/mapper/ServiceFeatureMapper.class
 com/intlmedical/controller/reviewer/ReviewerController$PendingItem.class
 com/intlmedical/mapper/EntityMediaMapper.class
 com/intlmedical/mapper/HospitalMapper.class
+com/intlmedical/service/ContentTranslationService.class
 com/intlmedical/controller/admin/AdminServiceFeatureController$ServiceFeatureDto.class
 com/intlmedical/controller/admin/AdminServiceFeatureController.class
 com/intlmedical/mapper/UserMapper.class
 com/intlmedical/controller/admin/AdminProductController.class
 com/intlmedical/mapper/SiteConfigMapper.class
 com/intlmedical/controller/AuthController.class
+com/intlmedical/controller/admin/AdminTranslationController.class
 com/intlmedical/controller/admin/AdminMediaController.class
 com/intlmedical/controller/admin/AdminProductVariantController.class
 com/intlmedical/controller/hospitaladmin/HAHospitalController.class
 com/intlmedical/controller/hospitaladmin/HAProfileController.class
+com/intlmedical/service/TranslateService$1.class
 com/intlmedical/entity/SpecialProduct.class
 com/intlmedical/entity/EntityMedia.class
 com/intlmedical/controller/admin/AdminHospitalEnvironmentController.class
@@ -101,8 +111,11 @@ com/intlmedical/controller/hospitaladmin/HAProductController.class
 com/intlmedical/mapper/ProductVariantMapper.class
 com/intlmedical/controller/hospitaladmin/HAMediaController.class
 com/intlmedical/controller/hospitaladmin/HADoctorController.class
+com/intlmedical/service/TranslateService$2.class
+com/intlmedical/mapper/TranslationJobItemMapper.class
 com/intlmedical/mapper/EquipmentMapper.class
 com/intlmedical/mapper/PendingChangeMapper.class
 com/intlmedical/dto/request/RegisterRequest.class
+com/intlmedical/controller/I18nController.class
 com/intlmedical/controller/admin/AdminServiceFeatureController$ServiceFeatureRequest.class
 com/intlmedical/controller/ProfileController$ChangePasswordRequest.class

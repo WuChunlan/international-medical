@@ -7,6 +7,7 @@ import com.intlmedical.entity.ServiceFeature;
 import com.intlmedical.entity.ServiceTeamFeature;
 import com.intlmedical.mapper.ServiceFeatureMapper;
 import com.intlmedical.mapper.ServiceTeamFeatureMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +25,7 @@ public class AdminServiceFeatureController {
 
     private final ServiceFeatureMapper serviceFeatureMapper;
     private final ServiceTeamFeatureMapper serviceTeamFeatureMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<ServiceFeatureDto>> list(
@@ -58,6 +61,10 @@ public class AdminServiceFeatureController {
         ServiceFeature sf = req.toEntity();
         serviceFeatureMapper.insert(sf);
         saveTeamLinks(sf.getId(), req.getTeamIds());
+        contentTranslationService.autoTranslateEntityAsync("service_feature", sf.getId(), Map.of(
+            "name", nullSafe(req.getNameZh()),
+            "intro", nullSafe(req.getIntroZh())
+        ));
         return Result.ok();
     }
 
@@ -71,6 +78,10 @@ public class AdminServiceFeatureController {
                 .eq(ServiceTeamFeature::getServiceFeatureId, id)
         );
         saveTeamLinks(id, req.getTeamIds());
+        contentTranslationService.autoTranslateEntityAsync("service_feature", id, Map.of(
+            "name", nullSafe(req.getNameZh()),
+            "intro", nullSafe(req.getIntroZh())
+        ));
         return Result.ok();
     }
 
@@ -93,6 +104,8 @@ public class AdminServiceFeatureController {
             serviceTeamFeatureMapper.insert(link);
         }
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 
     @Data
     public static class ServiceFeatureRequest {

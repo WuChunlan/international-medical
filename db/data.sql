@@ -321,3 +321,57 @@ CREATE TABLE `users` (
   UNIQUE KEY `uk_invite_code` (`invite_code`),
   KEY `idx_referred_by` (`referred_by`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+-- 多语言翻译表（扩展语种用，不改原表双列结构）
+CREATE TABLE `content_translation` (
+  `id`              bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entity_type`     varchar(50)  COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '实体类型: hospital/doctor/case/equipment/product/variant/service_team/service_feature/environment/site_config',
+  `entity_id`       bigint unsigned NOT NULL COMMENT '对应实体的主键ID',
+  `field_name`      varchar(50)  COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '字段名: name/intro/address/bio/title/specialty/summary/detail/desc/value',
+  `lang`            varchar(10)  COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '语言代码: en/fr/es/de/...',
+  `content`         text         COLLATE utf8mb4_unicode_ci NULL COMMENT '翻译内容，is_reviewed=1时对外展示',
+  `error_msg`       varchar(500) COLLATE utf8mb4_unicode_ci NULL COMMENT '翻译失败原因',
+  `is_reviewed`     tinyint      NOT NULL DEFAULT '0' COMMENT '0=待翻译 1=已翻译 2=翻译失败',
+  `updated_at`      datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_trans` (`entity_type`, `entity_id`, `field_name`, `lang`),
+  KEY `idx_entity` (`entity_type`, `entity_id`),
+  KEY `idx_lang_status` (`lang`, `is_reviewed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='多语言内容翻译表';
+
+-- 翻译管理员扩展
+ALTER TABLE `users`
+  ADD COLUMN `managed_lang` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+    COMMENT '翻译管理员负责的语言代码，仅 role_id=6 有值'
+  AFTER `invite_code`;
+
+CREATE TABLE `translation_job` (
+  `id`         bigint unsigned NOT NULL AUTO_INCREMENT,
+  `lang`       varchar(10)  COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '目标语言',
+  `status`     varchar(20)  COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'running'
+                 COMMENT 'running=翻译中 cancelled=已取消 done=完成',
+  `total`      int NOT NULL DEFAULT '0' COMMENT '总字段条数',
+  `done`       int NOT NULL DEFAULT '0' COMMENT '已完成条数',
+  `failed`     int NOT NULL DEFAULT '0' COMMENT '失败条数',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_lang_status` (`lang`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='全量翻译任务';
+
+CREATE TABLE `translation_job_item` (
+  `id`           bigint unsigned NOT NULL AUTO_INCREMENT,
+  `job_id`       bigint unsigned NOT NULL,
+  `entity_type`  varchar(50)  COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entity_id`    bigint unsigned NOT NULL,
+  `entity_label` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '实体展示名',
+  `field_name`   varchar(50)  COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status`       varchar(20)  COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending'
+                   COMMENT 'pending=待翻译 done=完成 failed=失败',
+  `error_msg`    varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at`   datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`   datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_job` (`job_id`),
+  KEY `idx_entity` (`entity_type`, `entity_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='翻译任务明细';

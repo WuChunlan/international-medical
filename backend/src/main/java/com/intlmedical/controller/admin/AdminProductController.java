@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.SpecialProduct;
 import com.intlmedical.mapper.SpecialProductMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/products")
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminProductController {
 
     private final SpecialProductMapper specialProductMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<SpecialProduct>> list(
@@ -31,6 +35,11 @@ public class AdminProductController {
     @PostMapping
     public Result<Void> create(@RequestBody SpecialProduct product) {
         specialProductMapper.insert(product);
+        contentTranslationService.autoTranslateEntityAsync("product", product.getId(), Map.of(
+            "name", nullSafe(product.getNameZh()),
+            "summary", nullSafe(product.getSummaryZh()),
+            "detail", nullSafe(product.getDetailZh())
+        ));
         return Result.ok();
     }
 
@@ -38,6 +47,11 @@ public class AdminProductController {
     public Result<Void> update(@PathVariable Long id, @RequestBody SpecialProduct product) {
         product.setId(id);
         specialProductMapper.updateById(product);
+        contentTranslationService.autoTranslateEntityAsync("product", id, Map.of(
+            "name", nullSafe(product.getNameZh()),
+            "summary", nullSafe(product.getSummaryZh()),
+            "detail", nullSafe(product.getDetailZh())
+        ));
         return Result.ok();
     }
 
@@ -50,4 +64,6 @@ public class AdminProductController {
         );
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

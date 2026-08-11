@@ -1,13 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useContacts } from '../hooks/useContacts';
+import api from '../api';
 import './Footer.less';
 
 export default function Footer() {
   const { t, i18n } = useTranslation();
-  const isZh = i18n.language.startsWith('zh');
   const [modalOpen, setModalOpen] = useState(false);
   const contacts = useContacts();
+  const lang = i18n.language;
+
+  const [siteName, setSiteName] = useState('国际医疗共享平台');
+  const [siteSubtitle, setSiteSubtitle] = useState('International Medical');
+
+  useEffect(() => {
+    const isZh = lang.startsWith('zh');
+    const isBuiltin = isZh || lang === 'en' || lang.startsWith('en-');
+    const pick = (cfg: { valueZh?: string; valueEn?: string; value3rd?: string } | null, fbZh: string, fbEn: string) => {
+      if (!cfg) return isZh ? fbZh : fbEn;
+      if (!isBuiltin) return cfg.value3rd || cfg.valueZh || fbZh;
+      return isZh ? cfg.valueZh || fbZh : cfg.valueEn || fbEn;
+    };
+    const fetch1 = (key: string) => api.get(`/api/config/${key}`, { params: { lang } }).then(r => r.data).catch(() => null);
+    Promise.all([fetch1('site_name'), fetch1('site_subtitle')]).then(([name, sub]) => {
+      setSiteName(pick(name, '国际医疗共享平台', 'International Medical'));
+      setSiteSubtitle(pick(sub, 'International Medical', 'International Medical'));
+    });
+  }, [lang]);
 
   return (
     <>
@@ -21,15 +40,15 @@ export default function Footer() {
                 </svg>
               </div>
               <div>
-                <div className="site-footer__logo-name">国际医疗共享平台</div>
-                <div className="site-footer__logo-sub">International Medical</div>
+                <div className="site-footer__logo-name">{siteName}</div>
+                <div className="site-footer__logo-sub">{siteSubtitle}</div>
               </div>
             </div>
 
             <p className="site-footer__tagline">{t('footer.tagline')}</p>
 
             <button className="site-footer__contact-cta" onClick={() => setModalOpen(true)}>
-              <span>{isZh ? '合作请联系' : 'Contact Us'}</span>
+              <span>{t('footer.contact_cta')}</span>
               <svg className="site-footer__cta-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
@@ -56,7 +75,7 @@ export default function Footer() {
               </svg>
             </div>
             <h3 className="footer-contact-modal__title">
-              {isZh ? '联系我们' : 'Contact Us'}
+              {t('footer.contact_title')}
             </h3>
             <div className="footer-contact-modal__divider" />
             {contacts.length === 0 ? (
@@ -65,9 +84,9 @@ export default function Footer() {
               <div className="footer-contact-modal__body">
                 {contacts.map((c, i) => (
                   <div key={i} className="footer-contact-modal__row" style={{ marginBottom: i < contacts.length - 1 ? 12 : 0 }}>
-                    <span className="footer-contact-modal__label">{isZh ? '联系人' : 'Contact'}</span>
+                    <span className="footer-contact-modal__label">{t('footer.contact_person')}</span>
                     <span className="footer-contact-modal__value">{c.name || '—'}</span>
-                    <span className="footer-contact-modal__label" style={{ marginLeft: 16 }}>{isZh ? '电话' : 'Phone'}</span>
+                    <span className="footer-contact-modal__label" style={{ marginLeft: 16 }}>{t('footer.contact_phone')}</span>
                     <span className="footer-contact-modal__value">{c.phone || '—'}</span>
                   </div>
                 ))}

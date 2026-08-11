@@ -16,13 +16,14 @@ public class CaseController {
     private final CaseService caseService;
 
     @GetMapping
-    public Result<List<CaseVO>> list() {
-        return Result.ok(caseService.listActive());
+    public Result<List<CaseVO>> list(@RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(caseService.listActive(lang));
     }
 
     @GetMapping("/{id}")
-    public Result<CaseVO> detail(@PathVariable Long id) {
-        CaseVO vo = caseService.getActiveById(id);
+    public Result<CaseVO> detail(@PathVariable Long id,
+                                 @RequestParam(defaultValue = "zh") String lang) {
+        CaseVO vo = caseService.getActiveById(id, lang);
         if (vo == null) {
             return Result.fail(404, "案例不存在");
         }

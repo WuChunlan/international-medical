@@ -17,6 +17,7 @@ import {
   SafetyCertificateOutlined,
   UsergroupAddOutlined,
   LockOutlined,
+  TranslationOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAdminAuthStore } from '../store/authStore'
@@ -44,6 +45,7 @@ const adminMenuItems = [
   { key: '/hospital-admins', icon: <SafetyCertificateOutlined />, label: '医院管理员' },
   { key: '/customer-reps', icon: <UsergroupAddOutlined />, label: '客户代表' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
+  { key: '/translation/manage', icon: <TranslationOutlined />, label: '翻译管理' },
 ]
 
 const hospitalAdminMenuItems = [
@@ -65,15 +67,19 @@ const customerRepMenuItems = [
   { key: '/rep/dashboard', icon: <DashboardOutlined />, label: '我的邀请' },
 ]
 
+const translationAdminMenuItems: never[] = []
+
 const roleLabels: Record<string, { text: string; color: string }> = {
-  admin:          { text: '超级管理员', color: '#0A2540' },
-  hospital_admin: { text: '医院管理员', color: '#2563EB' },
-  reviewer:       { text: '审核员',     color: '#059669' },
-  customer_rep:   { text: '客户代表',   color: 'purple' },
+  admin:             { text: '超级管理员', color: '#0A2540' },
+  hospital_admin:    { text: '医院管理员', color: '#2563EB' },
+  reviewer:          { text: '审核员',     color: '#059669' },
+  customer_rep:      { text: '客户代表',   color: 'purple' },
+  translation_admin: { text: '翻译管理员', color: '#d46b08' },
 }
 
 function getSelectedKey(pathname: string): string {
   if (pathname.startsWith('/ha/')) return pathname
+  if (pathname.startsWith('/translation/')) return pathname
   const first = pathname.split('/').filter(Boolean)[0]
   return first ? '/' + first : '/dashboard'
 }
@@ -119,9 +125,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   }
 
   const menuItems =
-    role === 'hospital_admin' ? hospitalAdminMenuItems :
-    role === 'reviewer' ? reviewerMenuItems :
-    role === 'customer_rep' ? customerRepMenuItems :
+    role === 'hospital_admin'    ? hospitalAdminMenuItems :
+    role === 'reviewer'          ? reviewerMenuItems :
+    role === 'customer_rep'      ? customerRepMenuItems :
+    role === 'translation_admin' ? translationAdminMenuItems :
     adminMenuItems
 
   const selectedKey = getSelectedKey(location.pathname)

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { Equipment } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
@@ -22,14 +23,14 @@ export default function EquipmentSection() {
     return () => observer.disconnect();
   }, []);
 
+  const lang = i18n.language;
+
   useEffect(() => {
-    api.get<Equipment[]>('/api/equipments')
+    api.get<Equipment[]>('/api/equipments', { params: { lang } })
       .then(res => setItems(res.data ?? []))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, []);
-
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  }, [lang]);
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(items.length);
 
   return (
@@ -93,8 +94,8 @@ export default function EquipmentSection() {
 function EquipmentCard({ equipment, lang }: { equipment: Equipment; lang: string }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const name = lang === 'zh' ? equipment.nameZh : equipment.nameEn;
-  const desc = lang === 'zh' ? equipment.descZh : equipment.descEn;
+  const name = t9n(equipment as unknown as Record<string, unknown>, 'name', lang);
+  const desc = t9n(equipment as unknown as Record<string, unknown>, 'desc', lang);
 
   return (
     <div

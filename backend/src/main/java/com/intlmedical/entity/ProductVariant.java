@@ -3,6 +3,7 @@ package com.intlmedical.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Data
 @TableName("product_variants")
@@ -17,4 +18,7 @@ public class ProductVariant {
     private BigDecimal price;
     private Integer sortOrder;
     private Integer isActive;
+
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

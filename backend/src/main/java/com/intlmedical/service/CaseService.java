@@ -12,12 +12,33 @@ import java.util.List;
 public class CaseService {
 
     private final CaseMapper caseMapper;
+    private final ContentTranslationService translationService;
+
+    private static final List<String> BUILTIN_LANGS = List.of("zh", "en");
 
     public List<CaseVO> listActive() {
-        return caseMapper.selectActiveWithHospital();
+        return listActive("zh");
+    }
+
+    public List<CaseVO> listActive(String lang) {
+        List<CaseVO> list = caseMapper.selectActiveWithHospital();
+        if (!BUILTIN_LANGS.contains(lang)) {
+            list.forEach(c -> c.setTranslations(
+                translationService.getAll("case", c.getId(), lang)
+            ));
+        }
+        return list;
     }
 
     public CaseVO getActiveById(Long id) {
-        return caseMapper.selectActiveById(id);
+        return getActiveById(id, "zh");
+    }
+
+    public CaseVO getActiveById(Long id, String lang) {
+        CaseVO vo = caseMapper.selectActiveById(id);
+        if (vo != null && !BUILTIN_LANGS.contains(lang)) {
+            vo.setTranslations(translationService.getAll("case", id, lang));
+        }
+        return vo;
     }
 }

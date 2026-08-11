@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../../api';
 import type { ServiceTeam } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
@@ -22,13 +23,13 @@ export default function ServiceTeamsSection() {
   }, []);
 
   useEffect(() => {
-    api.get<ServiceTeam[]>('/api/service-teams')
+    api.get<ServiceTeam[]>('/api/service-teams', { params: { lang } })
       .then(res => setTeams(res.data))
       .catch(() => setTeams([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const lang = i18n.language;
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(teams.length, 3);
 
   return (
@@ -90,8 +91,8 @@ export default function ServiceTeamsSection() {
 }
 
 function TeamCard({ team, lang, delay }: { team: ServiceTeam; lang: string; delay: number }) {
-  const name = lang === 'zh' ? team.nameZh : team.nameEn;
-  const intro = lang === 'zh' ? team.introZh : team.introEn;
+  const name = t9n(team as unknown as Record<string, unknown>, 'name', lang);
+  const intro = t9n(team as unknown as Record<string, unknown>, 'intro', lang);
 
   return (
     <div className="team-card" style={{ animationDelay: `${delay}ms` }}>

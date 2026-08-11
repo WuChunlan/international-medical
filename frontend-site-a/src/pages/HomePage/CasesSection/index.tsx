@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { MedicalCase } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
@@ -23,13 +24,13 @@ export default function CasesSection() {
   }, []);
 
   useEffect(() => {
-    api.get<MedicalCase[]>('/api/cases')
+    api.get<MedicalCase[]>('/api/cases', { params: { lang } })
       .then(res => setCases(res.data ?? []))
       .catch(() => setCases([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const lang = i18n.language;
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(cases.length);
 
   return (
@@ -95,8 +96,8 @@ function CaseCard({ medCase, lang, index }: {
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const title = lang === 'zh' ? medCase.titleZh : medCase.titleEn;
-  const summary = lang === 'zh' ? medCase.summaryZh : medCase.summaryEn;
+  const title = t9n(medCase as unknown as Record<string, unknown>, 'title', lang);
+  const summary = t9n(medCase as unknown as Record<string, unknown>, 'summary', lang);
 
   return (
     <div className="case-card" style={{ animationDelay: `${index * 100}ms` }}>

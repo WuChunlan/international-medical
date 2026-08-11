@@ -16,12 +16,13 @@ public class ProductController {
     private final SpecialProductService productService;
 
     @GetMapping
-    public Result<List<SpecialProduct>> list() {
-        return Result.ok(productService.listActive());
+    public Result<List<SpecialProduct>> list(@RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(productService.listActive(lang));
     }
 
     @GetMapping("/{id}")
-    public Result<Object> detail(@PathVariable Long id) {
-        return Result.ok(productService.getDetail(id));
+    public Result<Object> detail(@PathVariable Long id,
+                                 @RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(productService.getDetail(id, lang));
     }
 }

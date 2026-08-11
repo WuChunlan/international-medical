@@ -13,6 +13,7 @@ import BookingModal from '../../components/BookingModal';
 import MediaCarousel from '../../components/MediaCarousel';
 import { useContacts } from '../../hooks/useContacts';
 import type { ProductDetail, ProductVariant } from '../../types';
+import { t9n } from '../../utils/i18nField';
 
 const { Title, Paragraph } = Typography;
 
@@ -28,17 +29,17 @@ export default function ProductDetailPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const contacts = useContacts();
 
-  const isZh = i18n.language.startsWith('zh');
+  const lang = i18n.language;
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
     api
-      .get<ProductDetail>(`/api/products/${id}`)
+      .get<ProductDetail>(`/api/products/${id}`, { params: { lang } })
       .then((res) => setData(res.data))
       .catch(() => message.error('Failed to load product details'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, lang]);
 
   const handleBook = async () => {
     if (!user) {
@@ -58,27 +59,27 @@ export default function ProductDetailPage() {
   if (!data) return null;
 
   const { product, variants, mediaList } = data;
-  const productName = isZh ? product.nameZh : product.nameEn;
-  const productSummary = isZh ? product.summaryZh : product.summaryEn;
-  const productDetail = isZh ? product.detailZh : product.detailEn;
+  const productName    = t9n(product as unknown as Record<string, unknown>, 'name', lang);
+  const productSummary = t9n(product as unknown as Record<string, unknown>, 'summary', lang);
+  const productDetail  = t9n(product as unknown as Record<string, unknown>, 'detail', lang);
 
   const columns = [
     {
-      title: isZh ? '套餐名称' : 'Package',
+      title: t('product.variant_name'),
       key: 'name',
       render: (_: unknown, record: ProductVariant) => (
-        <strong>{isZh ? record.nameZh : record.nameEn}</strong>
+        <strong>{t9n(record as unknown as Record<string, unknown>, 'name', lang)}</strong>
       ),
     },
     {
-      title: isZh ? '描述' : 'Description',
+      title: t('product.variant_desc'),
       key: 'desc',
       render: (_: unknown, record: ProductVariant) => (
-        <span>{isZh ? record.descZh ?? '—' : record.descEn ?? '—'}</span>
+        <span>{t9n(record as unknown as Record<string, unknown>, 'desc', lang) || '—'}</span>
       ),
     },
     {
-      title: isZh ? '操作' : 'Action',
+      title: t('product.variant_action'),
       key: 'action',
       width: 110,
       render: () => (

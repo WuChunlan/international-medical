@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class PendingChangeService {
     private final EntityMediaMapper entityMediaMapper;
     private final ProductVariantMapper variantMapper;
     private final ObjectMapper objectMapper;
+    private final ContentTranslationService contentTranslationService;
 
     public void submitNewDraft(String entityType, Object entityData,
                                Long submittedBy) throws JsonProcessingException {
@@ -209,6 +212,52 @@ public class PendingChangeService {
         pc.setReviewedAt(LocalDateTime.now());
         pc.setReviewedBy(reviewerId);
         pendingChangeMapper.updateById(pc);
+
+        // 审批通过后异步触发机器翻译，填充非 zh/en 语种
+        triggerAutoTranslate(entityType, entityId, data);
+    }
+
+    private void triggerAutoTranslate(String entityType, Long entityId, JsonNode d) {
+        Map<String, String> zhFields = new HashMap<>();
+        switch (entityType) {
+            case "hospitals" -> {
+                putIfPresent(zhFields, "name",    d.path("nameZh").asText(null));
+                putIfPresent(zhFields, "intro",   d.path("introZh").asText(null));
+                putIfPresent(zhFields, "address", d.path("addressZh").asText(null));
+            }
+            case "doctors" -> {
+                putIfPresent(zhFields, "name",      d.path("nameZh").asText(null));
+                putIfPresent(zhFields, "specialty", d.path("specialtyZh").asText(null));
+                putIfPresent(zhFields, "bio",       d.path("bioZh").asText(null));
+                putIfPresent(zhFields, "title",     d.path("titleZh").asText(null));
+            }
+            case "equipments" -> {
+                putIfPresent(zhFields, "name", d.path("nameZh").asText(null));
+                putIfPresent(zhFields, "desc", d.path("descZh").asText(null));
+            }
+            case "environments" -> {
+                putIfPresent(zhFields, "name", d.path("nameZh").asText(null));
+                putIfPresent(zhFields, "desc", d.path("descZh").asText(null));
+            }
+            case "cases" -> {
+                putIfPresent(zhFields, "title",   d.path("titleZh").asText(null));
+                putIfPresent(zhFields, "summary", d.path("summaryZh").asText(null));
+                putIfPresent(zhFields, "detail",  d.path("detailZh").asText(null));
+            }
+            case "products" -> {
+                putIfPresent(zhFields, "name",    d.path("nameZh").asText(null));
+                putIfPresent(zhFields, "summary", d.path("summaryZh").asText(null));
+                putIfPresent(zhFields, "detail",  d.path("detailZh").asText(null));
+            }
+            default -> { return; }
+        }
+        if (!zhFields.isEmpty()) {
+            contentTranslationService.autoTranslateEntity(entityType, entityId, zhFields);
+        }
+    }
+
+    private void putIfPresent(Map<String, String> map, String key, String value) {
+        if (value != null && !value.isBlank()) map.put(key, value);
     }
 
     private Long insertNewEntity(String entityType, JsonNode d) {

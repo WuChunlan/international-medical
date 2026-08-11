@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.Equipment;
 import com.intlmedical.mapper.EquipmentMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/equipments")
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminEquipmentController {
 
     private final EquipmentMapper equipmentMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<Equipment>> list(
@@ -34,6 +38,10 @@ public class AdminEquipmentController {
     @PostMapping
     public Result<Void> create(@RequestBody Equipment equipment) {
         equipmentMapper.insert(equipment);
+        contentTranslationService.autoTranslateEntityAsync("equipment", equipment.getId(), Map.of(
+            "name", nullSafe(equipment.getNameZh()),
+            "desc", nullSafe(equipment.getDescZh())
+        ));
         return Result.ok();
     }
 
@@ -41,6 +49,10 @@ public class AdminEquipmentController {
     public Result<Void> update(@PathVariable Long id, @RequestBody Equipment equipment) {
         equipment.setId(id);
         equipmentMapper.updateById(equipment);
+        contentTranslationService.autoTranslateEntityAsync("equipment", id, Map.of(
+            "name", nullSafe(equipment.getNameZh()),
+            "desc", nullSafe(equipment.getDescZh())
+        ));
         return Result.ok();
     }
 
@@ -53,4 +65,6 @@ public class AdminEquipmentController {
         );
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

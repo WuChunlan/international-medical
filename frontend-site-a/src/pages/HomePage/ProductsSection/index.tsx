@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { SpecialProduct } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
@@ -23,13 +24,13 @@ export default function ProductsSection() {
   }, []);
 
   useEffect(() => {
-    api.get<SpecialProduct[]>('/api/products')
+    api.get<SpecialProduct[]>('/api/products', { params: { lang } })
       .then(res => setProducts(res.data ?? []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const lang = i18n.language;
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(products.length);
 
   return (
@@ -95,8 +96,8 @@ function ProductCard({ product, lang, index }: {
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const name = lang === 'zh' ? product.nameZh : product.nameEn;
-  const summary = lang === 'zh' ? product.summaryZh : product.summaryEn;
+  const name = t9n(product as unknown as Record<string, unknown>, 'name', lang);
+  const summary = t9n(product as unknown as Record<string, unknown>, 'summary', lang);
 
   return (
     <div className="product-card">

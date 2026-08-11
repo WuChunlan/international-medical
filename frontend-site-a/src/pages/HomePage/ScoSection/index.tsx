@@ -6,31 +6,20 @@ import './index.less';
 
 const SLIDES = [banner1, banner2];
 
-const STATS = {
-  zh: [
-    { value: '50+', label: '合作顶尖医院' },
-    { value: '200+', label: '权威专家团队' },
-    { value: '10,000+', label: '成功服务患者' },
-    { value: '30+', label: '覆盖国家地区' },
-  ],
-  en: [
-    { value: '50+', label: 'Partner Hospitals' },
-    { value: '200+', label: 'Expert Specialists' },
-    { value: '10,000+', label: 'Patients Served' },
-    { value: '30+', label: 'Countries Covered' },
-  ],
-};
+const STAT_KEYS = [
+  { value: '50+',     key: 'sco.partner_hospitals' },
+  { value: '200+',    key: 'sco.expert_specialists' },
+  { value: '10,000+', key: 'sco.patients_served' },
+  { value: '30+',     key: 'sco.countries_covered' },
+];
 
 export default function ScoSection() {
-  const { i18n } = useTranslation();
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const stats = STATS[lang];
 
   const goTo = (index: number) => {
     if (animating) return;
@@ -96,14 +85,14 @@ export default function ScoSection() {
 
       <div ref={statsRef} className="sco-stats">
         <div className="sco-stats__inner">
-          {stats.map((stat, i) => (
+          {STAT_KEYS.map((stat, i) => (
             <div
               key={i}
               className={`sco-stat-item${statsVisible ? ' sco-stat-item--visible' : ' sco-stat-item--hidden'}`}
               style={statsVisible ? { animationDelay: `${i * 0.1}s` } : undefined}
             >
               <div className="sco-stat-item__value">{stat.value}</div>
-              <div className="sco-stat-item__label">{stat.label}</div>
+              <div className="sco-stat-item__label">{t(stat.key)}</div>
             </div>
           ))}
         </div>

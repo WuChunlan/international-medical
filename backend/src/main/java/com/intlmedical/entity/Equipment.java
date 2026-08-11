@@ -2,6 +2,7 @@ package com.intlmedical.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import java.util.Map;
 
 @Data
 @TableName("equipments")
@@ -23,4 +24,7 @@ public class Equipment {
 
     @TableField(exist = false)
     private Boolean hasPendingEdit;
+
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

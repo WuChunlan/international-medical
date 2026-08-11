@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../../../api';
 import type { ServiceFeature } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
@@ -27,13 +28,13 @@ export default function ServiceFeaturesSection() {
   }, []);
 
   useEffect(() => {
-    api.get<IPage<ServiceFeature>>('/api/service-features', { params: { page: 1, size: 6 } })
+    api.get<IPage<ServiceFeature>>('/api/service-features', { params: { page: 1, size: 6, lang } })
       .then(res => setItems(res.data?.records ?? []))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
   }, []);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
+  const lang = i18n.language;
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(items.length);
 
   return (
@@ -95,8 +96,8 @@ export default function ServiceFeaturesSection() {
 }
 
 function ServiceFeatureCard({ feature, lang, delay }: { feature: ServiceFeature; lang: string; delay: number }) {
-  const name  = lang === 'zh' ? feature.nameZh  : feature.nameEn;
-  const intro = lang === 'zh' ? feature.introZh : feature.introEn;
+  const name  = t9n(feature as unknown as Record<string, unknown>, 'name', lang);
+  const intro = t9n(feature as unknown as Record<string, unknown>, 'intro', lang);
 
   return (
     <div className="sf-card" style={{ animationDelay: `${delay}ms` }}>

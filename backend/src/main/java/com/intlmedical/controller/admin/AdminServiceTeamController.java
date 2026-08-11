@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.ServiceTeam;
 import com.intlmedical.mapper.ServiceTeamMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/service-teams")
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminServiceTeamController {
 
     private final ServiceTeamMapper serviceTeamMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<ServiceTeam>> list(
@@ -30,6 +34,10 @@ public class AdminServiceTeamController {
     @PostMapping
     public Result<Void> create(@RequestBody ServiceTeam team) {
         serviceTeamMapper.insert(team);
+        contentTranslationService.autoTranslateEntityAsync("service_team", team.getId(), Map.of(
+            "name", nullSafe(team.getNameZh()),
+            "intro", nullSafe(team.getIntroZh())
+        ));
         return Result.ok();
     }
 
@@ -37,6 +45,10 @@ public class AdminServiceTeamController {
     public Result<Void> update(@PathVariable Long id, @RequestBody ServiceTeam team) {
         team.setId(id);
         serviceTeamMapper.updateById(team);
+        contentTranslationService.autoTranslateEntityAsync("service_team", id, Map.of(
+            "name", nullSafe(team.getNameZh()),
+            "intro", nullSafe(team.getIntroZh())
+        ));
         return Result.ok();
     }
 
@@ -45,4 +57,6 @@ public class AdminServiceTeamController {
         serviceTeamMapper.deleteById(id);
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

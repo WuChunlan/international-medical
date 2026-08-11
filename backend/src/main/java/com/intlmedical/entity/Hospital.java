@@ -3,6 +3,7 @@ package com.intlmedical.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 @TableName("hospitals")
@@ -32,4 +33,8 @@ public class Hospital {
 
     @TableField(exist = false)
     private Boolean hasPendingEdit;
+
+    /** 非 zh/en 语种时由 Service 填充，key 为去掉语言后缀的字段名（name/intro/address） */
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

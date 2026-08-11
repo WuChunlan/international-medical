@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import type { Hospital } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import './index.less';
 
 export default function HospitalsSection() {
   const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -23,13 +25,12 @@ export default function HospitalsSection() {
   }, []);
 
   useEffect(() => {
-    api.get<Hospital[]>('/api/hospitals')
+    api.get<Hospital[]>('/api/hospitals', { params: { lang } })
       .then(res => setHospitals(res.data ?? []))
       .catch(() => setHospitals([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
   const { visible: visibleIdx, prev, next, hasMultiple, index, pages } = useCarousel(hospitals.length);
 
   return (
@@ -95,8 +96,8 @@ function HospitalCard({ hospital, lang, delay }: {
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const name = lang === 'zh' ? hospital.nameZh : hospital.nameEn;
-  const intro = lang === 'zh' ? hospital.introZh : hospital.introEn;
+  const name = t9n(hospital as unknown as Record<string, unknown>, 'name', lang);
+  const intro = t9n(hospital as unknown as Record<string, unknown>, 'intro', lang);
 
   return (
     <div

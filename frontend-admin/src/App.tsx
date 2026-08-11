@@ -24,6 +24,7 @@ import HAProductsPage from './pages/HospitalAdmin/HAProductsPage';
 import ReviewerPendingPage from './pages/Reviewer/ReviewerPendingPage';
 import CustomerRepManage from './pages/CustomerRepManage';
 import RepDashboard from './pages/RepDashboard';
+import TranslationManage from './pages/TranslationManage';
 
 function App() {
   return (
@@ -62,6 +63,8 @@ function App() {
                 <Route path="reviewer/pending" element={<ReviewerPendingPage />} />
                 {/* Customer rep routes */}
                 <Route path="rep/dashboard" element={<RepDashboard />} />
+                {/* Translation routes */}
+                <Route path="translation/manage" element={<TranslationManage />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </AdminLayout>

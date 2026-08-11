@@ -66,7 +66,7 @@
     align-items: center;
     cursor: pointer;
     flex-shrink: 1;
-    min-width: 0;
+    min-width: 160px;
   }
 
   &__logo-img {
@@ -83,7 +83,9 @@
     justify-content: flex-end;
     gap: 0;
     height: 100%;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
   }
 
   &__mobile-btn {
@@ -125,7 +127,15 @@
       padding: 0 16px;
     }
 
-    &__lang-switcher { padding-left: 0; }
+    &__lang-switcher {
+      padding-left: 0;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      max-width: calc(100vw - 160px);
+      &::-webkit-scrollbar { display: none; }
+    }
   }
 
   @media (max-width: 480px) {
@@ -150,7 +160,7 @@
   font-family: '微软雅黑', 'Source Sans 3', sans-serif;
   font-size: 16px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 1);  // rgb(30,80,174) = #1e50ae
+  color: rgba(255, 255, 255, 1);
   text-decoration: none;
   padding: 0 10px;
   height: 109px;
@@ -159,6 +169,9 @@
   background: none;
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
   position: relative;
   transition: color 0.2s;
 

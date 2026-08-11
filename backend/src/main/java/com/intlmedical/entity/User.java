@@ -23,6 +23,8 @@ public class User {
     @TableField("hospital_id")
     private Long hospitalId;
     private String inviteCode;
+    /** 翻译管理员负责的语言，仅 role_id=6 有值 */
+    private String managedLang;
     private Integer canInvite;
     private Long referredBy;
     private Integer mustChangePassword;

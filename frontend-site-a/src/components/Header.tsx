@@ -4,64 +4,31 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import type { AuthState } from '../store/authStore';
 import api from '../api';
+import { loadLang } from '../i18n';
 import './Header.less';
 
-const NAV_LINKS = {
-  zh: [
-    { label: '首页', anchor: '#hero' },
-    { label: '中国顶尖医院', anchor: '#hospitals' },
-    { label: '高端医疗设备', anchor: '#equipment' },
-    { label: '专业医护人员', anchor: '#doctors' },
-    { label: '省心品质服务', anchor: '#service-features' },
-    { label: '过往成功案例', anchor: '#cases' },
-    { label: '特需治疗', anchor: '#products' },
-  ],
-  en: [
-    { label: 'Home', anchor: '#hero' },
-    { label: 'Top Hospitals', anchor: '#hospitals' },
-    { label: 'Premium Equipment', anchor: '#equipment' },
-    { label: 'Medical Staff', anchor: '#doctors' },
-    { label: 'Quality Services', anchor: '#service-features' },
-    { label: 'Success Cases', anchor: '#cases' },
-    { label: 'Special Care', anchor: '#products' },
-  ],
-};
+// zh/en nav labels are handled by i18n; 3rd-language labels fetched from /api/i18n/{lang}
+const NAV_ANCHORS = ['#hero', '#hospitals', '#equipment', '#doctors', '#service-features', '#cases', '#products'];
+const HD_NAV_ANCHORS = ['#hd-intro', '#hd-equipment', '#hd-environment', '#hd-doctors'];
+const PD_NAV_ANCHORS = ['#pd-intro', '#pd-detail', '#pd-variants'];
 
-const HD_NAV_LINKS = {
-  zh: [
-    { label: '医院简介', anchor: '#hd-intro' },
-    { label: '高端医疗设备', anchor: '#hd-equipment' },
-    { label: '舒适诊疗环境', anchor: '#hd-environment' },
-    { label: '专业医护团队', anchor: '#hd-doctors' },
-  ],
-  en: [
-    { label: 'Hospital Overview', anchor: '#hd-intro' },
-    { label: 'Premium Equipment', anchor: '#hd-equipment' },
-    { label: 'Treatment Environment', anchor: '#hd-environment' },
-    { label: 'Medical Team', anchor: '#hd-doctors' },
-  ],
-};
+// i18n keys for each nav anchor
+const NAV_KEYS = ['nav.home', 'nav.hospitals', 'nav.equipment', 'nav.doctors', 'nav.service_features', 'nav.cases', 'nav.products'];
+const HD_NAV_KEYS = ['nav.hd_intro', 'nav.hd_equipment', 'nav.hd_environment', 'nav.hd_doctors'];
+const PD_NAV_KEYS = ['nav.pd_intro', 'nav.pd_detail', 'nav.pd_variants'];
 
-const PD_NAV_LINKS = {
-  zh: [
-    { label: '产品简介', anchor: '#pd-intro' },
-    { label: '产品详情', anchor: '#pd-detail' },
-    { label: '套餐选择', anchor: '#pd-variants' },
-  ],
-  en: [
-    { label: 'Overview', anchor: '#pd-intro' },
-    { label: 'Details', anchor: '#pd-detail' },
-    { label: 'Packages', anchor: '#pd-variants' },
-  ],
+const LANG_LABELS: Record<string, string> = {
+  zh: '中文', en: 'English',
+  ru: 'Русский', es: 'Español', fr: 'Français',
+  de: 'Deutsch', ja: '日本語', ko: '한국어',
+  ar: 'العربية', pt: 'Português',
+  it: 'Italiano', nl: 'Nederlands', tr: 'Türkçe',
+  th: 'ภาษาไทย', vi: 'Tiếng Việt', id: 'Bahasa Indonesia',
+  hi: 'हिन्दी', pl: 'Polski',
 };
-
-const LANGUAGES = [
-  { code: 'zh', label: '中文' },
-  { code: 'en', label: 'English' },
-];
 
 export default function Header() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((s: AuthState) => s.user);
@@ -70,14 +37,11 @@ export default function Header() {
   const isHospitalDetail = location.pathname.startsWith('/hospital/');
   const isProductDetail  = location.pathname.startsWith('/product/');
   const isHomePage = location.pathname === '/';
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
-  const navLinks = isHospitalDetail
-    ? HD_NAV_LINKS[lang]
-    : isProductDetail
-      ? PD_NAV_LINKS[lang]
-      : NAV_LINKS[lang];
+  const lang = i18n.language;
 
-  const defaultAnchor = isHospitalDetail ? '#hd-intro' : isProductDetail ? '#pd-intro' : '#hero';
+  const navAnchorList  = isHospitalDetail ? HD_NAV_ANCHORS : isProductDetail ? PD_NAV_ANCHORS : NAV_ANCHORS;
+  const navKeyList     = isHospitalDetail ? HD_NAV_KEYS    : isProductDetail ? PD_NAV_KEYS    : NAV_KEYS;
+  const defaultAnchor  = isHospitalDetail ? '#hd-intro' : isProductDetail ? '#pd-intro' : '#hero';
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -85,6 +49,12 @@ export default function Header() {
   const [siteName, setSiteName] = useState('国际医疗');
   const [siteSubtitle, setSiteSubtitle] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [languages, setLanguages] = useState<{ code: string; label: string }[]>([
+    { code: 'zh', label: '中文' },
+    { code: 'en', label: 'English' },
+  ]);
+  // extra i18n bundle for 3rd languages (flat key→value map)
+  const [extraBundle, setExtraBundle] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -92,13 +62,41 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // fetch configured langs
   useEffect(() => {
-    const isZh = i18n.language.startsWith('zh');
-    const pick = (cfg: { valueZh?: string; valueEn?: string } | null, fallbackZh: string, fallbackEn: string) =>
-      isZh ? cfg?.valueZh || fallbackZh : cfg?.valueEn || fallbackEn;
+    api.get<string[]>('/api/config/langs')
+      .then(r => {
+        const codes: string[] = Array.isArray(r.data) ? r.data : [];
+        if (codes.length > 0) {
+          setLanguages(codes.map(code => ({ code, label: LANG_LABELS[code] ?? code.toUpperCase() })));
+        }
+      })
+      .catch(() => {/* keep default zh/en */});
+  }, []);
+
+  // fetch 3rd-language UI bundle when lang is non-builtin
+  useEffect(() => {
+    const isBuiltin = lang === 'zh' || lang.startsWith('zh-') || lang === 'en' || lang.startsWith('en-');
+    if (isBuiltin) {
+      setExtraBundle({});
+      return;
+    }
+    api.get<Record<string, string>>(`/api/i18n/${lang}`)
+      .then(r => setExtraBundle(r.data && typeof r.data === 'object' ? r.data : {}))
+      .catch(() => setExtraBundle({}));
+  }, [lang]);
+
+  useEffect(() => {
+    const isZh = lang.startsWith('zh');
+    const isBuiltin = isZh || lang === 'en' || lang.startsWith('en-');
+    const pick = (cfg: { valueZh?: string; valueEn?: string; value3rd?: string } | null, fallbackZh: string, fallbackEn: string) => {
+      if (!cfg) return isZh ? fallbackZh : fallbackEn;
+      if (!isBuiltin) return cfg.value3rd || cfg.valueZh || fallbackZh;
+      return isZh ? cfg.valueZh || fallbackZh : cfg.valueEn || fallbackEn;
+    };
 
     const fetchConfig = (key: string) =>
-      api.get(`/api/config/${key}`).then((r) => r.data).catch(() => null);
+      api.get(`/api/config/${key}`, { params: { lang } }).then((r) => r.data).catch(() => null);
 
     Promise.all([
       fetchConfig('site_name'),
@@ -109,21 +107,30 @@ export default function Header() {
       setSiteSubtitle(pick(subtitle, '', ''));
       setLogoUrl(logo?.valueZh || logo?.valueEn || '');
     });
-  }, [i18n.language]);
+  }, [lang]);
+
+  // resolve a UI text key: use i18n for zh/en, extraBundle for 3rd languages
+  const tx = (key: string): string => {
+    const isBuiltin = lang === 'zh' || lang.startsWith('zh-') || lang === 'en' || lang.startsWith('en-');
+    if (isBuiltin) return t(key);
+    return extraBundle[key] || t(key);
+  };
+
+  const navLinks = navAnchorList.map((anchor, i) => ({
+    label: tx(navKeyList[i]),
+    anchor,
+  }));
 
   const scrollTo = (anchor: string) => {
     setMobileOpen(false);
     setActiveAnchor(anchor);
 
-    // Hospital / product detail pages: scroll within the detail page anchors.
     if (isHospitalDetail || isProductDetail) {
       const id = anchor.replace('#', '');
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
 
-    // Any non-home route (login, register, profile, etc.): go back to home,
-    // then let HomePage handle the scroll/tab switch via router state.
     if (!isHomePage) {
       navigate('/', { state: { anchor } });
       return;
@@ -138,22 +145,26 @@ export default function Header() {
     window.dispatchEvent(new CustomEvent('nav:switch-tab', { detail: { tab: 'professional', anchor: id } }));
   };
 
+  const handleChangeLang = (code: string) => {
+    loadLang(code).then(() => i18n.changeLanguage(code));
+  };
+
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
   return (
-    <header className={`site-a-header${scrolled ? ' site-a-header--scrolled' : ''}${lang === 'en' ? ' site-a-header--en' : ''}`}>
+    <header className={`site-a-header${scrolled ? ' site-a-header--scrolled' : ''}${(lang === 'en' || lang.startsWith('en-')) ? ' site-a-header--en' : ''}`}>
       {/* Row 1: topbar */}
       <div className="site-a-header__topbar">
         <div className="site-a-header__topbar-inner">
           <div className="site-a-header__lang-switcher">
-            {LANGUAGES.map(lng => (
+            {languages.map(lng => (
               <button
                 key={lng.code}
                 className={`header-lang-item${i18n.language === lng.code ? ' header-lang-item--active' : ''}`}
-                onClick={() => i18n.changeLanguage(lng.code)}
+                onClick={() => handleChangeLang(lng.code)}
               >
                 {lng.label}
               </button>
@@ -164,16 +175,16 @@ export default function Header() {
               <>
                 <Link to="/profile" className="header-auth-link">{user.username}</Link>
                 <button className="header-auth-link header-auth-link--btn" onClick={handleLogout}>
-                  {lang === 'zh' ? '退出' : 'Logout'}
+                  {tx('nav.logout')}
                 </button>
               </>
             ) : (
               <>
                 <Link to="/login" className="header-auth-link">
-                  {lang === 'zh' ? '登录' : 'Login'}
+                  {tx('nav.login')}
                 </Link>
                 <Link to="/register" className="header-auth-link header-auth-link--register">
-                  {lang === 'zh' ? '注册' : 'Register'}
+                  {tx('nav.register')}
                 </Link>
               </>
             )}
@@ -235,11 +246,11 @@ export default function Header() {
             </button>
           ))}
           <div className="site-a-header__mobile-lang">
-            {LANGUAGES.map(lng => (
+            {languages.map(lng => (
               <button
                 key={lng.code}
                 className={`header-lang-item${i18n.language === lng.code ? ' header-lang-item--active' : ''}`}
-                onClick={() => { i18n.changeLanguage(lng.code); setMobileOpen(false); }}
+                onClick={() => { handleChangeLang(lng.code); setMobileOpen(false); }}
               >
                 {lng.label}
               </button>
@@ -250,16 +261,16 @@ export default function Header() {
               <>
                 <Link to="/profile" className="header-auth-link" onClick={() => setMobileOpen(false)}>{user.username}</Link>
                 <button className="header-auth-link header-auth-link--btn" onClick={() => { handleLogout(); setMobileOpen(false); }}>
-                  {lang === 'zh' ? '退出' : 'Logout'}
+                  {tx('nav.logout')}
                 </button>
               </>
             ) : (
               <>
                 <Link to="/login" className="header-auth-link" onClick={() => setMobileOpen(false)}>
-                  {lang === 'zh' ? '登录' : 'Login'}
+                  {tx('nav.login')}
                 </Link>
                 <Link to="/register" className="header-auth-link header-auth-link--register" onClick={() => setMobileOpen(false)}>
-                  {lang === 'zh' ? '注册' : 'Register'}
+                  {tx('nav.register')}
                 </Link>
               </>
             )}

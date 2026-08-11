@@ -9,8 +9,7 @@ interface BookingModalProps {
 }
 
 export default function BookingModal({ visible, onClose, contacts }: BookingModalProps) {
-  const { t, i18n } = useTranslation();
-  const isZh = i18n.language.startsWith('zh');
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -25,16 +24,16 @@ export default function BookingModal({ visible, onClose, contacts }: BookingModa
     >
       <div className="booking-modal__content">
         {contacts.length === 0 ? (
-          <p style={{ color: '#999' }}>{isZh ? '暂无联系方式' : 'No contact info available'}</p>
+          <p style={{ color: '#999' }}>{t('booking.no_contact')}</p>
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 <th style={{ textAlign: 'left', padding: '6px 12px 6px 0', borderBottom: '1px solid #f0f0f0', color: '#888', fontWeight: 500, fontSize: 13 }}>
-                  {isZh ? '联系人' : 'Contact'}
+                  {t('booking.contact_person')}
                 </th>
                 <th style={{ textAlign: 'left', padding: '6px 0', borderBottom: '1px solid #f0f0f0', color: '#888', fontWeight: 500, fontSize: 13 }}>
-                  {isZh ? '联系电话' : 'Phone'}
+                  {t('booking.contact_phone')}
                 </th>
               </tr>
             </thead>

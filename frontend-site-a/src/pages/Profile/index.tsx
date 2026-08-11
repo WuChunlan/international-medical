@@ -81,9 +81,7 @@ export default function ProfilePage() {
               </div>
             ) : history.length === 0 ? (
               <Empty
-                description={
-                  isZh ? '暂无浏览记录' : 'No browse history yet'
-                }
+                description={t('profile.no_history')}
                 className="profile-empty"
               />
             ) : (

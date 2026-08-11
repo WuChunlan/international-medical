@@ -3,6 +3,8 @@ package com.intlmedical.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @TableName("hospital_environments")
 public class HospitalEnvironment {
@@ -23,4 +25,7 @@ public class HospitalEnvironment {
 
     @TableField(exist = false)
     private Boolean hasPendingEdit;
+
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

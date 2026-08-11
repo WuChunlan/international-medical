@@ -8,10 +8,9 @@ interface TabSectionProps {
 }
 
 export default function TabSection({ activeTab, onTabChange }: TabSectionProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const lang = i18n.language === 'zh' ? 'zh' : 'en';
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,7 +31,7 @@ export default function TabSection({ activeTab, onTabChange }: TabSectionProps) 
           <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
         </svg>
       ),
-      tag: lang === 'zh' ? '专科诊疗' : 'Specialist Care',
+      tag: t('tabs.professional_tag'),
     },
     {
       key: 'special' as const,
@@ -43,7 +42,7 @@ export default function TabSection({ activeTab, onTabChange }: TabSectionProps) 
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
       ),
-      tag: lang === 'zh' ? '定制服务' : 'Custom Service',
+      tag: t('tabs.special_tag'),
     },
   ];
 

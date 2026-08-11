@@ -10,6 +10,7 @@ import Header from '../../components/Header';
 import BookingModal from '../../components/BookingModal';
 import MediaCarousel from '../../components/MediaCarousel';
 import { useCarousel } from '../../hooks/useCarousel';
+import { t9n } from '../../utils/i18nField';
 import { useContacts } from '../../hooks/useContacts';
 import type { HospitalDetail, Doctor, Equipment, HospitalEnvironment } from '../../types';
 import './index.less';
@@ -73,37 +74,41 @@ function SectionCarousel<T>({
 }
 
 // ── Equipment card ────────────────────────────────────────────────────────────
-function EquipCard({ item, isZh }: { item: Equipment; isZh: boolean }) {
+function EquipCard({ item, lang }: { item: Equipment; lang: string }) {
+  const name = t9n(item as unknown as Record<string, unknown>, 'name', lang);
+  const desc = t9n(item as unknown as Record<string, unknown>, 'desc', lang);
   return (
     <div className="hd-card hd-card--equip">
       <div className="hd-card__cover">
         {item.imageUrl
-          ? <img src={item.imageUrl} alt={isZh ? item.nameZh : item.nameEn} />
+          ? <img src={item.imageUrl} alt={name} />
           : <div className="hd-card__cover-ph"><MedicineBoxOutlined /></div>
         }
       </div>
       <div className="hd-card__body">
-        <h4 className="hd-card__name">{isZh ? item.nameZh : item.nameEn}</h4>
-        <p className="hd-card__desc">{isZh ? item.descZh : item.descEn}</p>
+        <h4 className="hd-card__name">{name}</h4>
+        <p className="hd-card__desc">{desc}</p>
       </div>
     </div>
   );
 }
 
 // ── Environment card ──────────────────────────────────────────────────────────
-function EnvCard({ item, isZh }: { item: HospitalEnvironment; isZh: boolean }) {
+function EnvCard({ item, lang }: { item: HospitalEnvironment; lang: string }) {
+  const name = t9n(item as unknown as Record<string, unknown>, 'name', lang);
+  const desc = t9n(item as unknown as Record<string, unknown>, 'desc', lang);
   return (
     <div className="hd-card hd-card--env">
       <div className="hd-card__cover">
         {item.imageUrl
-          ? <img src={item.imageUrl} alt={isZh ? item.nameZh : item.nameEn} />
+          ? <img src={item.imageUrl} alt={name} />
           : <div className="hd-card__cover-ph hd-card__cover-ph--env"><HomeOutlined /></div>
         }
       </div>
       <div className="hd-card__body">
-        <h4 className="hd-card__name">{isZh ? item.nameZh : item.nameEn}</h4>
-        {(isZh ? item.descZh : item.descEn) && (
-          <p className="hd-card__desc">{isZh ? item.descZh : item.descEn}</p>
+        <h4 className="hd-card__name">{name}</h4>
+        {desc && (
+          <p className="hd-card__desc">{desc}</p>
         )}
       </div>
     </div>
@@ -112,13 +117,13 @@ function EnvCard({ item, isZh }: { item: HospitalEnvironment; isZh: boolean }) {
 
 // ── Doctor card ───────────────────────────────────────────────────────────────
 function DoctorCard({
-  doc, isZh, onBook,
-}: { doc: Doctor; isZh: boolean; onBook: (d: Doctor) => void }) {
+  doc, lang, onBook,
+}: { doc: Doctor; lang: string; onBook: (d: Doctor) => void }) {
   const { t } = useTranslation();
-  const name      = isZh ? doc.nameZh      : doc.nameEn;
-  const title     = isZh ? doc.titleZh     : doc.titleEn;
-  const specialty = isZh ? doc.specialtyZh : doc.specialtyEn;
-  const bio       = isZh ? doc.bioZh       : doc.bioEn;
+  const name      = t9n(doc as unknown as Record<string, unknown>, 'name', lang);
+  const title     = t9n(doc as unknown as Record<string, unknown>, 'title', lang);
+  const specialty = t9n(doc as unknown as Record<string, unknown>, 'specialty', lang);
+  const bio       = t9n(doc as unknown as Record<string, unknown>, 'bio', lang);
 
   return (
     <div className="hd-card hd-card--doctor">
@@ -178,16 +183,16 @@ export default function HospitalDetailPage() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const contacts = useContacts();
 
-  const isZh = i18n.language.startsWith('zh');
+  const lang = i18n.language;
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    api.get<HospitalDetail>(`/api/hospitals/${id}`)
+    api.get<HospitalDetail>(`/api/hospitals/${id}`, { params: { lang } })
       .then(res => setData(res.data))
       .catch(() => message.error('Failed to load hospital details'))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, lang]);
 
   const handleBook = async (_doctor: Doctor) => {
     if (!user) {
@@ -204,8 +209,8 @@ export default function HospitalDetailPage() {
   if (!data)   return null;
 
   const { hospital, doctors, equipments, environments, mediaList } = data;
-  const hospitalName  = isZh ? hospital.nameZh : hospital.nameEn;
-  const hospitalIntro = isZh ? hospital.introZh : hospital.introEn;
+  const hospitalName  = t9n(hospital as unknown as Record<string, unknown>, 'name', lang);
+  const hospitalIntro = t9n(hospital as unknown as Record<string, unknown>, 'intro', lang);
 
   return (
     <div className="page-wrapper">
@@ -226,11 +231,11 @@ export default function HospitalDetailPage() {
           <SectionBlock
             id="hd-equipment"
             icon={<MedicineBoxOutlined />}
-            title={isZh ? '高端医疗设备' : 'Premium Medical Equipment'}
+            title={t('hospital.equipment_title')}
           >
             <SectionCarousel
               items={equipments}
-              renderCard={(eq) => <EquipCard item={eq} isZh={isZh} />}
+              renderCard={(eq) => <EquipCard item={eq} lang={lang} />}
               theme="light"
             />
           </SectionBlock>
@@ -240,12 +245,12 @@ export default function HospitalDetailPage() {
           <SectionBlock
             id="hd-environment"
             icon={<HomeOutlined />}
-            title={isZh ? '舒适诊疗环境' : 'Comfortable Treatment Environment'}
+            title={t('hospital.environment_title')}
             alt
           >
             <SectionCarousel
               items={environments}
-              renderCard={(env) => <EnvCard item={env} isZh={isZh} />}
+              renderCard={(env) => <EnvCard item={env} lang={lang} />}
               theme="light"
             />
           </SectionBlock>
@@ -259,7 +264,7 @@ export default function HospitalDetailPage() {
           >
             <SectionCarousel
               items={doctors}
-              renderCard={(doc) => <DoctorCard doc={doc} isZh={isZh} onBook={handleBook} />}
+              renderCard={(doc) => <DoctorCard doc={doc} lang={lang} onBook={handleBook} />}
               theme="light"
             />
           </SectionBlock>

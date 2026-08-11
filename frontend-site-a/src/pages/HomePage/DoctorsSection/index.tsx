@@ -5,6 +5,7 @@ import { Avatar, Tag } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import api from '../../../api';
 import type { Doctor } from '../../../types';
+import { t9n } from '../../../utils/i18nField';
 import { useCarousel } from '../../../hooks/useCarousel';
 import BookingModal from '../../../components/BookingModal';
 import { useAuthStore } from '../../../store/authStore';
@@ -35,14 +36,14 @@ export default function DoctorsSection() {
     return () => observer.disconnect();
   }, []);
 
+  const lang = i18n.language;
+
   useEffect(() => {
-    api.get<IPage<Doctor>>('/api/doctors', { params: { page: 1, size: 200 } })
+    api.get<IPage<Doctor>>('/api/doctors', { params: { page: 1, size: 200, lang } })
       .then(res => setItems(res.data?.records ?? []))
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, []);
-
-  const isZh = i18n.language.startsWith('zh');
+  }, [lang]);
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((s: AuthState) => s.user);
@@ -92,7 +93,7 @@ export default function DoctorsSection() {
               )}
               <div className="cards-grid cards-grid--doctors">
                 {visibleIdx.map((i, slot) => (
-                  <DoctorCard key={`${items[i].id}-${slot}`} doc={items[i]} isZh={isZh} onBook={handleBook} />
+                  <DoctorCard key={`${items[i].id}-${slot}`} doc={items[i]} lang={lang} onBook={handleBook} />
                 ))}
               </div>
               {hasMultiple && (
@@ -123,12 +124,12 @@ export default function DoctorsSection() {
   );
 }
 
-function DoctorCard({ doc, isZh, onBook }: { doc: Doctor; isZh: boolean; onBook: (d: Doctor) => void }) {
+function DoctorCard({ doc, lang, onBook }: { doc: Doctor; lang: string; onBook: (d: Doctor) => void }) {
   const { t } = useTranslation();
-  const name      = isZh ? doc.nameZh      : doc.nameEn;
-  const title     = isZh ? doc.titleZh     : doc.titleEn;
-  const specialty = isZh ? doc.specialtyZh : doc.specialtyEn;
-  const bio       = isZh ? doc.bioZh       : doc.bioEn;
+  const name      = t9n(doc as unknown as Record<string, unknown>, 'name', lang);
+  const title     = t9n(doc as unknown as Record<string, unknown>, 'title', lang);
+  const specialty = t9n(doc as unknown as Record<string, unknown>, 'specialty', lang);
+  const bio       = t9n(doc as unknown as Record<string, unknown>, 'bio', lang);
 
   return (
     <div className="dc-card">

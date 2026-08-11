@@ -16,12 +16,13 @@ public class HospitalController {
     private final HospitalService hospitalService;
 
     @GetMapping
-    public Result<List<Hospital>> list() {
-        return Result.ok(hospitalService.listActive());
+    public Result<List<Hospital>> list(@RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(hospitalService.listActive(lang));
     }
 
     @GetMapping("/{id}")
-    public Result<Object> detail(@PathVariable Long id) {
-        return Result.ok(hospitalService.getDetail(id));
+    public Result<Object> detail(@PathVariable Long id,
+                                 @RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(hospitalService.getDetail(id, lang));
     }
 }

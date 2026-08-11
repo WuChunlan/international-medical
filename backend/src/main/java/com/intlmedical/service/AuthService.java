@@ -71,6 +71,7 @@ public class AuthService {
             case 3 -> "hospital_admin";
             case 4 -> "reviewer";
             case 5 -> "customer_rep";
+            case 6 -> "translation_admin";
             default -> "user";
         };
         String displayName = (user.getLastName() != null ? user.getLastName() : "") +

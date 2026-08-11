@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.Doctor;
 import com.intlmedical.mapper.DoctorMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/doctors")
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminDoctorController {
 
     private final DoctorMapper doctorMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<Doctor>> list(
@@ -34,6 +38,12 @@ public class AdminDoctorController {
     @PostMapping
     public Result<Void> create(@RequestBody Doctor doctor) {
         doctorMapper.insert(doctor);
+        contentTranslationService.autoTranslateEntityAsync("doctor", doctor.getId(), Map.of(
+            "name", nullSafe(doctor.getNameZh()),
+            "title", nullSafe(doctor.getTitleZh()),
+            "specialty", nullSafe(doctor.getSpecialtyZh()),
+            "bio", nullSafe(doctor.getBioZh())
+        ));
         return Result.ok();
     }
 
@@ -41,6 +51,12 @@ public class AdminDoctorController {
     public Result<Void> update(@PathVariable Long id, @RequestBody Doctor doctor) {
         doctor.setId(id);
         doctorMapper.updateById(doctor);
+        contentTranslationService.autoTranslateEntityAsync("doctor", id, Map.of(
+            "name", nullSafe(doctor.getNameZh()),
+            "title", nullSafe(doctor.getTitleZh()),
+            "specialty", nullSafe(doctor.getSpecialtyZh()),
+            "bio", nullSafe(doctor.getBioZh())
+        ));
         return Result.ok();
     }
 
@@ -53,4 +69,6 @@ public class AdminDoctorController {
         );
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

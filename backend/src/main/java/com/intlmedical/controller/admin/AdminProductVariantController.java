@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.intlmedical.entity.ProductVariant;
 import com.intlmedical.mapper.ProductVariantMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/products/{productId}/variants")
@@ -16,6 +18,7 @@ import java.util.List;
 public class AdminProductVariantController {
 
     private final ProductVariantMapper variantMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<List<ProductVariant>> list(@PathVariable Long productId) {
@@ -31,6 +34,10 @@ public class AdminProductVariantController {
     public Result<Void> create(@PathVariable Long productId, @RequestBody ProductVariant variant) {
         variant.setProductId(productId);
         variantMapper.insert(variant);
+        contentTranslationService.autoTranslateEntityAsync("variant", variant.getId(), Map.of(
+            "name", nullSafe(variant.getNameZh()),
+            "desc", nullSafe(variant.getDescZh())
+        ));
         return Result.ok();
     }
 
@@ -40,6 +47,10 @@ public class AdminProductVariantController {
         variant.setId(id);
         variant.setProductId(productId);
         variantMapper.updateById(variant);
+        contentTranslationService.autoTranslateEntityAsync("variant", id, Map.of(
+            "name", nullSafe(variant.getNameZh()),
+            "desc", nullSafe(variant.getDescZh())
+        ));
         return Result.ok();
     }
 
@@ -53,4 +64,6 @@ public class AdminProductVariantController {
         );
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

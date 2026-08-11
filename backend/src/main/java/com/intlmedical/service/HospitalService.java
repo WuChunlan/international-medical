@@ -28,18 +28,38 @@ public class HospitalService {
     private final EquipmentMapper equipmentMapper;
     private final EntityMediaMapper entityMediaMapper;
     private final HospitalEnvironmentMapper hospitalEnvironmentMapper;
+    private final ContentTranslationService translationService;
+
+    private static final List<String> BUILTIN_LANGS = List.of("zh", "en");
 
     public List<Hospital> listActive() {
-        return hospitalMapper.selectList(
+        return listActive("zh");
+    }
+
+    public List<Hospital> listActive(String lang) {
+        List<Hospital> list = hospitalMapper.selectList(
             new LambdaQueryWrapper<Hospital>()
                 .eq(Hospital::getIsActive, 1)
                 .eq(Hospital::getAuditStatus, "approved")
                 .orderByAsc(Hospital::getSortOrder)
         );
+        if (!BUILTIN_LANGS.contains(lang)) {
+            list.forEach(h -> h.setTranslations(
+                translationService.getAll("hospital", h.getId(), lang)
+            ));
+        }
+        return list;
     }
 
     public Map<String, Object> getDetail(Long id) {
+        return getDetail(id, "zh");
+    }
+
+    public Map<String, Object> getDetail(Long id, String lang) {
         Hospital hospital = hospitalMapper.selectById(id);
+        if (hospital != null && !BUILTIN_LANGS.contains(lang)) {
+            hospital.setTranslations(translationService.getAll("hospital", id, lang));
+        }
         List<Doctor> doctors = doctorMapper.selectList(
             new LambdaQueryWrapper<Doctor>()
                 .eq(Doctor::getHospitalId, id)
@@ -61,6 +81,12 @@ public class HospitalService {
                 .eq(HospitalEnvironment::getAuditStatus, "approved")
                 .orderByAsc(HospitalEnvironment::getSortOrder)
         );
+        if (!BUILTIN_LANGS.contains(lang)) {
+            doctors.forEach(d -> d.setTranslations(translationService.getAll("doctor", d.getId(), lang)));
+            equipments.forEach(e -> e.setTranslations(translationService.getAll("equipment", e.getId(), lang)));
+            environments.forEach(e -> e.setTranslations(translationService.getAll("environment", e.getId(), lang)));
+        }
+
         List<EntityMedia> mediaList = entityMediaMapper.selectList(
             new LambdaQueryWrapper<EntityMedia>()
                 .eq(EntityMedia::getEntityType, "hospital")

@@ -5,6 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @TableName("special_products")
@@ -39,4 +40,7 @@ public class SpecialProduct {
 
     @TableField(exist = false)
     private List<ProductVariant> variants;
+
+    @TableField(exist = false)
+    private Map<String, String> translations;
 }

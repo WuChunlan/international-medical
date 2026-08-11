@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.Hospital;
 import com.intlmedical.mapper.HospitalMapper;
+import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/hospitals")
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class AdminHospitalController {
 
     private final HospitalMapper hospitalMapper;
+    private final ContentTranslationService contentTranslationService;
 
     @GetMapping
     public Result<IPage<Hospital>> list(
@@ -31,6 +35,11 @@ public class AdminHospitalController {
     @PostMapping
     public Result<Void> create(@RequestBody Hospital hospital) {
         hospitalMapper.insert(hospital);
+        contentTranslationService.autoTranslateEntityAsync("hospital", hospital.getId(), Map.of(
+            "name", nullSafe(hospital.getNameZh()),
+            "intro", nullSafe(hospital.getIntroZh()),
+            "address", nullSafe(hospital.getAddressZh())
+        ));
         return Result.ok();
     }
 
@@ -38,6 +47,11 @@ public class AdminHospitalController {
     public Result<Void> update(@PathVariable Long id, @RequestBody Hospital hospital) {
         hospital.setId(id);
         hospitalMapper.updateById(hospital);
+        contentTranslationService.autoTranslateEntityAsync("hospital", id, Map.of(
+            "name", nullSafe(hospital.getNameZh()),
+            "intro", nullSafe(hospital.getIntroZh()),
+            "address", nullSafe(hospital.getAddressZh())
+        ));
         return Result.ok();
     }
 
@@ -50,4 +64,6 @@ public class AdminHospitalController {
         );
         return Result.ok();
     }
+
+    private static String nullSafe(String s) { return s != null ? s : ""; }
 }

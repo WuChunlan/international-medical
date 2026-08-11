@@ -15,4 +15,7 @@ public class SiteConfig {
     private String description;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updatedAt;
+
+    @TableField(exist = false)
+    private String value3rd;
 }

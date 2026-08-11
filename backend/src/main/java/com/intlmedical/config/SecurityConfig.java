@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/service-features/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/doctors/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/config/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/i18n/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/media/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 // User endpoints

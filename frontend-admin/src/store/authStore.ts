@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type Role = 'admin' | 'hospital_admin' | 'reviewer' | 'user' | 'customer_rep' | null;
+type Role = 'admin' | 'hospital_admin' | 'reviewer' | 'user' | 'customer_rep' | 'translation_admin' | null;
 
 interface AdminAuthState {
   token: string | null;

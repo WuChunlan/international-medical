@@ -5,6 +5,7 @@ import { ArrowLeftOutlined, BankOutlined, CalendarOutlined } from '@ant-design/i
 import { useTranslation } from 'react-i18next';
 import api from '../../api';
 import Header from '../../components/Header';
+import { t9n } from '../../utils/i18nField';
 import type { MedicalCase } from '../../types';
 import './index.less';
 
@@ -14,7 +15,7 @@ export default function CaseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
-  const isZh = i18n.language.startsWith('zh');
+  const lang = i18n.language;
 
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<MedicalCase | null>(null);
@@ -23,7 +24,7 @@ export default function CaseDetailPage() {
     if (!id) return;
     setLoading(true);
     api
-      .get<MedicalCase>(`/api/cases/${id}`)
+      .get<MedicalCase>(`/api/cases/${id}`, { params: { lang } })
       .then(res => {
         if (res.data) {
           setData(res.data);
@@ -36,7 +37,7 @@ export default function CaseDetailPage() {
         setData(null);
       })
       .finally(() => setLoading(false));
-  }, [id, navigate]);
+  }, [id, lang, navigate]);
 
   if (loading) {
     return (
@@ -56,18 +57,18 @@ export default function CaseDetailPage() {
         <main className="page-main">
           <div className="page-loading">
             <Paragraph>{t('common.not_found')}</Paragraph>
-            <Paragraph style={{ color: '#888', fontSize: '0.85rem' }}>{isZh ? '即将返回首页...' : 'Redirecting to home...'}</Paragraph>
+            <Paragraph style={{ color: '#888', fontSize: '0.85rem' }}>{t('cases.redirecting')}</Paragraph>
           </div>
         </main>
       </div>
     );
   }
 
-  const title = isZh ? data.titleZh : data.titleEn;
-  const summary = isZh ? data.summaryZh : data.summaryEn;
-  const detail = isZh ? data.detailZh : data.detailEn;
-  const hospitalName = isZh ? data.hospitalNameZh : data.hospitalNameEn;
-  const createdAt = data.createdAt ? data.createdAt.slice(0, 10) : null;
+  const title        = t9n(data, 'title', lang);
+  const summary      = t9n(data, 'summary', lang);
+  const detail       = t9n(data, 'detail', lang);
+  const hospitalName = lang === 'zh' ? (data.hospitalNameZh ?? '') : (data.hospitalNameEn ?? data.hospitalNameZh ?? '');
+  const createdAt    = data.createdAt ? data.createdAt.slice(0, 10) : null;
 
   return (
     <div className="page-wrapper">
@@ -125,10 +126,10 @@ export default function CaseDetailPage() {
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0067ED', padding: 0, fontSize: '0.9rem' }}
                 onClick={() => navigate(-1)}
               >
-                <ArrowLeftOutlined /> {isZh ? '返回' : 'Back'}
+                <ArrowLeftOutlined /> {t('common.back')}
               </button>
               <Title level={2} className="section-title">
-                {isZh ? '案例详情' : 'Case Detail'}
+                {t('cases.detail_title')}
               </Title>
               <Divider />
               <div className="case-detail-html" dangerouslySetInnerHTML={{ __html: detail }} />
@@ -136,7 +137,6 @@ export default function CaseDetailPage() {
           </section>
         )}
 
-        {/* No detail fallback */}
         {!detail && (
           <section className="section-block">
             <div className="section-inner">
@@ -145,7 +145,7 @@ export default function CaseDetailPage() {
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0067ED', padding: 0, fontSize: '0.9rem' }}
                 onClick={() => navigate(-1)}
               >
-                <ArrowLeftOutlined /> {isZh ? '返回' : 'Back'}
+                <ArrowLeftOutlined /> {t('common.back')}
               </button>
             </div>
           </section>
