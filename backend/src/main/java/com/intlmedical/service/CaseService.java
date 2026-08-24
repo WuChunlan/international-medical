@@ -41,4 +41,14 @@ public class CaseService {
         }
         return vo;
     }
+
+    public List<CaseVO> listActiveByHospital(Long hospitalId, String lang) {
+        List<CaseVO> list = caseMapper.selectActiveByHospitalId(hospitalId);
+        if (!BUILTIN_LANGS.contains(lang)) {
+            list.forEach(c -> c.setTranslations(
+                translationService.getAll("case", c.getId(), lang)
+            ));
+        }
+        return list;
+    }
 }

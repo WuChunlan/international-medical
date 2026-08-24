@@ -1,6 +1,8 @@
 package com.intlmedical.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.intlmedical.entity.SiteConfig;
+import com.intlmedical.mapper.SiteConfigMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TranslateService {
 
-    private final SiteConfigService siteConfigService;
+    private final SiteConfigMapper siteConfigMapper;
     private final RestTemplate restTemplate;
 
     /** 翻译到英文（兼容旧调用方） */
@@ -110,6 +112,7 @@ public class TranslateService {
             case "ar" -> "Arabic";
             case "pt" -> "Portuguese";
             case "ru" -> "Russian";
+            case "zh-tw" -> "Traditional Chinese (繁體中文)";
             default   -> targetLang;
         };
 
@@ -150,12 +153,15 @@ public class TranslateService {
         return switch (lang.toLowerCase()) {
             case "en" -> "EN-US";
             case "pt" -> "PT-PT";
+            case "zh-tw" -> "ZH-HANT";
             default   -> lang.toUpperCase();
         };
     }
 
     private String getConfigValue(String key, String defaultValue) {
-        SiteConfig cfg = siteConfigService.getByKey(key);
+        SiteConfig cfg = siteConfigMapper.selectOne(
+            new LambdaQueryWrapper<SiteConfig>().eq(SiteConfig::getConfigKey, key)
+        );
         if (cfg == null) return defaultValue;
         String v = cfg.getValueEn();
         return (v != null && !v.isBlank()) ? v : defaultValue;

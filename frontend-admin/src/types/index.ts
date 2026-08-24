@@ -19,7 +19,8 @@ export interface Hospital {
 
 export interface Doctor {
   id: number;
-  hospitalId: number;
+  hospitalId: number | null;
+  createdUser?: number | null;
   nameZh: string;
   nameEn: string;
   specialtyZh: string;
@@ -39,7 +40,8 @@ export interface Doctor {
 
 export interface Equipment {
   id: number;
-  hospitalId: number;
+  hospitalId: number | null;
+  createdUser?: number | null;
   nameZh: string;
   nameEn: string;
   descZh: string | null;
@@ -167,6 +169,7 @@ export interface MedicalCase {
   sortOrder: number;
   isActive: number;
   createdAt?: string;
+  createdUser?: number | null;
   auditStatus?: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string | null;
   hasPendingEdit?: boolean;
@@ -190,6 +193,7 @@ export interface ServiceFeature {
   sortOrder: number;
   isActive: number;
   teamIds?: number[];
+  createdUser?: number | null;
 }
 
 export interface PageResult<T> {

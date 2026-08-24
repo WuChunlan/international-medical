@@ -8,6 +8,7 @@ import com.intlmedical.entity.Doctor;
 import com.intlmedical.mapper.DoctorMapper;
 import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
+import com.intlmedical.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,11 @@ public class AdminDoctorController {
 
     @PostMapping
     public Result<Void> create(@RequestBody Doctor doctor) {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        doctor.setCreatedUser(currentUserId);
+        doctor.setUpdatedUser(currentUserId);
+        doctor.setAuditStatus("approved");
+        doctor.setIsActive(doctor.getIsActive() != null ? doctor.getIsActive() : 1);
         doctorMapper.insert(doctor);
         contentTranslationService.autoTranslateEntityAsync("doctor", doctor.getId(), Map.of(
             "name", nullSafe(doctor.getNameZh()),
@@ -49,7 +55,14 @@ public class AdminDoctorController {
 
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody Doctor doctor) {
+        Doctor existing = doctorMapper.selectById(id);
+        if (existing == null) return Result.fail(404, "医生不存在");
+        if (!SecurityUtil.canEdit(existing.getCreatedUser())) {
+            return Result.fail(403, "无权编辑他人创建的数据");
+        }
         doctor.setId(id);
+        doctor.setUpdatedUser(SecurityUtil.getCurrentUserId());
+        doctor.setAuditStatus("approved");
         doctorMapper.updateById(doctor);
         contentTranslationService.autoTranslateEntityAsync("doctor", id, Map.of(
             "name", nullSafe(doctor.getNameZh()),
@@ -62,10 +75,16 @@ public class AdminDoctorController {
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
+        Doctor existing = doctorMapper.selectById(id);
+        if (existing == null) return Result.fail(404, "医生不存在");
+        if (!SecurityUtil.canEdit(existing.getCreatedUser())) {
+            return Result.fail(403, "无权删除他人创建的数据");
+        }
         doctorMapper.update(null,
             new LambdaUpdateWrapper<Doctor>()
                 .eq(Doctor::getId, id)
                 .set(Doctor::getIsActive, 0)
+                .set(Doctor::getUpdatedUser, SecurityUtil.getCurrentUserId())
         );
         return Result.ok();
     }

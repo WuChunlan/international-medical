@@ -2,6 +2,7 @@ com/intlmedical/mapper/BrowseHistoryMapper.class
 com/intlmedical/dto/request/ProductVariantDTO.class
 com/intlmedical/mapper/HospitalBannerMapper.class
 com/intlmedical/controller/hospitaladmin/HAEquipmentController.class
+com/intlmedical/service/RoleService.class
 com/intlmedical/config/MyBatisPlusConfig.class
 com/intlmedical/entity/TranslationJob.class
 com/intlmedical/service/SiteConfigService.class
@@ -32,6 +33,7 @@ com/intlmedical/service/TranslationJobService.class
 com/intlmedical/mapper/ServiceTeamFeatureMapper.class
 com/intlmedical/controller/hospitaladmin/HACaseController.class
 com/intlmedical/service/PendingChangeService.class
+com/intlmedical/entity/Role.class
 com/intlmedical/InternationalMedicalApplication.class
 com/intlmedical/controller/admin/AdminConfigController$UpdateConfigRequest.class
 com/intlmedical/service/TranslateService.class
@@ -41,10 +43,12 @@ com/intlmedical/entity/Case.class
 com/intlmedical/dto/response/LoginResponse.class
 com/intlmedical/controller/admin/AdminEquipmentController.class
 com/intlmedical/controller/hospitaladmin/HAProfileController$ChangePasswordRequest.class
+com/intlmedical/mapper/RoleMapper.class
 com/intlmedical/entity/Doctor.class
 com/intlmedical/mapper/TranslationJobMapper.class
 com/intlmedical/service/TranslationJobAsyncRunner.class
 com/intlmedical/controller/admin/AdminDoctorController.class
+com/intlmedical/controller/admin/AdminUserController$UpdateStaffRequest.class
 com/intlmedical/controller/hospitaladmin/HAUploadController.class
 com/intlmedical/service/CaseService.class
 com/intlmedical/entity/BrowseHistory.class
@@ -60,6 +64,7 @@ com/intlmedical/entity/Equipment.class
 com/intlmedical/controller/UserController$HistoryRequest.class
 com/intlmedical/controller/reviewer/ReviewerController.class
 com/intlmedical/mapper/ServiceTeamMapper.class
+com/intlmedical/config/AppConfig.class
 com/intlmedical/entity/ServiceTeamFeature.class
 com/intlmedical/controller/admin/AdminHospitalController.class
 com/intlmedical/entity/HospitalBanner.class
@@ -74,6 +79,7 @@ com/intlmedical/util/InviteCodeGenerator.class
 com/intlmedical/config/SecurityConfig.class
 com/intlmedical/mapper/CaseMapper.class
 com/intlmedical/mapper/ServiceFeatureMapper.class
+com/intlmedical/controller/admin/AdminUserController$UpdateBaseAdminRequest.class
 com/intlmedical/controller/reviewer/ReviewerController$PendingItem.class
 com/intlmedical/mapper/EntityMediaMapper.class
 com/intlmedical/mapper/HospitalMapper.class

@@ -47,6 +47,7 @@ const LANG_OPTIONS = [
   { value: 'es', label: '西班牙语（Español，es）' },
   { value: 'fr', label: '法语（Français，fr）' },
   { value: 'de', label: '德语（Deutsch，de）' },
+  { value: 'zh-TW', label: '中文（繁体，Traditional Chinese，zh-TW）' },
   { value: 'ja', label: '日语（日本語，ja）' },
   { value: 'ko', label: '韩语（한국어，ko）' },
   { value: 'ar', label: '阿拉伯语（العربية，ar）' },

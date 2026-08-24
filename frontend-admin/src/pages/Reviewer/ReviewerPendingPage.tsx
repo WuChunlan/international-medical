@@ -148,7 +148,7 @@ const DoctorDetail: React.FC<{ r: Doctor; hospitalMap: Record<number, string> }>
     <Descriptions.Item label="审核状态">
       <StatusTag status={(r.auditStatus ?? 'pending') as 'approved' | 'pending' | 'rejected'} />
     </Descriptions.Item>
-    <Descriptions.Item label="所属医院">{hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}`}</Descriptions.Item>
+    <Descriptions.Item label="所属医院">{r.hospitalId ? hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}` : '未关联'}</Descriptions.Item>
     <Descriptions.Item label="中文姓名">{r.nameZh}</Descriptions.Item>
     <Descriptions.Item label="英文姓名">{r.nameEn}</Descriptions.Item>
     <Descriptions.Item label="中文职称">{r.titleZh || '-'}</Descriptions.Item>
@@ -173,7 +173,7 @@ const EquipmentDetail: React.FC<{ r: Equipment; hospitalMap: Record<number, stri
     <Descriptions.Item label="审核状态">
       <StatusTag status={(r.auditStatus ?? 'pending') as 'approved' | 'pending' | 'rejected'} />
     </Descriptions.Item>
-    <Descriptions.Item label="所属医院">{hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}`}</Descriptions.Item>
+    <Descriptions.Item label="所属医院">{r.hospitalId ? hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}` : '未关联'}</Descriptions.Item>
     <Descriptions.Item label="中文名称">{r.nameZh}</Descriptions.Item>
     <Descriptions.Item label="英文名称">{r.nameEn}</Descriptions.Item>
     <Descriptions.Item label="图片" span={2}>{imgCell(r.imageUrl)}</Descriptions.Item>
@@ -191,7 +191,7 @@ const EnvironmentDetail: React.FC<{ r: HospitalEnvironment; hospitalMap: Record<
     <Descriptions.Item label="审核状态">
       <StatusTag status={(r.auditStatus ?? 'pending') as 'approved' | 'pending' | 'rejected'} />
     </Descriptions.Item>
-    <Descriptions.Item label="所属医院">{hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}`}</Descriptions.Item>
+    <Descriptions.Item label="所属医院">{r.hospitalId ? hospitalMap[r.hospitalId] || `ID: ${r.hospitalId}` : '未关联'}</Descriptions.Item>
     <Descriptions.Item label="中文名称">{r.nameZh}</Descriptions.Item>
     <Descriptions.Item label="英文名称">{r.nameEn}</Descriptions.Item>
     <Descriptions.Item label="图片" span={2}>{imgCell(r.imageUrl)}</Descriptions.Item>

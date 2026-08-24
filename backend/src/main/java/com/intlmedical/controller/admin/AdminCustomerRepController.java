@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.User;
 import com.intlmedical.mapper.UserMapper;
+import com.intlmedical.service.RoleService;
 import com.intlmedical.util.InviteCodeGenerator;
 import com.intlmedical.util.Result;
 import lombok.Data;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class AdminCustomerRepController {
 
     private final UserMapper userMapper;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
     @Data
@@ -46,7 +48,7 @@ public class AdminCustomerRepController {
             @RequestParam(defaultValue = "10") int size) {
         IPage<User> result = userMapper.selectPage(
             new Page<>(page, size),
-            new LambdaQueryWrapper<User>().eq(User::getRoleId, 5).orderByDesc(User::getId)
+            new LambdaQueryWrapper<User>().eq(User::getRoleId, roleService.getIdByCode("customer_rep")).orderByDesc(User::getId)
         );
         List<User> reps = result.getRecords();
         reps.forEach(u -> u.setPasswordHash(null));
@@ -110,7 +112,7 @@ public class AdminCustomerRepController {
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
-        user.setRoleId(5);
+        user.setRoleId(roleService.getIdByCode("customer_rep"));
         user.setInviteCode(code);
         user.setCanInvite(1);
         user.setIsActive(1);
@@ -121,7 +123,7 @@ public class AdminCustomerRepController {
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody UpdateRepRequest req) {
         User target = userMapper.selectById(id);
-        if (target == null || target.getRoleId() != 5) return Result.fail(404, "代表不存在");
+        if (target == null || !"customer_rep".equals(roleService.getCodeById(target.getRoleId()))) return Result.fail(404, "代表不存在");
         if (req.getEmail() != null && !req.getEmail().equals(target.getEmail())) {
             long exists = userMapper.selectCount(
                 new LambdaQueryWrapper<User>().eq(User::getEmail, req.getEmail()).ne(User::getId, id)
@@ -143,7 +145,7 @@ public class AdminCustomerRepController {
     @PutMapping("/{id}/toggle-invite")
     public Result<Void> toggleInvite(@PathVariable Long id) {
         User target = userMapper.selectById(id);
-        if (target == null || target.getRoleId() != 5) return Result.fail(404, "代表不存在");
+        if (target == null || !"customer_rep".equals(roleService.getCodeById(target.getRoleId()))) return Result.fail(404, "代表不存在");
         int next = (target.getCanInvite() != null && target.getCanInvite() == 1) ? 0 : 1;
         userMapper.update(null, new LambdaUpdateWrapper<User>()
             .eq(User::getId, id).set(User::getCanInvite, next));
@@ -153,7 +155,7 @@ public class AdminCustomerRepController {
     @PutMapping("/{id}/toggle")
     public Result<Void> toggle(@PathVariable Long id) {
         User target = userMapper.selectById(id);
-        if (target == null || target.getRoleId() != 5) return Result.fail(404, "代表不存在");
+        if (target == null || !"customer_rep".equals(roleService.getCodeById(target.getRoleId()))) return Result.fail(404, "代表不存在");
         int next = (target.getIsActive() != null && target.getIsActive() == 1) ? 0 : 1;
         userMapper.update(null, new LambdaUpdateWrapper<User>()
             .eq(User::getId, id).set(User::getIsActive, next));
@@ -163,7 +165,7 @@ public class AdminCustomerRepController {
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         User target = userMapper.selectById(id);
-        if (target == null || target.getRoleId() != 5) return Result.fail(404, "代表不存在");
+        if (target == null || !"customer_rep".equals(roleService.getCodeById(target.getRoleId()))) return Result.fail(404, "代表不存在");
         userMapper.deleteById(id);
         return Result.ok();
     }

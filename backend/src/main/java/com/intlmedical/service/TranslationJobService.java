@@ -2,6 +2,7 @@ package com.intlmedical.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intlmedical.entity.*;
 import com.intlmedical.mapper.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class TranslationJobService {
     private final ServiceTeamMapper serviceTeamMapper;
     private final ServiceFeatureMapper serviceFeatureMapper;
     private final SiteConfigMapper siteConfigMapper;
+    private final ObjectMapper objectMapper;
 
     /**
      * 创建全量翻译任务，立即返回，收集+翻译全部异步执行
@@ -84,6 +86,17 @@ public class TranslationJobService {
                     .eq(TranslationJob::getId, item.getJobId())
                     .setSql("done = done + 1, failed = failed - 1")
             );
+            if ("site_config".equals(item.getEntityType())
+                    && item.getFieldName().startsWith("friendly_links#")) {
+                var cfg = siteConfigMapper.selectOne(new LambdaQueryWrapper<SiteConfig>()
+                    .eq(SiteConfig::getConfigKey, "friendly_links"));
+                if (cfg != null && cfg.getValueZh() != null) {
+                    try {
+                        String[] names = objectMapper.readValue(cfg.getValueZh(), String[].class);
+                        translationService.assembleAndSaveFriendlyLinksTranslation(job.getLang(), names.length);
+                    } catch (Exception ignored) {}
+                }
+            }
         } catch (Exception e) {
             markItem(itemId, "failed", e.getMessage());
         }
@@ -175,7 +188,24 @@ public class TranslationJobService {
         );
 
         siteConfigMapper.selectList(null).forEach(cfg -> {
-            if (cfg.getValueZh() != null && !cfg.getValueZh().isBlank()) {
+            if (cfg.getValueZh() == null || cfg.getValueZh().isBlank()) return;
+            if ("friendly_links".equals(cfg.getConfigKey())) {
+                try {
+                    String[] names = objectMapper.readValue(cfg.getValueZh(), String[].class);
+                    for (int i = 0; i < names.length; i++) {
+                        if (names[i] == null || names[i].isBlank()) continue;
+                        TranslationJobItem item = new TranslationJobItem();
+                        item.setEntityType("site_config");
+                        item.setEntityId(0L);
+                        item.setEntityLabel("config:friendly_links");
+                        item.setFieldName("friendly_links#" + i);
+                        item.setStatus("pending");
+                        items.add(item);
+                    }
+                } catch (Exception e) {
+                    // malformed JSON — skip
+                }
+            } else {
                 TranslationJobItem item = new TranslationJobItem();
                 item.setEntityType("site_config");
                 item.setEntityId(0L);
@@ -283,6 +313,20 @@ public class TranslationJobService {
                 };
             }
             case "site_config" -> {
+                if (fieldName.startsWith("friendly_links#")) {
+                    int idx;
+                    try { idx = Integer.parseInt(fieldName.substring("friendly_links#".length())); }
+                    catch (NumberFormatException e) { yield null; }
+                    var cfg = siteConfigMapper.selectOne(
+                        new LambdaQueryWrapper<SiteConfig>()
+                            .eq(SiteConfig::getConfigKey, "friendly_links")
+                    );
+                    if (cfg == null || cfg.getValueZh() == null) yield null;
+                    try {
+                        String[] names = objectMapper.readValue(cfg.getValueZh(), String[].class);
+                        yield idx < names.length ? names[idx] : null;
+                    } catch (Exception e) { yield null; }
+                }
                 var cfg = siteConfigMapper.selectOne(
                     new LambdaQueryWrapper<SiteConfig>()
                         .eq(SiteConfig::getConfigKey, fieldName)

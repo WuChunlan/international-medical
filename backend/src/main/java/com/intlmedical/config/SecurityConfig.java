@@ -52,7 +52,15 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // User endpoints
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                // Admin endpoints
+                // Base admin endpoints (specific paths only)
+                .requestMatchers("/api/admin/doctors/**").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/equipments/**").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/service-features/**").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/service-teams/**").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/cases/**").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/hospitals").hasAnyRole("ADMIN", "BASE_ADMIN")
+                .requestMatchers("/api/admin/media/**").hasAnyRole("ADMIN", "BASE_ADMIN", "HOSPITAL_ADMIN")
+                // Admin endpoints (all other /api/admin/**)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Hospital admin endpoints
                 .requestMatchers("/api/hospital-admin/**").hasAnyRole("ADMIN", "HOSPITAL_ADMIN")

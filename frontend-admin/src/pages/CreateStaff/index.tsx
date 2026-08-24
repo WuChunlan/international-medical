@@ -6,13 +6,28 @@ import type { Hospital } from '../../types';
 
 const { Title } = Typography;
 
+interface RoleOption {
+  id: number;
+  code: string;
+  nameZh: string;
+  nameEn: string;
+}
+
+const STAFF_ROLES = ['hospital_admin', 'reviewer', 'base_admin'];
+
 const CreateStaffPage: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const [roleId, setRoleId] = useState<number | undefined>(undefined);
+  const [roles, setRoles] = useState<RoleOption[]>([]);
+  const [roleCode, setRoleCode] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    api.get('/api/admin/users/roles').then((res) => {
+      const all: RoleOption[] = res.data ?? [];
+      setRoles(all.filter((r) => STAFF_ROLES.includes(r.code)));
+    }).catch(() => {});
+
     api.get('/api/admin/hospitals', { params: { page: 1, size: 200 } }).then((res) => {
       const d = res.data?.data ?? res.data;
       setHospitals(d?.records ?? d?.list ?? []);
@@ -26,7 +41,7 @@ const CreateStaffPage: React.FC = () => {
       await api.post('/api/admin/users/staff', values);
       message.success('账号创建成功');
       form.resetFields();
-      setRoleId(undefined);
+      setRoleCode(undefined);
     } catch (err: unknown) {
       const e = err as { response?: { data?: { message?: string } } };
       if (e.response?.data?.message) {
@@ -54,14 +69,15 @@ const CreateStaffPage: React.FC = () => {
             <Form.Item name="lastName" label="姓"><Input /></Form.Item>
             <Form.Item name="firstName" label="名"><Input /></Form.Item>
           </FormRow>
-          <Form.Item name="roleId" label="角色" rules={[{ required: true }]}>
-            <Select placeholder="选择角色" onChange={(v: number) => setRoleId(v)}>
-              <Select.Option value={3}>医院管理员</Select.Option>
-              <Select.Option value={4}>信息审核员</Select.Option>
+          <Form.Item name="roleCode" label="角色" rules={[{ required: true, message: '请选择角色' }]}>
+            <Select placeholder="选择角色" onChange={(v: string) => setRoleCode(v)}>
+              {roles.map((r) => (
+                <Select.Option key={r.code} value={r.code}>{r.nameZh}</Select.Option>
+              ))}
             </Select>
           </Form.Item>
-          {roleId === 3 && (
-            <Form.Item name="hospitalId" label="绑定医院" rules={[{ required: true }]}>
+          {roleCode === 'hospital_admin' && (
+            <Form.Item name="hospitalId" label="绑定医院" rules={[{ required: true, message: '请选择医院' }]}>
               <Select placeholder="选择医院" showSearch
                 filterOption={(input, option) =>
                   String(option?.children ?? '').toLowerCase().includes(input.toLowerCase())

@@ -24,8 +24,14 @@ public class Case {
     private String auditStatus;
     @TableField("rejection_reason")
     private String rejectionReason;
+    @TableField("created_user")
+    private Long createdUser;
+    @TableField("updated_user")
+    private Long updatedUser;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
 
     @TableField(exist = false)
     private Boolean hasPendingEdit;

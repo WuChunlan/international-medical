@@ -4,6 +4,8 @@ import { useContacts } from '../hooks/useContacts';
 import api from '../api';
 import './Footer.less';
 
+interface FriendlyLink { name: string; url: string }
+
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
@@ -12,19 +14,28 @@ export default function Footer() {
 
   const [siteName, setSiteName] = useState('国际医疗共享平台');
   const [siteSubtitle, setSiteSubtitle] = useState('International Medical');
+  const [friendlyLinks, setFriendlyLinks] = useState<FriendlyLink[]>([]);
 
   useEffect(() => {
-    const isZh = lang.startsWith('zh');
-    const isBuiltin = isZh || lang === 'en' || lang.startsWith('en-');
+    const isZh = lang === 'zh' || lang === 'zh-CN';
+    const isBuiltin = isZh || lang === 'en' || lang === 'en-US';
     const pick = (cfg: { valueZh?: string; valueEn?: string; value3rd?: string } | null, fbZh: string, fbEn: string) => {
       if (!cfg) return isZh ? fbZh : fbEn;
       if (!isBuiltin) return cfg.value3rd || cfg.valueZh || fbZh;
       return isZh ? cfg.valueZh || fbZh : cfg.valueEn || fbEn;
     };
     const fetch1 = (key: string) => api.get(`/api/config/${key}`, { params: { lang } }).then(r => r.data).catch(() => null);
-    Promise.all([fetch1('site_name'), fetch1('site_subtitle')]).then(([name, sub]) => {
+    Promise.all([fetch1('site_name'), fetch1('site_subtitle'), fetch1('friendly_links')]).then(([name, sub, fl]) => {
       setSiteName(pick(name, '国际医疗共享平台', 'International Medical'));
       setSiteSubtitle(pick(sub, 'International Medical', 'International Medical'));
+      if (fl) {
+        try {
+          const namesPicked = pick(fl, '[]', '[]');
+          const names: string[] = JSON.parse(namesPicked || '[]');
+          const urls: string[] = JSON.parse(fl.description || '[]');
+          setFriendlyLinks(names.map((n, i) => ({ name: n || '', url: urls[i] || '' })).filter(l => l.url));
+        } catch { /* ignore */ }
+      }
     });
   }, [lang]);
 
@@ -56,6 +67,24 @@ export default function Footer() {
           </div>
 
           <div className="site-footer__bottom">
+            {friendlyLinks.length > 0 && (
+              <div className="site-footer__friendly-links">
+                <span className="site-footer__friendly-links-title">{t('footer.friendly_links', '友情链接')}</span>
+                <div className="site-footer__friendly-links-list">
+                  {friendlyLinks.map((link, i) => (
+                    <a
+                      key={i}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="site-footer__friendly-link"
+                    >
+                      {link.name || link.url}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
             <p className="site-footer__copyright">{t('footer.copyright')}</p>
           </div>
         </div>

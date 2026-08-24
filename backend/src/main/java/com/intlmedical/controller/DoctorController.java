@@ -41,4 +41,23 @@ public class DoctorController {
         }
         return Result.ok(result);
     }
+
+    @GetMapping("/by-hospital/{hospitalId}")
+    public Result<List<Doctor>> listByHospital(
+            @PathVariable Long hospitalId,
+            @RequestParam(defaultValue = "zh") String lang) {
+        List<Doctor> list = doctorMapper.selectList(
+            new LambdaQueryWrapper<Doctor>()
+                .eq(Doctor::getHospitalId, hospitalId)
+                .eq(Doctor::getIsActive, 1)
+                .eq(Doctor::getAuditStatus, "approved")
+                .orderByAsc(Doctor::getSortOrder)
+        );
+        if (!BUILTIN_LANGS.contains(lang)) {
+            list.forEach(d -> d.setTranslations(
+                translationService.getAll("doctor", d.getId(), lang)
+            ));
+        }
+        return Result.ok(list);
+    }
 }

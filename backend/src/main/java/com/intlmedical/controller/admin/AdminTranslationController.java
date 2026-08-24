@@ -8,6 +8,7 @@ import com.intlmedical.entity.TranslationJobItem;
 import com.intlmedical.entity.User;
 import com.intlmedical.mapper.UserMapper;
 import com.intlmedical.service.ContentTranslationService;
+import com.intlmedical.service.RoleService;
 import com.intlmedical.service.SiteConfigService;
 import com.intlmedical.service.TranslationJobService;
 import com.intlmedical.util.Result;
@@ -30,6 +31,7 @@ public class AdminTranslationController {
     private final TranslationJobService jobService;
     private final SiteConfigService siteConfigService;
     private final UserMapper userMapper;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
     // ── 语种配置 ────────────────────────────────────────────────────────────────
@@ -72,7 +74,7 @@ public class AdminTranslationController {
     @GetMapping("/admins")
     public Result<List<User>> listAdmins() {
         List<User> list = userMapper.selectList(
-            new LambdaQueryWrapper<User>().eq(User::getRoleId, 6)
+            new LambdaQueryWrapper<User>().eq(User::getRoleId, roleService.getIdByCode("translation_admin"))
         );
         list.forEach(u -> u.setPasswordHash(null));
         return Result.ok(list);
@@ -93,7 +95,7 @@ public class AdminTranslationController {
         if (exists) return Result.fail("邮箱已存在");
 
         User user = new User();
-        user.setRoleId(6);
+        user.setRoleId(roleService.getIdByCode("translation_admin"));
         user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setFirstName(firstName);

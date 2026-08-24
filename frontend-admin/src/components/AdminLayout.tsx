@@ -42,7 +42,7 @@ const adminMenuItems = [
   { key: '/products', icon: <ShoppingOutlined />, label: '产品管理' },
   { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
   { key: '/users', icon: <TeamOutlined />, label: '用户管理' },
-  { key: '/hospital-admins', icon: <SafetyCertificateOutlined />, label: '医院管理员' },
+  { key: '/staff-manage', icon: <SafetyCertificateOutlined />, label: '账号管理' },
   { key: '/customer-reps', icon: <UsergroupAddOutlined />, label: '客户代表' },
   { key: '/config', icon: <SettingOutlined />, label: '网站配置' },
   { key: '/translation/manage', icon: <TranslationOutlined />, label: '翻译管理' },
@@ -69,12 +69,21 @@ const customerRepMenuItems = [
 
 const translationAdminMenuItems: never[] = []
 
+const baseAdminMenuItems = [
+  { key: '/dashboard', icon: <DashboardOutlined />, label: '控制台' },
+  { key: '/doctors', icon: <UserOutlined />, label: '医生管理' },
+  { key: '/equipments', icon: <MedicineBoxOutlined />, label: '设备管理' },
+  { key: '/service-features', icon: <AppstoreOutlined />, label: '服务功能' },
+  { key: '/cases', icon: <FileTextOutlined />, label: '过往案例' },
+]
+
 const roleLabels: Record<string, { text: string; color: string }> = {
   admin:             { text: '超级管理员', color: '#0A2540' },
   hospital_admin:    { text: '医院管理员', color: '#2563EB' },
   reviewer:          { text: '审核员',     color: '#059669' },
   customer_rep:      { text: '客户代表',   color: 'purple' },
   translation_admin: { text: '翻译管理员', color: '#d46b08' },
+  base_admin:        { text: '基础管理员', color: '#7C3AED' },
 }
 
 function getSelectedKey(pathname: string): string {
@@ -129,6 +138,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     role === 'reviewer'          ? reviewerMenuItems :
     role === 'customer_rep'      ? customerRepMenuItems :
     role === 'translation_admin' ? translationAdminMenuItems :
+    role === 'base_admin'        ? baseAdminMenuItems :
     adminMenuItems
 
   const selectedKey = getSelectedKey(location.pathname)

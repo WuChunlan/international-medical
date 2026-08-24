@@ -12,15 +12,17 @@ const CONFIG_LABELS: Record<string, string> = {
   site_intro: '首页简介',
   contact_contacts: '默认联系人列表',
   site_a_base_url: '客户端站点地址（邀请二维码用）',
+  friendly_links: '友情链接',
 }
 
 const TARGET_KEYS = [
   'site_name', 'site_subtitle', 'site_logo_url', 'site_intro',
-  'contact_contacts', 'site_a_base_url',
+  'contact_contacts', 'site_a_base_url', 'friendly_links',
 ]
 
 interface ContactEntry { name: string; phone: string }
-interface ConfigFormValues { valueZh: string; valueEn: string }
+interface FriendlyLinkEntry { nameZh: string; nameEn: string; url: string }
+interface ConfigFormValues { valueZh: string; valueEn: string; description?: string }
 
 const ContactsConfigForm: React.FC<{
   initialValues: ConfigFormValues
@@ -81,6 +83,91 @@ const ContactsConfigForm: React.FC<{
       ))}
       <Button icon={<PlusOutlined />} onClick={add} style={{ marginBottom: 16 }}>
         添加联系人
+      </Button>
+      <Divider style={{ margin: '12px 0' }} />
+      <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>
+        保存
+      </Button>
+    </div>
+  )
+}
+
+const FriendlyLinksConfigForm: React.FC<{
+  initialValues: ConfigFormValues
+  saving: boolean
+  onSave: (values: ConfigFormValues) => void
+}> = ({ initialValues, saving, onSave }) => {
+  const parseLinks = (vzh: string, ven: string, desc: string): FriendlyLinkEntry[] => {
+    try {
+      const names = JSON.parse(vzh || '[]')
+      const namesEn = JSON.parse(ven || '[]')
+      const urls = JSON.parse(desc || '[]')
+      if (Array.isArray(names) && names.length > 0) {
+        return names.map((n: string, i: number) => ({
+          nameZh: n || '',
+          nameEn: (namesEn[i] as string) || '',
+          url: (urls[i] as string) || '',
+        }))
+      }
+    } catch { /* ignore */ }
+    return [{ nameZh: '', nameEn: '', url: '' }]
+  }
+
+  const [links, setLinks] = useState<FriendlyLinkEntry[]>(() =>
+    parseLinks(initialValues.valueZh, initialValues.valueEn, initialValues.description || ''))
+
+  useEffect(() => {
+    setLinks(parseLinks(initialValues.valueZh, initialValues.valueEn, initialValues.description || ''))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValues.valueZh])
+
+  const update = (idx: number, field: keyof FriendlyLinkEntry, val: string) =>
+    setLinks(prev => prev.map((l, i) => i === idx ? { ...l, [field]: val } : l))
+
+  const add = () => setLinks(prev => [...prev, { nameZh: '', nameEn: '', url: '' }])
+  const remove = (idx: number) => setLinks(prev => prev.filter((_, i) => i !== idx))
+
+  const handleSave = () => {
+    const clean = links.filter(l => l.nameZh || l.nameEn || l.url)
+    onSave({
+      valueZh: JSON.stringify(clean.map(l => l.nameZh)),
+      valueEn: JSON.stringify(clean.map(l => l.nameEn)),
+      description: JSON.stringify(clean.map(l => l.url)),
+    })
+  }
+
+  return (
+    <div>
+      {links.map((l, idx) => (
+        <div key={idx} style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'center' }}>
+          <Input
+            placeholder="中文名称"
+            value={l.nameZh}
+            onChange={e => update(idx, 'nameZh', e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <Input
+            placeholder="英文名称"
+            value={l.nameEn}
+            onChange={e => update(idx, 'nameEn', e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <Input
+            placeholder="链接地址 (https://...)"
+            value={l.url}
+            onChange={e => update(idx, 'url', e.target.value)}
+            style={{ flex: 2 }}
+          />
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => remove(idx)}
+            disabled={links.length === 1}
+          />
+        </div>
+      ))}
+      <Button icon={<PlusOutlined />} onClick={add} style={{ marginBottom: 16 }}>
+        添加友情链接
       </Button>
       <Divider style={{ margin: '12px 0' }} />
       <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={handleSave}>
@@ -196,7 +283,11 @@ const SiteConfigPage: React.FC = () => {
   const handleSave = async (configKey: string, values: ConfigFormValues) => {
     setSavingKey(configKey)
     try {
-      await api.put(`/api/admin/config/${configKey}`, { valueZh: values.valueZh, valueEn: values.valueEn })
+      await api.put(`/api/admin/config/${configKey}`, {
+        valueZh: values.valueZh,
+        valueEn: values.valueEn,
+        description: values.description,
+      })
       message.success('保存成功')
       fetchConfigs()
     } catch {
@@ -216,7 +307,11 @@ const SiteConfigPage: React.FC = () => {
         {TARGET_KEYS.map(key => {
           const config = configs.find(c => c.configKey === key)
           const label = CONFIG_LABELS[key] || key
-          const initialValues = { valueZh: config?.valueZh || '', valueEn: config?.valueEn || '' }
+          const initialValues: ConfigFormValues = {
+            valueZh: config?.valueZh || '',
+            valueEn: config?.valueEn || '',
+            description: config?.description || '',
+          }
 
           return (
             <div key={key} style={{ marginBottom: 24, padding: '20px 0', borderBottom: '1px solid #E5E7EB' }}>
@@ -228,6 +323,8 @@ const SiteConfigPage: React.FC = () => {
                 <LogoConfigForm initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
               ) : key === 'contact_contacts' ? (
                 <ContactsConfigForm initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
+              ) : key === 'friendly_links' ? (
+                <FriendlyLinksConfigForm initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
               ) : (
                 <ConfigItemForm configKey={key} initialValues={initialValues} saving={savingKey === key} onSave={values => handleSave(key, values)} />
               )}

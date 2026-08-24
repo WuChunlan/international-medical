@@ -23,7 +23,7 @@ public class AdminConfigController {
 
     @PutMapping("/{key}")
     public Result<Void> update(@PathVariable String key, @RequestBody UpdateConfigRequest request) {
-        siteConfigService.update(key, request.getValueZh(), request.getValueEn());
+        siteConfigService.update(key, request.getValueZh(), request.getValueEn(), request.getDescription());
         return Result.ok();
     }
 
@@ -31,5 +31,6 @@ public class AdminConfigController {
     static class UpdateConfigRequest {
         private String valueZh;
         private String valueEn;
+        private String description;
     }
 }

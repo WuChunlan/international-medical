@@ -18,7 +18,7 @@ CREATE TABLE `browse_history` (
 
 CREATE TABLE `cases` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '关联医院（可为空）',
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '关联医院（可为空，NULL表示平台通用）',
   `title_zh` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title_en` varchar(300) COLLATE utf8mb4_unicode_ci NOT NULL,
   `summary_zh` text COLLATE utf8mb4_unicode_ci,
@@ -30,7 +30,10 @@ CREATE TABLE `cases` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
   `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_user` bigint unsigned DEFAULT NULL COMMENT '创建人user_id',
+  `updated_user` bigint unsigned DEFAULT NULL COMMENT '最后更新人user_id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `idx_hospital` (`hospital_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='成功案例表';
@@ -40,7 +43,7 @@ CREATE TABLE `cases` (
 
 CREATE TABLE `doctors` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `hospital_id` bigint unsigned NOT NULL,
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '关联医院（可为空，NULL表示平台通用）',
   `name_zh` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name_en` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `specialty_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '专业/科室',
@@ -55,6 +58,8 @@ CREATE TABLE `doctors` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
   `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_user` bigint unsigned DEFAULT NULL COMMENT '创建人user_id',
+  `updated_user` bigint unsigned DEFAULT NULL COMMENT '最后更新人user_id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -97,7 +102,7 @@ CREATE TABLE `entity_media` (
 
 CREATE TABLE `equipments` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `hospital_id` bigint unsigned NOT NULL,
+  `hospital_id` bigint unsigned DEFAULT NULL COMMENT '关联医院（可为空，NULL表示平台通用）',
   `name_zh` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name_en` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `desc_zh` text COLLATE utf8mb4_unicode_ci,
@@ -107,6 +112,8 @@ CREATE TABLE `equipments` (
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
   `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_user` bigint unsigned DEFAULT NULL COMMENT '创建人user_id',
+  `updated_user` bigint unsigned DEFAULT NULL COMMENT '最后更新人user_id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -217,6 +224,10 @@ CREATE TABLE `service_features` (
   `image_url` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '简介图片',
   `sort_order` int NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `audit_status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved' COMMENT '审核状态',
+  `rejection_reason` text COLLATE utf8mb4_unicode_ci,
+  `created_user` bigint unsigned DEFAULT NULL COMMENT '创建人user_id',
+  `updated_user` bigint unsigned DEFAULT NULL COMMENT '最后更新人user_id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -260,7 +271,7 @@ CREATE TABLE `site_configs` (
   `config_key` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '配置键',
   `value_zh` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value_en` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(2000) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_key` (`config_key`)
@@ -375,3 +386,34 @@ CREATE TABLE `translation_job_item` (
   KEY `idx_job` (`job_id`),
   KEY `idx_entity` (`entity_type`, `entity_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='翻译任务明细';
+
+
+-- ================================================================
+-- 迁移：支持基础管理员角色（role_id=7）
+-- 执行时间：2026-08-24
+-- ================================================================
+
+-- doctors: hospital_id 改为允许 NULL，新增 created_user / updated_user
+ALTER TABLE `doctors`
+  MODIFY COLUMN `hospital_id` BIGINT UNSIGNED NULL COMMENT '关联医院（可为空，NULL表示平台通用）',
+  ADD COLUMN `created_user` BIGINT UNSIGNED NULL COMMENT '创建人user_id' AFTER `rejection_reason`,
+  ADD COLUMN `updated_user` BIGINT UNSIGNED NULL COMMENT '最后更新人user_id' AFTER `created_user`;
+
+-- equipments: hospital_id 改为允许 NULL，新增 created_user / updated_user
+ALTER TABLE `equipments`
+  MODIFY COLUMN `hospital_id` BIGINT UNSIGNED NULL COMMENT '关联医院（可为空，NULL表示平台通用）',
+  ADD COLUMN `created_user` BIGINT UNSIGNED NULL COMMENT '创建人user_id' AFTER `rejection_reason`,
+  ADD COLUMN `updated_user` BIGINT UNSIGNED NULL COMMENT '最后更新人user_id' AFTER `created_user`;
+
+-- cases: hospital_id 已允许 NULL，新增 created_user / updated_user / updated_at
+ALTER TABLE `cases`
+  ADD COLUMN `created_user` BIGINT UNSIGNED NULL COMMENT '创建人user_id' AFTER `rejection_reason`,
+  ADD COLUMN `updated_user` BIGINT UNSIGNED NULL COMMENT '最后更新人user_id' AFTER `created_user`,
+  ADD COLUMN `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间' AFTER `updated_user`;
+
+-- service_features: 新增 audit_status / rejection_reason / created_user / updated_user
+ALTER TABLE `service_features`
+  ADD COLUMN `audit_status` ENUM('pending','approved','rejected') NOT NULL DEFAULT 'approved' COMMENT '审核状态' AFTER `is_active`,
+  ADD COLUMN `rejection_reason` TEXT COLLATE utf8mb4_unicode_ci NULL AFTER `audit_status`,
+  ADD COLUMN `created_user` BIGINT UNSIGNED NULL COMMENT '创建人user_id' AFTER `rejection_reason`,
+  ADD COLUMN `updated_user` BIGINT UNSIGNED NULL COMMENT '最后更新人user_id' AFTER `created_user`;

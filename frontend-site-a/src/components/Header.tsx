@@ -19,6 +19,7 @@ const PD_NAV_KEYS = ['nav.pd_intro', 'nav.pd_detail', 'nav.pd_variants'];
 
 const LANG_LABELS: Record<string, string> = {
   zh: '中文', en: 'English',
+  'zh-TW': '繁體中文',
   ru: 'Русский', es: 'Español', fr: 'Français',
   de: 'Deutsch', ja: '日本語', ko: '한국어',
   ar: 'العربية', pt: 'Português',
@@ -76,7 +77,7 @@ export default function Header() {
 
   // fetch 3rd-language UI bundle when lang is non-builtin
   useEffect(() => {
-    const isBuiltin = lang === 'zh' || lang.startsWith('zh-') || lang === 'en' || lang.startsWith('en-');
+    const isBuiltin = lang === 'zh' || lang === 'zh-CN' || lang === 'en' || lang === 'en-US';
     if (isBuiltin) {
       setExtraBundle({});
       return;
@@ -87,8 +88,8 @@ export default function Header() {
   }, [lang]);
 
   useEffect(() => {
-    const isZh = lang.startsWith('zh');
-    const isBuiltin = isZh || lang === 'en' || lang.startsWith('en-');
+    const isZh = lang === 'zh' || lang === 'zh-CN';
+    const isBuiltin = isZh || lang === 'en' || lang === 'en-US';
     const pick = (cfg: { valueZh?: string; valueEn?: string; value3rd?: string } | null, fallbackZh: string, fallbackEn: string) => {
       if (!cfg) return isZh ? fallbackZh : fallbackEn;
       if (!isBuiltin) return cfg.value3rd || cfg.valueZh || fallbackZh;
@@ -111,7 +112,7 @@ export default function Header() {
 
   // resolve a UI text key: use i18n for zh/en, extraBundle for 3rd languages
   const tx = (key: string): string => {
-    const isBuiltin = lang === 'zh' || lang.startsWith('zh-') || lang === 'en' || lang.startsWith('en-');
+    const isBuiltin = lang === 'zh' || lang === 'zh-CN' || lang === 'en' || lang === 'en-US';
     if (isBuiltin) return t(key);
     return extraBundle[key] || t(key);
   };

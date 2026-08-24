@@ -9,6 +9,7 @@ import com.intlmedical.mapper.ServiceFeatureMapper;
 import com.intlmedical.mapper.ServiceTeamFeatureMapper;
 import com.intlmedical.service.ContentTranslationService;
 import com.intlmedical.util.Result;
+import com.intlmedical.util.SecurityUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class AdminServiceFeatureController {
             dto.setImageUrl(sf.getImageUrl());
             dto.setSortOrder(sf.getSortOrder());
             dto.setIsActive(sf.getIsActive());
+            dto.setCreatedUser(sf.getCreatedUser());
             dto.setCreatedAt(sf.getCreatedAt() != null ? sf.getCreatedAt().toString() : null);
             List<Long> teamIds = serviceTeamFeatureMapper.selectList(
                 new LambdaQueryWrapper<ServiceTeamFeature>()
@@ -58,7 +60,11 @@ public class AdminServiceFeatureController {
 
     @PostMapping
     public Result<Void> create(@RequestBody ServiceFeatureRequest req) {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
         ServiceFeature sf = req.toEntity();
+        sf.setCreatedUser(currentUserId);
+        sf.setUpdatedUser(currentUserId);
+        sf.setAuditStatus("approved");
         serviceFeatureMapper.insert(sf);
         saveTeamLinks(sf.getId(), req.getTeamIds());
         contentTranslationService.autoTranslateEntityAsync("service_feature", sf.getId(), Map.of(
@@ -70,8 +76,15 @@ public class AdminServiceFeatureController {
 
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody ServiceFeatureRequest req) {
+        ServiceFeature existing = serviceFeatureMapper.selectById(id);
+        if (existing == null) return Result.fail(404, "服务功能不存在");
+        if (!SecurityUtil.canEdit(existing.getCreatedUser())) {
+            return Result.fail(403, "无权编辑他人创建的数据");
+        }
         ServiceFeature sf = req.toEntity();
         sf.setId(id);
+        sf.setUpdatedUser(SecurityUtil.getCurrentUserId());
+        sf.setAuditStatus("approved");
         serviceFeatureMapper.updateById(sf);
         serviceTeamFeatureMapper.delete(
             new LambdaQueryWrapper<ServiceTeamFeature>()
@@ -87,6 +100,11 @@ public class AdminServiceFeatureController {
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
+        ServiceFeature existing = serviceFeatureMapper.selectById(id);
+        if (existing == null) return Result.fail(404, "服务功能不存在");
+        if (!SecurityUtil.canEdit(existing.getCreatedUser())) {
+            return Result.fail(403, "无权删除他人创建的数据");
+        }
         serviceTeamFeatureMapper.delete(
             new LambdaQueryWrapper<ServiceTeamFeature>()
                 .eq(ServiceTeamFeature::getServiceFeatureId, id)
@@ -142,6 +160,7 @@ public class AdminServiceFeatureController {
         private String imageUrl;
         private Integer sortOrder;
         private Integer isActive;
+        private Long createdUser;
         private String createdAt;
         private List<Long> teamIds;
     }

@@ -45,6 +45,7 @@
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/ProductVariantMapper.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/UserController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/hospitaladmin/HAProductController.java
+/Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/entity/Role.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminMediaController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/util/Result.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/hospitaladmin/HAProfileController.java
@@ -59,10 +60,12 @@
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/EquipmentController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/TranslationJobMapper.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/HospitalBannerMapper.java
+/Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/service/RoleService.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/util/InviteCodeGenerator.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminProductVariantController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/entity/EntityMedia.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminDoctorController.java
+/Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/RoleMapper.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminConfigController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminTranslationController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/entity/ProductVariant.java
@@ -95,6 +98,7 @@
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/util/SecurityUtil.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/SpecialProductMapper.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/admin/AdminServiceFeatureController.java
+/Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/config/AppConfig.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/mapper/CaseMapper.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/I18nController.java
 /Users/wuchunlan/Desktop/project/international-medical/backend/src/main/java/com/intlmedical/controller/ServiceTeamController.java

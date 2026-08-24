@@ -96,8 +96,46 @@
 
   &__bottom {
     display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 16px;
+  }
+
+  &__friendly-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 16px;
     justify-content: center;
+  }
+
+  &__friendly-links-title {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(233,244,254,0.45);
+    white-space: nowrap;
+  }
+
+  &__friendly-links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  &__friendly-link {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(37,241,255,0.65);
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #25F1FF;
+      text-decoration: underline;
+    }
   }
 
   &__copyright {

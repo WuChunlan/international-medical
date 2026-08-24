@@ -367,7 +367,7 @@ i18n
  * Called by components when the user switches to a non-builtin language.
  */
 export async function loadLang(lang: string): Promise<void> {
-  if (lang === 'zh' || lang.startsWith('zh-') || lang === 'en' || lang.startsWith('en-')) return;
+  if (lang === 'zh' || lang === 'zh-CN' || lang === 'en' || lang === 'en-US') return;
   if (i18n.hasResourceBundle(lang, 'translation')) return;
   try {
     const res = await fetch(`/api/i18n/${lang}`);

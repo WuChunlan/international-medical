@@ -2,6 +2,7 @@ package com.intlmedical.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intlmedical.entity.*;
 import com.intlmedical.mapper.*;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class TranslationJobAsyncRunner {
     private final ServiceTeamMapper serviceTeamMapper;
     private final ServiceFeatureMapper serviceFeatureMapper;
     private final SiteConfigMapper siteConfigMapper;
+    private final ObjectMapper objectMapper;
 
     @Async
     public void collectAndRunAsync(Long jobId, String lang,
@@ -106,6 +108,28 @@ public class TranslationJobAsyncRunner {
                     .eq(TranslationJob::getId, jobId)
                     .set(TranslationJob::getStatus, "done")
             );
+        }
+
+        // After all items done, assemble friendly_links translation from indexed sub-items
+        assembleFriendlyLinksIfNeeded(jobId, job.getLang());
+    }
+
+    private void assembleFriendlyLinksIfNeeded(Long jobId, String lang) {
+        boolean hasIndexedItems = itemMapper.selectList(
+            new LambdaQueryWrapper<TranslationJobItem>()
+                .eq(TranslationJobItem::getJobId, jobId)
+                .likeRight(TranslationJobItem::getFieldName, "friendly_links#")
+        ).size() > 0;
+        if (!hasIndexedItems) return;
+
+        var cfg = siteConfigMapper.selectOne(new LambdaQueryWrapper<SiteConfig>()
+            .eq(SiteConfig::getConfigKey, "friendly_links"));
+        if (cfg == null || cfg.getValueZh() == null) return;
+        try {
+            String[] names = objectMapper.readValue(cfg.getValueZh(), String[].class);
+            translationService.assembleAndSaveFriendlyLinksTranslation(lang, names.length);
+        } catch (Exception e) {
+            log.warn("assembleFriendlyLinksIfNeeded lang={}: {}", lang, e.getMessage());
         }
     }
 
@@ -190,6 +214,20 @@ public class TranslationJobAsyncRunner {
                 };
             }
             case "site_config" -> {
+                if (fieldName.startsWith("friendly_links#")) {
+                    int idx;
+                    try { idx = Integer.parseInt(fieldName.substring("friendly_links#".length())); }
+                    catch (NumberFormatException e) { yield null; }
+                    var cfg = siteConfigMapper.selectOne(
+                        new LambdaQueryWrapper<SiteConfig>()
+                            .eq(SiteConfig::getConfigKey, "friendly_links")
+                    );
+                    if (cfg == null || cfg.getValueZh() == null) yield null;
+                    try {
+                        String[] names = objectMapper.readValue(cfg.getValueZh(), String[].class);
+                        yield idx < names.length ? names[idx] : null;
+                    } catch (Exception e) { yield null; }
+                }
                 var cfg = siteConfigMapper.selectOne(
                     new LambdaQueryWrapper<SiteConfig>()
                         .eq(SiteConfig::getConfigKey, fieldName)

@@ -27,4 +27,29 @@ public class SecurityUtil {
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_" + role.toUpperCase()));
     }
+
+    public static boolean isAdmin() {
+        return hasRole("admin");
+    }
+
+    public static boolean isHospitalAdmin() {
+        return hasRole("hospital_admin");
+    }
+
+    public static boolean isBaseAdmin() {
+        return hasRole("base_admin");
+    }
+
+    /**
+     * 判断当前用户是否有权限编辑/删除某条数据。
+     * Admin可操作任何数据；基础管理员只能操作自己创建的（createdUser匹配）。
+     */
+    public static boolean canEdit(Long createdUser) {
+        if (isAdmin()) return true;
+        if (isBaseAdmin()) {
+            Long currentUserId = getCurrentUserId();
+            return currentUserId != null && currentUserId.equals(createdUser);
+        }
+        return false;
+    }
 }

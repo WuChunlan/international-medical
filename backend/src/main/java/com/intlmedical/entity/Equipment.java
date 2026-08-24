@@ -2,6 +2,7 @@ package com.intlmedical.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -21,6 +22,12 @@ public class Equipment {
     private String auditStatus;
     @TableField("rejection_reason")
     private String rejectionReason;
+    @TableField("created_user")
+    private Long createdUser;
+    @TableField("updated_user")
+    private Long updatedUser;
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updatedAt;
 
     @TableField(exist = false)
     private Boolean hasPendingEdit;

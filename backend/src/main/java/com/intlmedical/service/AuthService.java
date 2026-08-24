@@ -18,6 +18,7 @@ public class AuthService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final RoleService roleService;
 
     public void register(RegisterRequest req) {
         long count = userMapper.selectCount(
@@ -29,7 +30,7 @@ public class AuthService {
         }
 
         User user = new User();
-        user.setRoleId(1);
+        user.setRoleId(roleService.getIdByCode("user"));
         user.setFirstName(req.getFirstName());
         user.setLastName(req.getLastName());
         user.setGender(req.getGender());
@@ -43,7 +44,7 @@ public class AuthService {
         if (req.getInviteCode() != null && !req.getInviteCode().isBlank()) {
             User rep = userMapper.selectOne(
                 new LambdaQueryWrapper<User>()
-                    .eq(User::getRoleId, 5)
+                    .eq(User::getRoleId, roleService.getIdByCode("customer_rep"))
                     .eq(User::getIsActive, 1)
                     .eq(User::getCanInvite, 1)
                     .eq(User::getInviteCode, req.getInviteCode().trim())
@@ -66,20 +67,13 @@ public class AuthService {
         if (user.getIsActive() != 1) {
             throw new RuntimeException("账号已被禁用");
         }
-        String role = switch (user.getRoleId()) {
-            case 2 -> "admin";
-            case 3 -> "hospital_admin";
-            case 4 -> "reviewer";
-            case 5 -> "customer_rep";
-            case 6 -> "translation_admin";
-            default -> "user";
-        };
+        String role = roleService.getCodeById(user.getRoleId());
         String displayName = (user.getLastName() != null ? user.getLastName() : "") +
                              (user.getFirstName() != null ? user.getFirstName() : "");
         if (displayName.isBlank()) displayName = user.getEmail();
         String token = jwtUtil.generateToken(user.getId(), displayName, role, user.getHospitalId());
         boolean mustChange = user.getMustChangePassword() != null && user.getMustChangePassword() == 1;
-        return new LoginResponse(token, displayName, role, user.getHospitalId(), mustChange);
+        return new LoginResponse(token, displayName, role, user.getHospitalId(), mustChange, user.getId());
     }
 
     public java.util.Map<String, Object> inviteInfo(String code) {
@@ -91,7 +85,7 @@ public class AuthService {
         }
         User rep = userMapper.selectOne(
             new LambdaQueryWrapper<User>()
-                .eq(User::getRoleId, 5)
+                .eq(User::getRoleId, roleService.getIdByCode("customer_rep"))
                 .eq(User::getIsActive, 1)
                 .eq(User::getCanInvite, 1)
                 .eq(User::getInviteCode, code.trim())

@@ -2,8 +2,11 @@ package com.intlmedical.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intlmedical.entity.ContentTranslation;
+import com.intlmedical.entity.SiteConfig;
 import com.intlmedical.mapper.ContentTranslationMapper;
+import com.intlmedical.mapper.SiteConfigMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -18,19 +21,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContentTranslationService {
 
-    /** is_reviewed 状态常量 */
-    public static final int STATUS_PENDING = 0; // 待翻译
-    public static final int STATUS_DONE    = 1; // 已翻译（直接展示）
-    public static final int STATUS_FAILED  = 2; // 翻译失败
+    public static final int STATUS_PENDING = 0;
+    public static final int STATUS_DONE    = 1;
+    public static final int STATUS_FAILED  = 2;
 
     private final ContentTranslationMapper mapper;
     private final TranslateService translateService;
-    private final SiteConfigService siteConfigService;
+    private final SiteConfigMapper siteConfigMapper;
+    private final ObjectMapper objectMapper;
 
-    /**
-     * 查询已翻译的内容（is_reviewed=1 才返回，否则 null）
-     * frontend-site-a 只读此结果
-     */
     public String get(String entityType, Long entityId, String fieldName, String lang) {
         ContentTranslation row = mapper.selectOne(
             new LambdaQueryWrapper<ContentTranslation>()
@@ -43,9 +42,6 @@ public class ContentTranslationService {
         return row.getIsReviewed() == STATUS_DONE ? row.getContent() : null;
     }
 
-    /**
-     * 批量查询某实体所有字段的已翻译内容
-     */
     public Map<String, String> getAll(String entityType, Long entityId, String lang) {
         List<ContentTranslation> rows = mapper.selectList(
             new LambdaQueryWrapper<ContentTranslation>()
@@ -60,10 +56,6 @@ public class ContentTranslationService {
         ));
     }
 
-    /**
-     * 机器翻译一条记录并直接写入 content，成功→1，失败→2
-     * 原文更新时保留旧翻译（status 临时回到 0），翻译完成后直接覆盖
-     */
     public void machineTranslate(String entityType, Long entityId,
                                   String fieldName, String lang, String zhText) {
         if (zhText == null || zhText.isBlank()) return;
@@ -83,7 +75,7 @@ public class ContentTranslationService {
             translated = translateService.translate(zhText, lang);
             status = STATUS_DONE;
         } catch (Exception e) {
-            translated = row != null ? row.getContent() : null; // keep old content on failure
+            translated = row != null ? row.getContent() : null;
             errorMsg = e.getMessage();
             status = STATUS_FAILED;
             log.warn("机器翻译失败 entity={} id={} field={} lang={}: {}",
@@ -108,7 +100,6 @@ public class ContentTranslationService {
                 .eq(ContentTranslation::getLang, lang)
                 .set(ContentTranslation::getIsReviewed, status)
                 .set(ContentTranslation::getErrorMsg, errorMsg);
-            // on success, overwrite content; on failure, keep old content intact
             if (status == STATUS_DONE) {
                 update.set(ContentTranslation::getContent, translated);
             }
@@ -116,17 +107,11 @@ public class ContentTranslationService {
         }
     }
 
-    /**
-     * 异步触发翻译（Admin/审核流保存后非阻塞调用）
-     */
     @Async
     public void autoTranslateEntityAsync(String entityType, Long entityId, Map<String, String> zhFields) {
         autoTranslateEntity(entityType, entityId, zhFields);
     }
 
-    /**
-     * 批量机器翻译某实体所有字段到所有目标语种（审核通过或 Admin 保存后调用）
-     */
     public void autoTranslateEntity(String entityType, Long entityId, Map<String, String> zhFields) {
         List<String> targetLangs = getTargetLangs();
         for (String lang : targetLangs) {
@@ -139,8 +124,88 @@ public class ContentTranslationService {
     }
 
     /**
-     * 删除某实体的所有翻译（实体删除时调用）
+     * 保存 friendly_links 后异步翻译：逐条翻译每个名称，组装 JSON 数组写入 content_translations
      */
+    @Async
+    public void translateFriendlyLinksAsync(String valueZh) {
+        try {
+            String[] names = objectMapper.readValue(valueZh, String[].class);
+            List<String> targetLangs = getTargetLangs();
+            for (String lang : targetLangs) {
+                String[] translated = new String[names.length];
+                for (int i = 0; i < names.length; i++) {
+                    if (names[i] == null || names[i].isBlank()) {
+                        translated[i] = "";
+                        continue;
+                    }
+                    try {
+                        translated[i] = translateService.translate(names[i], lang);
+                    } catch (Exception e) {
+                        log.warn("friendly_link[{}] 翻译失败 lang={}: {}", i, lang, e.getMessage());
+                        translated[i] = names[i];
+                    }
+                }
+                saveFriendlyLinksContent(lang, translated);
+            }
+        } catch (Exception e) {
+            log.warn("translateFriendlyLinksAsync 解析失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 从 content_translations 中读取各索引项，组装完整 JSON 数组并持久化（Job 完成后调用）
+     */
+    public void assembleAndSaveFriendlyLinksTranslation(String lang, int count) {
+        String[] names = new String[count];
+        for (int i = 0; i < count; i++) {
+            ContentTranslation row = mapper.selectOne(
+                new LambdaQueryWrapper<ContentTranslation>()
+                    .eq(ContentTranslation::getEntityType, "site_config")
+                    .eq(ContentTranslation::getEntityId, 0L)
+                    .eq(ContentTranslation::getFieldName, "friendly_links#" + i)
+                    .eq(ContentTranslation::getLang, lang)
+                    .eq(ContentTranslation::getIsReviewed, STATUS_DONE)
+            );
+            names[i] = (row != null && row.getContent() != null) ? row.getContent() : "";
+        }
+        saveFriendlyLinksContent(lang, names);
+    }
+
+    private void saveFriendlyLinksContent(String lang, String[] names) {
+        try {
+            String assembled = objectMapper.writeValueAsString(names);
+            ContentTranslation existing = mapper.selectOne(
+                new LambdaQueryWrapper<ContentTranslation>()
+                    .eq(ContentTranslation::getEntityType, "site_config")
+                    .eq(ContentTranslation::getEntityId, 0L)
+                    .eq(ContentTranslation::getFieldName, "friendly_links")
+                    .eq(ContentTranslation::getLang, lang)
+            );
+            if (existing == null) {
+                ContentTranslation row = new ContentTranslation();
+                row.setEntityType("site_config");
+                row.setEntityId(0L);
+                row.setFieldName("friendly_links");
+                row.setLang(lang);
+                row.setContent(assembled);
+                row.setIsReviewed(STATUS_DONE);
+                mapper.insert(row);
+            } else {
+                mapper.update(null, new LambdaUpdateWrapper<ContentTranslation>()
+                    .eq(ContentTranslation::getEntityType, "site_config")
+                    .eq(ContentTranslation::getEntityId, 0L)
+                    .eq(ContentTranslation::getFieldName, "friendly_links")
+                    .eq(ContentTranslation::getLang, lang)
+                    .set(ContentTranslation::getContent, assembled)
+                    .set(ContentTranslation::getIsReviewed, STATUS_DONE)
+                    .set(ContentTranslation::getErrorMsg, null)
+                );
+            }
+        } catch (Exception e) {
+            log.warn("saveFriendlyLinksContent lang={}: {}", lang, e.getMessage());
+        }
+    }
+
     public void deleteByEntity(String entityType, Long entityId) {
         mapper.delete(
             new LambdaQueryWrapper<ContentTranslation>()
@@ -149,9 +214,6 @@ public class ContentTranslationService {
         );
     }
 
-    /**
-     * 查询所有翻译失败的记录（Admin 全局失败列表用）
-     */
     public List<ContentTranslation> listFailed() {
         return mapper.selectList(
             new LambdaQueryWrapper<ContentTranslation>()
@@ -160,9 +222,6 @@ public class ContentTranslationService {
         );
     }
 
-    /**
-     * 重试单条失败记录（需要传入对应的中文原文）
-     */
     public void retryFailed(Long id, String zhText) {
         ContentTranslation row = mapper.selectById(id);
         if (row == null || row.getIsReviewed() != STATUS_FAILED) return;
@@ -171,7 +230,10 @@ public class ContentTranslationService {
     }
 
     public List<String> getTargetLangs() {
-        var cfg = siteConfigService.getByKey("translate_target_langs");
+        SiteConfig cfg = siteConfigMapper.selectOne(
+            new LambdaQueryWrapper<SiteConfig>()
+                .eq(SiteConfig::getConfigKey, "translate_target_langs")
+        );
         String raw = (cfg != null && cfg.getValueEn() != null) ? cfg.getValueEn() : "en";
         return List.of(raw.split(",")).stream()
             .map(String::trim)

@@ -7,6 +7,7 @@ import MediaUploadList from '../../components/MediaUploadList'
 import ImageUpload from '../../components/ImageUpload'
 import FormRow from '../../components/FormRow'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
+import { useAdminAuthStore } from '../../store/authStore'
 
 interface EquipmentFormProps {
   open: boolean
@@ -21,6 +22,8 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ open, record, hospitals, 
   const [loading, setLoading] = useState(false)
   const isEdit = !!record
   const { translateField, translateAll } = useAutoTranslate(form)
+  const { role } = useAdminAuthStore()
+  const showHospital = role === 'admin' || role === 'hospital_admin'
 
   useEffect(() => {
     if (open) {
@@ -82,9 +85,15 @@ const EquipmentForm: React.FC<EquipmentFormProps> = ({ open, record, hospitals, 
         </Tooltip>
       </div>
       <Form form={form} layout="vertical">
-        <Form.Item name="hospitalId" label="所属医院" rules={[{ required: true, message: '请选择所属医院' }]}>
-          <Select placeholder="请选择所属医院" options={hospitals.map(h => ({ value: h.id, label: h.nameZh }))} />
-        </Form.Item>
+        {showHospital && (
+          <Form.Item name="hospitalId" label="所属医院">
+            <Select
+              allowClear
+              placeholder="请选择所属医院（可选）"
+              options={hospitals.map(h => ({ value: h.id, label: h.nameZh }))}
+            />
+          </Form.Item>
+        )}
         <FormRow>
           <Form.Item name="nameZh" label="中文名称" rules={[{ required: true, message: '请输入中文名称' }]}>
             <Input placeholder="请输入中文名称" onBlur={() => translateField('nameZh')} />

@@ -3,7 +3,7 @@ import { Col, Row, Spin, Typography, Card, Statistic, Badge, List, Tag, Alert, B
 import {
   BankOutlined, UserOutlined, ShoppingOutlined, FileTextOutlined,
   AuditOutlined, CheckCircleOutlined, ClockCircleOutlined, TeamOutlined,
-  QrcodeOutlined,
+  QrcodeOutlined, MedicineBoxOutlined, AppstoreOutlined,
 } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import api from '../../api'
@@ -419,6 +419,70 @@ const CustomerRepDashboard: React.FC<{ username: string }> = ({ username }) => {
   )
 }
 
+// ── Base admin dashboard ─────────────────────────────────────────
+interface BaseAdminStats { doctors: number; equipments: number; serviceFeatures: number; cases: number }
+
+const BaseAdminDashboard: React.FC<{ username: string }> = ({ username }) => {
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<BaseAdminStats>({ doctors: 0, equipments: 0, serviceFeatures: 0, cases: 0 })
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetch = async () => {
+      setLoading(true)
+      try {
+        const [dRes, eRes, sfRes, cRes] = await Promise.allSettled([
+          api.get('/api/admin/doctors', { params: { page: 1, size: 1 } }),
+          api.get('/api/admin/equipments', { params: { page: 1, size: 1 } }),
+          api.get('/api/admin/service-features', { params: { page: 1, size: 1 } }),
+          api.get('/api/admin/cases', { params: { page: 1, size: 1 } }),
+        ])
+        const getTotal = (res: PromiseSettledResult<{ data: { total?: number; records?: unknown[] } }>) => {
+          if (res.status !== 'fulfilled') return 0
+          return res.value.data?.total ?? res.value.data?.records?.length ?? 0
+        }
+        setStats({
+          doctors:         getTotal(dRes  as PromiseSettledResult<{ data: { total?: number; records?: unknown[] } }>),
+          equipments:      getTotal(eRes  as PromiseSettledResult<{ data: { total?: number; records?: unknown[] } }>),
+          serviceFeatures: getTotal(sfRes as PromiseSettledResult<{ data: { total?: number; records?: unknown[] } }>),
+          cases:           getTotal(cRes  as PromiseSettledResult<{ data: { total?: number; records?: unknown[] } }>),
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetch()
+  }, [])
+
+  const statCards = [
+    { label: '医生数量',   value: stats.doctors,         icon: <UserOutlined />,        accent: 'accent-primary', path: '/doctors' },
+    { label: '设备数量',   value: stats.equipments,      icon: <MedicineBoxOutlined />, accent: 'accent-blue',    path: '/equipments' },
+    { label: '服务功能',   value: stats.serviceFeatures, icon: <AppstoreOutlined />,    accent: 'accent-green',   path: '/service-features' },
+    { label: '过往案例',   value: stats.cases,           icon: <FileTextOutlined />,    accent: 'accent-amber',   path: '/cases' },
+  ]
+
+  return (
+    <>
+      <div className="page-header">
+        <h3 className="page-title">欢迎回来，{username}</h3>
+        <p className="page-description">基础管理员 · 管理平台基础内容</p>
+      </div>
+      <Spin spinning={loading}>
+        <Row gutter={[16, 16]}>
+          {statCards.map(card => (
+            <Col xs={24} sm={12} lg={6} key={card.label}>
+              <div className={`stat-card ${card.accent}`} style={{ cursor: 'pointer' }} onClick={() => navigate(card.path)}>
+                <div className="stat-value">{card.value}</div>
+                <div className="stat-label">{card.label}</div>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </Spin>
+    </>
+  )
+}
+
 // ── Root ─────────────────────────────────────────────────────────
 const Dashboard: React.FC = () => {
   const { username, role } = useAdminAuthStore()
@@ -430,6 +494,7 @@ const Dashboard: React.FC = () => {
       {role === 'hospital_admin' && <HospitalAdminDashboard username={name} />}
       {role === 'reviewer'       && <ReviewerDashboard      username={name} />}
       {role === 'customer_rep'   && <CustomerRepDashboard   username={name} />}
+      {role === 'base_admin'     && <BaseAdminDashboard     username={name} />}
       {!role && (
         <>
           <div className="page-header">

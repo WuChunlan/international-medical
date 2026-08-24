@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.intlmedical.entity.User;
 import com.intlmedical.mapper.UserMapper;
+import com.intlmedical.service.RoleService;
 import com.intlmedical.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,12 +22,13 @@ import java.util.Map;
 public class RepController {
 
     private final UserMapper userMapper;
+    private final RoleService roleService;
 
     @GetMapping("/me")
     public Result<Map<String, Object>> me(Authentication auth) {
         Long userId = (Long) auth.getPrincipal();
         User rep = userMapper.selectById(userId);
-        if (rep == null || rep.getRoleId() != 5) {
+        if (rep == null || !"customer_rep".equals(roleService.getCodeById(rep.getRoleId()))) {
             return Result.fail(403, "非客户代表账号");
         }
         long count = userMapper.selectCount(

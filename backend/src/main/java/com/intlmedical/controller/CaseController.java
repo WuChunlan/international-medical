@@ -29,4 +29,11 @@ public class CaseController {
         }
         return Result.ok(vo);
     }
+
+    @GetMapping("/by-hospital/{hospitalId}")
+    public Result<List<CaseVO>> listByHospital(
+            @PathVariable Long hospitalId,
+            @RequestParam(defaultValue = "zh") String lang) {
+        return Result.ok(caseService.listActiveByHospital(hospitalId, lang));
+    }
 }

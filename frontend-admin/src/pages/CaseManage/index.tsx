@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Table, Button, Space, Switch, Popconfirm, message, Tag, Divider } from 'antd'
+import { Table, Button, Space, Switch, Popconfirm, message, Tag, Divider, Tooltip } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { ColumnsType } from 'antd/es/table'
 import api from '../../api'
 import type { MedicalCase } from '../../types'
 import CaseForm from './CaseForm'
+import { useAdminAuthStore } from '../../store/authStore'
 
 const CaseManage: React.FC = () => {
   const [data, setData] = useState<MedicalCase[]>([])
@@ -13,6 +14,10 @@ const CaseManage: React.FC = () => {
   const [current, setCurrent] = useState(1)
   const [modalOpen, setModalOpen] = useState(false)
   const [editRecord, setEditRecord] = useState<MedicalCase | null>(null)
+  const { role, userId } = useAdminAuthStore()
+  const isAdmin = role === 'admin'
+
+  const canEdit = (record: MedicalCase) => isAdmin || record.createdUser === userId
 
   const fetchData = useCallback(async (page = 1) => {
     setLoading(true)
@@ -74,19 +79,23 @@ const CaseManage: React.FC = () => {
       title: '状态', dataIndex: 'isActive', width: 100,
       render: (val: number, record: MedicalCase) => (
         <Switch checked={val === 1} checkedChildren="启用" unCheckedChildren="禁用"
-          onChange={() => handleToggleStatus(record)} size="small" />
+          onChange={() => handleToggleStatus(record)} size="small" disabled={!canEdit(record)} />
       ),
     },
     {
       title: '操作', width: 150,
       render: (_: unknown, record: MedicalCase) => (
         <Space size={0}>
-          <Button type="text" size="small" icon={<EditOutlined />}
-            onClick={() => { setEditRecord(record); setModalOpen(true) }}>编辑</Button>
+          <Tooltip title={canEdit(record) ? '' : '无权编辑他人数据'}>
+            <Button type="text" size="small" icon={<EditOutlined />} disabled={!canEdit(record)}
+              onClick={() => { setEditRecord(record); setModalOpen(true) }}>编辑</Button>
+          </Tooltip>
           <Divider type="vertical" style={{ margin: '0 2px' }} />
-          <Popconfirm title="确认删除该案例？" onConfirm={() => handleDelete(record.id)} okText="确认" cancelText="取消">
-            <Button type="text" danger size="small" icon={<DeleteOutlined />}>删除</Button>
-          </Popconfirm>
+          <Tooltip title={canEdit(record) ? '' : '无权删除他人数据'}>
+            <Popconfirm title="确认删除该案例？" onConfirm={() => handleDelete(record.id)} okText="确认" cancelText="取消" disabled={!canEdit(record)}>
+              <Button type="text" danger size="small" icon={<DeleteOutlined />} disabled={!canEdit(record)}>删除</Button>
+            </Popconfirm>
+          </Tooltip>
         </Space>
       ),
     },

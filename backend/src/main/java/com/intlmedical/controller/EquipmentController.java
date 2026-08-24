@@ -35,4 +35,23 @@ public class EquipmentController {
         }
         return Result.ok(list);
     }
+
+    @GetMapping("/by-hospital/{hospitalId}")
+    public Result<List<Equipment>> listByHospital(
+            @PathVariable Long hospitalId,
+            @RequestParam(defaultValue = "zh") String lang) {
+        List<Equipment> list = equipmentMapper.selectList(
+            new LambdaQueryWrapper<Equipment>()
+                .eq(Equipment::getHospitalId, hospitalId)
+                .eq(Equipment::getIsActive, 1)
+                .eq(Equipment::getAuditStatus, "approved")
+                .orderByAsc(Equipment::getSortOrder)
+        );
+        if (!BUILTIN_LANGS.contains(lang)) {
+            list.forEach(e -> e.setTranslations(
+                translationService.getAll("equipment", e.getId(), lang)
+            ));
+        }
+        return Result.ok(list);
+    }
 }

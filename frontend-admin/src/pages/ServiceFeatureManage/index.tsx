@@ -10,6 +10,7 @@ import type { ServiceFeature, ServiceTeam, PageResult } from '../../types'
 import ImageUpload from '../../components/ImageUpload'
 import { useAutoTranslate } from '../../hooks/useAutoTranslate'
 import FormRow from '../../components/FormRow'
+import { useAdminAuthStore } from '../../store/authStore'
 
 const { TextArea } = Input
 
@@ -26,6 +27,10 @@ const ServiceFeatureManage: React.FC = () => {
   const [teamOptions, setTeamOptions] = useState<{ value: number; label: string }[]>([])
   const [form] = Form.useForm()
   const { translateField, translateAll } = useAutoTranslate(form)
+  const { role, userId } = useAdminAuthStore()
+  const isAdmin = role === 'admin'
+
+  const canEdit = (record: ServiceFeature) => isAdmin || record.createdUser === userId
 
   const fetchFeatures = useCallback(async (p: number) => {
     setLoading(true)
@@ -116,10 +121,14 @@ const ServiceFeatureManage: React.FC = () => {
       title: '操作', width: 120,
       render: (_, record) => (
         <Space size={0}>
-          <Button type="text" size="small" icon={<EditOutlined />} onClick={() => openEdit(record)}>编辑</Button>
-          <Popconfirm title="确认删除？" onConfirm={() => handleDelete(record.id)}>
-            <Button type="text" danger size="small" icon={<DeleteOutlined />}>删除</Button>
-          </Popconfirm>
+          <Tooltip title={canEdit(record) ? '' : '无权编辑他人数据'}>
+            <Button type="text" size="small" icon={<EditOutlined />} disabled={!canEdit(record)} onClick={() => openEdit(record)}>编辑</Button>
+          </Tooltip>
+          <Tooltip title={canEdit(record) ? '' : '无权删除他人数据'}>
+            <Popconfirm title="确认删除？" onConfirm={() => handleDelete(record.id)} disabled={!canEdit(record)}>
+              <Button type="text" danger size="small" icon={<DeleteOutlined />} disabled={!canEdit(record)}>删除</Button>
+            </Popconfirm>
+          </Tooltip>
         </Space>
       ),
     },
