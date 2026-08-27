@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/cases/**").hasAnyRole("ADMIN", "BASE_ADMIN")
                 .requestMatchers("/api/admin/hospitals").hasAnyRole("ADMIN", "BASE_ADMIN")
                 .requestMatchers("/api/admin/media/**").hasAnyRole("ADMIN", "BASE_ADMIN", "HOSPITAL_ADMIN")
+                .requestMatchers("/api/admin/upload").hasAnyRole("ADMIN", "BASE_ADMIN")
                 // Admin endpoints (all other /api/admin/**)
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 // Hospital admin endpoints
